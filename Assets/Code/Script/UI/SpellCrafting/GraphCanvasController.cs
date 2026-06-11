@@ -119,10 +119,52 @@ public class GraphCanvasController : MonoBehaviour
 
     // ── Connection Wiring ────────────────────────────────────────────────
 
+    /// Détache la connexion existante sur ce port (s'il y en a une) et
+    /// démarre un câble pendant depuis le port OUTPUT. Si aucune connexion
+    /// n'existe, démarre un nouveau câble (ports OUTPUT seulement).
+    public void GrabConnection(PortView port)
+    {
+        if (_pending == null) _pending = GetComponentInChildren<PendingConnectionController>(true);
+
+        var existing = FindConnectionForPort(port);
+        if (existing != null)
+        {
+            // Garder le port OUTPUT comme point d'ancrage du câble pendant
+            PortView outputPort = port.Type == PortView.PortType.Output
+                ? port
+                : GetNodeView(existing.FromNodeIndex)?.OutputPort;
+
+            DeleteConnection(existing);
+            if (outputPort != null) _pending?.StartFrom(outputPort);
+        }
+        else if (port.Type == PortView.PortType.Output)
+        {
+            _pending?.StartFrom(port);
+        }
+        // Clic sur un INPUT sans connexion : rien
+    }
+
     public void BeginConnection(PortView outputPort)
     {
         if (_pending == null) _pending = GetComponentInChildren<PendingConnectionController>(true);
         _pending?.StartFrom(outputPort);
+    }
+
+    public void DeleteConnection(ConnectionView cv)
+    {
+        _connectionViews.Remove(cv);
+        Destroy(cv.gameObject);
+    }
+
+    private ConnectionView FindConnectionForPort(PortView port)
+    {
+        int idx = port.OwnerNodeView.NodeIndex;
+        foreach (var cv in _connectionViews)
+        {
+            if (port.Type == PortView.PortType.Output && cv.FromNodeIndex == idx) return cv;
+            if (port.Type == PortView.PortType.Input  && cv.ToNodeIndex   == idx) return cv;
+        }
+        return null;
     }
 
     public void CompleteConnection(PortView inputPort)
@@ -142,6 +184,7 @@ public class GraphCanvasController : MonoBehaviour
     private NodeView SpawnNodeView(SpellNodeSO data, int index)
     {
         var go   = Instantiate(NodeViewPrefab, GraphArea);
+        go.SetActive(true);
         var view = go.GetComponent<NodeView>();
         view.NodeIndex = index;
         view.Init(data, this);
@@ -152,6 +195,7 @@ public class GraphCanvasController : MonoBehaviour
     private void SpawnConnectionView(PortView from, PortView to)
     {
         var go   = Instantiate(ConnectionViewPrefab, GraphArea);
+        go.SetActive(true);
         var conn = go.GetComponent<ConnectionView>();
         conn.Init(from, to, GraphArea);
         _connectionViews.Add(conn);

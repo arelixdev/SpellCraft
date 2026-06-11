@@ -2,7 +2,11 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class PortView : MonoBehaviour, IPointerClickHandler
+public class PortView : MonoBehaviour,
+    IPointerDownHandler,
+    IPointerClickHandler,
+    IBeginDragHandler,
+    IDragHandler
 {
     public enum PortType { Input, Output }
 
@@ -17,14 +21,26 @@ public class PortView : MonoBehaviour, IPointerClickHandler
         if (img) img.color = color;
     }
 
-    public void OnPointerClick(PointerEventData e)
+    // OnPointerDown (pas OnPointerClick) : fire dès le press, pas besoin
+    // que la souris soit immobile entre press et release.
+    public void OnPointerDown(PointerEventData e)
     {
-        if (Type == PortType.Output)
-            GraphCanvasController.Instance.BeginConnection(this);
-        else
-            GraphCanvasController.Instance.CompleteConnection(this);
+        var gca     = GraphCanvasController.Instance;
+        var pending = PendingConnectionController.Instance;
+
+        if (pending != null && pending.IsActive && Type == PortType.Input)
+        {
+            gca.CompleteConnection(this);
+            return;
+        }
+
+        gca.GrabConnection(this);
     }
 
-    // In Screen Space Overlay, transform.position.xy == screen position in pixels
+    // No-op : absorbe l'event pour qu'il ne remonte pas
+    public void OnPointerClick(PointerEventData e) { }
+    public void OnBeginDrag(PointerEventData e)    { }
+    public void OnDrag(PointerEventData e)          { }
+
     public Vector2 ScreenPosition => transform.position;
 }

@@ -15,6 +15,7 @@ public class NodeInventoryPanel : MonoBehaviour
         {
             if (node == null) continue;
             var go   = Instantiate(NodeCardPrefab, ContentRoot);
+            go.SetActive(true);
             var card = go.GetComponent<NodeCardView>();
             card.Init(node);
         }

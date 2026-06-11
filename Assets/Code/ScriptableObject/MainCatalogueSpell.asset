@@ -10,6 +10,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0fdc8446c0fb7f5458edf7c6ecb18add, type: 3}
-  m_Name: CatalogueSpell
+  m_Name: MainCatalogueSpell
   m_EditorClassIdentifier: Assembly-CSharp::SpellNodeCatalogSO
-  allNodes: []
+  allNodes:
+  - {fileID: 11400000, guid: 9024edfe89b5add4eaf97856a8b8167c, type: 2}
+  - {fileID: 11400000, guid: a8eb528ebc02322468008ac21b80115d, type: 2}

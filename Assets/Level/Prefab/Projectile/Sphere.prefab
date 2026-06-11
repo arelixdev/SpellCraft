@@ -13,7 +13,6 @@ GameObject:
   - component: {fileID: 7882787973993836696}
   - component: {fileID: 3812831994775237740}
   - component: {fileID: 4305213035034467565}
-  - component: {fileID: 8664249481658888832}
   m_Layer: 0
   m_Name: Sphere
   m_TagString: Untagged
@@ -141,15 +140,3 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!114 &8664249481658888832
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7326707846551993688}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c97b4e09f1edb2241b8199d5c5cf35f6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::SpellProjectile

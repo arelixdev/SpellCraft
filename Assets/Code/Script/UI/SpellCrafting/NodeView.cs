@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class NodeView : MonoBehaviour, IBeginDragHandler, IDragHandler, IPointerClickHandler
+public class NodeView : MonoBehaviour, IPointerDownHandler, IBeginDragHandler, IDragHandler, IPointerClickHandler
 {
     public SpellNodeSO Data       { get; private set; }
     public int         NodeIndex  { get; set; }
@@ -42,6 +42,10 @@ public class NodeView : MonoBehaviour, IBeginDragHandler, IDragHandler, IPointer
         InputPort? .Init(this, PortView.PortType.Input,  new Color(0.3f, 0.75f, 1.0f));
         OutputPort?.Init(this, PortView.PortType.Output, new Color(1.0f, 0.60f, 0.2f));
     }
+
+    // Absorbe OnPointerDown sur le corps du nœud pour empêcher le fond
+    // de GraphArea de recevoir l'event (évite une annulation involontaire).
+    public void OnPointerDown(PointerEventData e) { }
 
     public void OnBeginDrag(PointerEventData e)
     {

@@ -1,26 +1,23 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-/// Represents a drawn bezier cable between two ports.
-/// Registers to Canvas.willRenderCanvases so cable positions
-/// update every rendered frame even when Time.timeScale == 0.
 public class ConnectionView : MonoBehaviour
 {
     public int FromNodeIndex { get; set; }
     public int ToNodeIndex   { get; set; }
 
-    private UIBezierLine _line;
-    private PortView     _fromPort;
-    private PortView     _toPort;
+    private UIBezierLine  _line;
+    private PortView      _fromPort;
+    private PortView      _toPort;
     private RectTransform _graphAreaRect;
 
     public void Init(PortView from, PortView to, RectTransform graphArea)
     {
-        _fromPort     = from;
-        _toPort       = to;
+        _fromPort      = from;
+        _toPort        = to;
         _graphAreaRect = graphArea;
-        FromNodeIndex = from.OwnerNodeView.NodeIndex;
-        ToNodeIndex   = to.OwnerNodeView.NodeIndex;
+        FromNodeIndex  = from.OwnerNodeView.NodeIndex;
+        ToNodeIndex    = to.OwnerNodeView.NodeIndex;
 
         _line = GetComponent<UIBezierLine>();
         Canvas.willRenderCanvases += UpdateLine;
@@ -38,7 +35,6 @@ public class ConnectionView : MonoBehaviour
         _line.SetPoints(s, e);
     }
 
-    /// Called when a node is deleted to keep indices consistent.
     public void UpdateIndices(int deletedIndex)
     {
         if (FromNodeIndex > deletedIndex) FromNodeIndex--;
