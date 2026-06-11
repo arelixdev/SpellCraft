@@ -1,11 +1,12 @@
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 /// Bottom bar: slot selector buttons, budget display, Apply button.
 public class BottomBarController : MonoBehaviour
 {
     [Header("References")]
-    public Text   BudgetLabel;
+    public TMP_Text BudgetLabel;
     public Slider BudgetSlider;
     public Button ApplyButton;
 

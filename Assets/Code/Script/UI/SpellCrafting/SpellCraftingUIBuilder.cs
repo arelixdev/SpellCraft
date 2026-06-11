@@ -135,7 +135,7 @@ public class SpellCraftingUIBuilder : MonoBehaviour
         var applyBtn = NewButtonChild("ApplyButton", bottomBar.transform, "Apply");
 
         var bbc          = bottomBar.AddComponent<BottomBarController>();
-        bbc.BudgetLabel  = budgetLabel.GetComponent<Text>();
+        bbc.BudgetLabel  = budgetLabel.GetComponent<TMPro.TMP_Text>();
         bbc.BudgetSlider = budgetSlider.GetComponent<Slider>();
         bbc.ApplyButton  = applyBtn.GetComponent<Button>();
 

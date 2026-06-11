@@ -53,7 +53,11 @@ public class SpellCraftingPanel : MonoBehaviour
 
     public void RefreshBudget()
     {
-        if (_workingCopy == null || BottomBar == null) return;
+        if (_workingCopy == null || BottomBar == null)
+        {
+            Debug.LogWarning($"[SpellCrafting] RefreshBudget skip — workingCopy={_workingCopy != null}, BottomBar={BottomBar != null}");
+            return;
+        }
         BottomBar.RefreshBudget(_workingCopy.TotalCost, _workingCopy.complexityBudget);
     }
 

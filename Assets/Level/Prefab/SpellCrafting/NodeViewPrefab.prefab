@@ -303,7 +303,7 @@ GameObject:
   - component: {fileID: 7740675123401735333}
   - component: {fileID: 7544816673083652130}
   m_Layer: 5
-  m_Name: OutPort
+  m_Name: OutputPort
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
