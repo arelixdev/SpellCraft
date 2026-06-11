@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c07816cde7204304e9395454d8eb804b, type: 3}
+  m_Name: Projectile
+  m_EditorClassIdentifier: Assembly-CSharp::EmitterNodeSO
+  icon: {fileID: 0}
+  nodeName: Projectile
+  nodeType: 0
+  complexityCost: 2
+  emitterType: 1
+  projectilePrefab: {fileID: 7326707846551993688, guid: 5bd8f0eae267a5f4c8b98a633db1e76f, type: 3}
+  baseDamage: 15
+  baseSpeed: 12
+  baseSize: 1

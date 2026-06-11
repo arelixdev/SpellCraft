@@ -10,9 +10,12 @@ public class SpellProjectile : MonoBehaviour
     private List<SpellContext.PendingTrigger> _tickTriggers = new();
     private List<float>                       _tickTimers   = new();
 
+    private void Awake() => enabled = false;
+
     public void Initialize(SpellContext ctx)
     {
-        _ctx = ctx;
+        _ctx    = ctx;
+        enabled = true;
         transform.localScale = Vector3.one * ctx.Size;
 
         foreach (var trigger in ctx.PendingTriggers)
@@ -55,6 +58,7 @@ public class SpellProjectile : MonoBehaviour
 
     private void OnDestroy()
     {
+        if (_ctx == null) return;
         FireTriggers(TriggerType.OnExpire, null);
     }
 

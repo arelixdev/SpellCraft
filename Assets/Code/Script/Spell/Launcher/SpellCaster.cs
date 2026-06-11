@@ -78,4 +78,11 @@ public class SpellCaster : MonoBehaviour
         var slot = _spellSlots[i];
         return slot?.launcherConfig != null && slot.connectedSpell != null;
     }
+
+    public SpellSlot   GetSlot(int i)  => (i >= 0 && i < _spellSlots.Length) ? _spellSlots[i] : null;
+    public SpellSlot[] GetSlots()      => _spellSlots;
+    public void SetSlotGraph(int i, SpellGraphSO graph)
+    {
+        if (i >= 0 && i < _spellSlots.Length) _spellSlots[i].connectedSpell = graph;
+    }
 }

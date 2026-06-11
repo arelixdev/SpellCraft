@@ -14,17 +14,27 @@ public class SpellGraphSO : ScriptableObject
         [HorizontalGroup, LabelWidth(80)] public int toIndex;
     }
 
+    [Serializable]
+    public struct NodePlacement
+    {
+        public int     nodeIndex;
+        public Vector2 canvasPosition;
+    }
+
     [BoxGroup("Budget"), LabelWidth(150), MinValue(1)]
     public int complexityBudget = 10;
 
     [ShowInInspector, BoxGroup("Budget"), ReadOnly, LabelWidth(150)]
     [ProgressBar(0, "complexityBudget", ColorMember = "BudgetBarColor", DrawValueLabel = true)]
-    private int TotalCost => nodes?.Sum(n => n?.complexityCost ?? 0) ?? 0;
+    public int TotalCost => nodes?.Sum(n => n?.complexityCost ?? 0) ?? 0;
 
     [ShowInInspector, BoxGroup("Budget"), ReadOnly, LabelWidth(150)]
-    private bool IsValid => TotalCost <= complexityBudget;
+    public bool IsValid => TotalCost <= complexityBudget;
 
     private Color BudgetBarColor => TotalCost <= complexityBudget ? Color.green : Color.red;
+
+    [HideInInspector]
+    public List<NodePlacement> editorLayout = new();
 
     [Title("Nodes")]
     [ListDrawerSettings(ShowIndexLabels = true, DraggableItems = true)]
