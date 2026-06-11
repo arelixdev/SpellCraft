@@ -20,4 +20,4 @@ MonoBehaviour:
   projectilePrefab: {fileID: 7326707846551993688, guid: 5bd8f0eae267a5f4c8b98a633db1e76f, type: 3}
   baseDamage: 15
   baseSpeed: 12
-  baseSize: 1
+  baseSize: 0.3

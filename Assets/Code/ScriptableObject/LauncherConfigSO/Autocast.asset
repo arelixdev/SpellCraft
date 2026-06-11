@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d666e5cc1e34a6843acfff7567606581, type: 3}
   m_Name: Autocast
   m_EditorClassIdentifier: Assembly-CSharp::SpellLauncherConfigSO
-  launcherName: 
+  launcherName: Autocast
   launcherType: 0
   cooldown: 1
   inputAction: {fileID: 0}

@@ -14,5 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::SpellGraphSO
   complexityBudget: 10
   editorLayout: []
-  nodes: []
-  connections: []
+  nodes:
+  - {fileID: 11400000, guid: a8eb528ebc02322468008ac21b80115d, type: 2}
+  - {fileID: 11400000, guid: 9024edfe89b5add4eaf97856a8b8167c, type: 2}
+  connections:
+  - fromIndex: 0
+    toIndex: 1
