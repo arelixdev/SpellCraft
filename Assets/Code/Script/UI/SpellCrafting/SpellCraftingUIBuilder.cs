@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
+using TMPro;
 using Sirenix.OdinInspector;
 
 #if UNITY_EDITOR
@@ -13,22 +14,26 @@ public class SpellCraftingUIBuilder : MonoBehaviour
     public SpellCaster        TargetCaster;
     public SpellNodeCatalogSO NodeCatalog;
 
-    [Title("Prefab colours / sizing")]
-    public Color PanelBg     = new Color(0.08f, 0.08f, 0.12f, 0.95f);
+    [Title("Colours")]
+    public Color PanelBg     = new Color(0.08f, 0.08f, 0.12f, 0.97f);
     public Color NodeBg      = new Color(0.15f, 0.15f, 0.20f, 1.00f);
-    public Color BottomBarBg = new Color(0.05f, 0.05f, 0.08f, 1.00f);
+    public Color SidebarBg   = new Color(0.04f, 0.04f, 0.07f, 1.00f);
+    public Color InvBarBg    = new Color(0.06f, 0.06f, 0.10f, 1.00f);
+
+    [Title("Sizing")]
+    public float DrawerWidth    = 860f;   // px at 1920×1080
+    public float SidebarWidth   = 80f;
+    public float InvBarHeight   = 90f;
 
     [Button("Build UI"), GUIColor(0.4f, 0.9f, 0.4f)]
     public void BuildUI()
     {
-        // ── EventSystem (obligatoire pour tous les clics/drags UI) ───────
         EnsureEventSystem();
 
-        // Destroy old canvas if present
         var old = GameObject.Find("SpellCraftingCanvas");
         if (old != null) DestroyImmediate(old);
 
-        // ── Root Canvas ──────────────────────────────────────────────────
+        // ── Root Canvas ─────────────────────────────────────────────────────
         var canvasGO = NewGO("SpellCraftingCanvas");
         var canvas   = canvasGO.AddComponent<Canvas>();
         canvas.renderMode   = RenderMode.ScreenSpaceOverlay;
@@ -39,61 +44,149 @@ public class SpellCraftingUIBuilder : MonoBehaviour
         canvasGO.AddComponent<GraphicRaycaster>();
         var toggle = canvasGO.AddComponent<SpellCraftingToggle>();
 
-        // ── Panel Root (hidden by default) ───────────────────────────────
+        // ── Panel Root — right-side drawer ──────────────────────────────────
+        // pivot (1,0.5) + anchor right edge → slide via anchoredPosition.x
         var panelRoot = NewRTChild("CraftingPanel", canvasGO.transform);
-        StretchFull(panelRoot);
+        var panelRT   = panelRoot.GetComponent<RectTransform>();
+        panelRT.anchorMin        = new Vector2(1f, 0f);
+        panelRT.anchorMax        = new Vector2(1f, 1f);
+        panelRT.pivot            = new Vector2(1f, 0.5f);
+        panelRT.sizeDelta        = new Vector2(DrawerWidth, 0f);
+        panelRT.anchoredPosition = new Vector2(DrawerWidth, 0f); // hidden off-screen right
         SetImage(panelRoot, PanelBg);
+
         var panel = panelRoot.AddComponent<SpellCraftingPanel>();
         panel.TargetCaster = TargetCaster;
 
-        // ── Left: Inventory ──────────────────────────────────────────────
-        var invPanel = NewRTChild("InventoryPanel", panelRoot.transform);
-        var invRT    = invPanel.GetComponent<RectTransform>();
-        invRT.anchorMin = Vector2.zero;
-        invRT.anchorMax = new Vector2(0.22f, 1f);
-        invRT.offsetMin = invRT.offsetMax = Vector2.zero;
-        SetImage(invPanel, new Color(0.06f, 0.06f, 0.10f));
+        // ── Left: Slot Sidebar ───────────────────────────────────────────────
+        var sidebar   = NewRTChild("SlotSidebar", panelRoot.transform);
+        var sbRT      = sidebar.GetComponent<RectTransform>();
+        sbRT.anchorMin        = new Vector2(0f, 0f);
+        sbRT.anchorMax        = new Vector2(0f, 1f);
+        sbRT.pivot            = new Vector2(0f, 0.5f);
+        sbRT.sizeDelta        = new Vector2(SidebarWidth, 0f);
+        sbRT.anchoredPosition = Vector2.zero;
+        SetImage(sidebar, SidebarBg);
 
-        var scroll   = invPanel.AddComponent<ScrollRect>();
+        // VLG on sidebar: slots fill top, budget+apply sit at bottom
+        var sbVLG = sidebar.AddComponent<VerticalLayoutGroup>();
+        sbVLG.childControlWidth      = true;
+        sbVLG.childControlHeight     = false;
+        sbVLG.childForceExpandWidth  = true;
+        sbVLG.childForceExpandHeight = false;
+        sbVLG.childAlignment         = TextAnchor.UpperCenter;
+        sbVLG.spacing                = 0;
+        sbVLG.padding                = new RectOffset(0, 0, 0, 0);
 
-        var viewport = NewRTChild("Viewport", invPanel.transform);
-        StretchFull(viewport);
-        viewport.AddComponent<Image>().color = Color.clear;
-        viewport.AddComponent<Mask>().showMaskGraphic = false;
+        // SlotContainer — dynamic slot buttons spawned at runtime
+        var slotContainerGO = NewRTChild("SlotContainer", sidebar.transform);
+        var scLE            = slotContainerGO.AddComponent<LayoutElement>();
+        scLE.flexibleHeight = 1f;
+        var scVLG = slotContainerGO.AddComponent<VerticalLayoutGroup>();
+        scVLG.childControlWidth     = true;
+        scVLG.childControlHeight    = false;
+        scVLG.childForceExpandWidth = true;
+        scVLG.childAlignment        = TextAnchor.UpperCenter;
+        scVLG.spacing               = 10;
+        scVLG.padding               = new RectOffset(8, 8, 12, 8);
 
-        var content   = NewRTChild("Content", viewport.transform);
-        var contentRT = content.GetComponent<RectTransform>();
-        contentRT.anchorMin        = new Vector2(0f, 1f);
-        contentRT.anchorMax        = new Vector2(1f, 1f);
-        contentRT.pivot            = new Vector2(0.5f, 1f);
-        contentRT.offsetMin        = contentRT.offsetMax = Vector2.zero;
-        var vlg = content.AddComponent<VerticalLayoutGroup>();
-        vlg.childControlWidth  = true;
-        vlg.childControlHeight = false;
-        vlg.spacing            = 6;
-        vlg.padding            = new RectOffset(6, 6, 6, 6);
-        content.AddComponent<ContentSizeFitter>().verticalFit = ContentSizeFitter.FitMode.PreferredSize;
-        scroll.viewport   = viewport.GetComponent<RectTransform>();
-        scroll.content    = contentRT;
-        scroll.vertical   = true;
-        scroll.horizontal = false;
-        scroll.scrollSensitivity = 30f;
+        // Budget label
+        var budgetLabelGO = NewRTChild("BudgetLabel", sidebar.transform);
+        budgetLabelGO.AddComponent<LayoutElement>().preferredHeight = 22f;
+        var budgetTMP  = budgetLabelGO.AddComponent<TextMeshProUGUI>();
+        budgetTMP.text      = "0 / 10";
+        budgetTMP.fontSize  = 12;
+        budgetTMP.alignment = TextAlignmentOptions.Center;
+        budgetTMP.color     = Color.white;
 
-        var invComp            = invPanel.AddComponent<NodeInventoryPanel>();
-        invComp.ContentRoot    = content.transform;
+        // Budget slider
+        var sliderGO = NewRTChild("BudgetSlider", sidebar.transform);
+        sliderGO.AddComponent<LayoutElement>().preferredHeight = 16f;
+        var slider   = sliderGO.AddComponent<Slider>();
+
+        // Apply button
+        var applyGO = NewRTChild("ApplyButton", sidebar.transform);
+        var applyLE = applyGO.AddComponent<LayoutElement>();
+        applyLE.preferredHeight = 40f;
+        applyLE.minHeight       = 40f;
+        SetImage(applyGO, new Color(0.2f, 0.5f, 0.2f));
+        var applyBtn = applyGO.AddComponent<Button>();
+        var applyLbl = NewRTChild("Label", applyGO.transform);
+        StretchFull(applyLbl);
+        var applyTxt      = applyLbl.AddComponent<TextMeshProUGUI>();
+        applyTxt.text     = "Apply";
+        applyTxt.fontSize = 13;
+        applyTxt.color    = Color.white;
+        applyTxt.alignment = TextAlignmentOptions.Center;
+
+        // Wire SlotSidebarController
+        var sidebarComp          = sidebar.AddComponent<SlotSidebarController>();
+        sidebarComp.SlotContainer = slotContainerGO.transform;
+        sidebarComp.BudgetLabel   = budgetTMP;
+        sidebarComp.BudgetSlider  = slider;
+        sidebarComp.ApplyButton   = applyBtn;
+
+        // ── Main Area (right of sidebar) ─────────────────────────────────────
+        var mainArea = NewRTChild("MainArea", panelRoot.transform);
+        var maRT     = mainArea.GetComponent<RectTransform>();
+        maRT.anchorMin = Vector2.zero;
+        maRT.anchorMax = Vector2.one;
+        maRT.offsetMin = new Vector2(SidebarWidth, 0f);
+        maRT.offsetMax = Vector2.zero;
+        SetImage(mainArea, PanelBg);
+
+        // ── Inventory Bar (top of main area, horizontal scroll) ──────────────
+        var invBar = NewRTChild("InventoryBar", mainArea.transform);
+        var ibRT   = invBar.GetComponent<RectTransform>();
+        ibRT.anchorMin = new Vector2(0f, 1f);
+        ibRT.anchorMax = new Vector2(1f, 1f);
+        ibRT.pivot     = new Vector2(0.5f, 1f);
+        ibRT.sizeDelta = new Vector2(0f, InvBarHeight);
+        ibRT.anchoredPosition = Vector2.zero;
+        SetImage(invBar, InvBarBg);
+
+        var invScroll    = invBar.AddComponent<ScrollRect>();
+        var invViewport  = NewRTChild("Viewport", invBar.transform);
+        StretchFull(invViewport);
+        invViewport.AddComponent<Image>().color = Color.clear;
+        invViewport.AddComponent<Mask>().showMaskGraphic = false;
+
+        var invContent    = NewRTChild("Content", invViewport.transform);
+        var icRT          = invContent.GetComponent<RectTransform>();
+        icRT.anchorMin    = new Vector2(0f, 0f);
+        icRT.anchorMax    = new Vector2(0f, 1f);
+        icRT.pivot        = new Vector2(0f, 0.5f);
+        icRT.offsetMin    = icRT.offsetMax = Vector2.zero;
+        var icHLG = invContent.AddComponent<HorizontalLayoutGroup>();
+        icHLG.childControlHeight     = true;
+        icHLG.childControlWidth      = false;
+        icHLG.childForceExpandHeight = true;
+        icHLG.childForceExpandWidth  = false;
+        icHLG.spacing                = 6;
+        icHLG.padding                = new RectOffset(6, 6, 6, 6);
+        invContent.AddComponent<ContentSizeFitter>().horizontalFit = ContentSizeFitter.FitMode.PreferredSize;
+
+        invScroll.viewport        = invViewport.GetComponent<RectTransform>();
+        invScroll.content         = icRT;
+        invScroll.horizontal      = true;
+        invScroll.vertical        = false;
+        invScroll.scrollSensitivity = 30f;
+
+        var invComp            = invBar.AddComponent<NodeInventoryPanel>();
+        invComp.ContentRoot    = invContent.transform;
         invComp.Catalog        = NodeCatalog;
         invComp.NodeCardPrefab = BuildNodeCardPrefab();
 
-        // ── Centre: Graph Area ───────────────────────────────────────────
-        var graphArea = NewRTChild("GraphArea", panelRoot.transform);
+        // ── Graph Area (below inventory bar) ─────────────────────────────────
+        var graphArea = NewRTChild("GraphArea", mainArea.transform);
         var gaRT      = graphArea.GetComponent<RectTransform>();
-        gaRT.anchorMin = new Vector2(0.22f, 0.08f);
-        gaRT.anchorMax = new Vector2(1f,    1f);
-        gaRT.offsetMin = gaRT.offsetMax = Vector2.zero;
+        gaRT.anchorMin = Vector2.zero;
+        gaRT.anchorMax = Vector2.one;
+        gaRT.offsetMin = Vector2.zero;
+        gaRT.offsetMax = new Vector2(0f, -InvBarHeight);
         SetImage(graphArea, new Color(0.10f, 0.10f, 0.14f));
         graphArea.AddComponent<GraphAreaClickHandler>();
 
-        // Pending connection line (fills GraphArea, starts hidden)
         var pendingGO = NewRTChild("PendingLine", graphArea.transform);
         StretchFull(pendingGO);
         pendingGO.AddComponent<UIBezierLine>().color = new Color(1f, 0.8f, 0.2f, 0.8f);
@@ -106,45 +199,22 @@ public class SpellCraftingUIBuilder : MonoBehaviour
         gca.ConnectionViewPrefab = BuildConnectionViewPrefab();
         gca.PendingLinePrefab    = pendingGO;
 
-        // ── Bottom: Budget + Slots + Apply ───────────────────────────────
-        var bottomBar = NewRTChild("BottomBar", panelRoot.transform);
-        var bbRT      = bottomBar.GetComponent<RectTransform>();
-        bbRT.anchorMin = new Vector2(0.22f, 0f);
-        bbRT.anchorMax = new Vector2(1f,    0.08f);
-        bbRT.offsetMin = bbRT.offsetMax = Vector2.zero;
-        SetImage(bottomBar, BottomBarBg);
+        // ── Launcher→Node0 bezier — added LAST so it renders above opaque panels ─
+        var connLineGO    = NewRTChild("LauncherConnectionLine", panelRoot.transform);
+        StretchFull(connLineGO);
+        var connBezier    = connLineGO.AddComponent<UIBezierLine>();
+        connBezier.color  = new Color(1f, 0.7f, 0.15f, 0.85f);
+        var connLine      = connLineGO.AddComponent<LauncherConnectionLine>();
 
-        var hlg = bottomBar.AddComponent<HorizontalLayoutGroup>();
-        hlg.childControlHeight  = true;
-        hlg.childForceExpandWidth = false;
-        hlg.childAlignment      = TextAnchor.MiddleLeft;
-        hlg.spacing             = 8;
-        hlg.padding             = new RectOffset(8, 8, 4, 4);
-
-        var budgetLabel   = NewTextChild("BudgetLabel",   bottomBar.transform, "0 / 10");
-        var budgetSlider  = NewSliderChild("BudgetSlider", bottomBar.transform);
-        var slotContainer = NewRTChild("SlotContainer",   bottomBar.transform);
-        var slotHLG       = slotContainer.AddComponent<HorizontalLayoutGroup>();
-        slotHLG.childForceExpandWidth  = false;
-        slotHLG.childControlHeight     = true;
-        slotHLG.spacing                = 4;
-        slotContainer.AddComponent<LayoutElement>().flexibleWidth = 1f;
-        int slotCount = TargetCaster ? TargetCaster.GetSlots().Length : 4;
-        for (int i = 0; i < slotCount; i++)
-            NewButtonChild($"Slot{i}", slotContainer.transform, $"Slot {i}");
-        var applyBtn = NewButtonChild("ApplyButton", bottomBar.transform, "Apply");
-
-        var bbc          = bottomBar.AddComponent<BottomBarController>();
-        bbc.BudgetLabel  = budgetLabel.GetComponent<TMPro.TMP_Text>();
-        bbc.BudgetSlider = budgetSlider.GetComponent<Slider>();
-        bbc.ApplyButton  = applyBtn.GetComponent<Button>();
-
-        // ── Wire everything ──────────────────────────────────────────────
+        // ── Wire everything ──────────────────────────────────────────────────
         panel.CanvasController = gca;
         panel.InventoryPanel   = invComp;
-        panel.BottomBar        = bbc;
-        SetPrivateField(toggle, "_panelRoot", panelRoot);
-        SetPrivateField(toggle, "_panel",     panel);
+        panel.SlotSidebar      = sidebarComp;
+        connLine.Sidebar       = sidebarComp;
+        connLine.Canvas        = gca;
+        connLine.Panel         = panel;
+        SetPrivateField(toggle, "_panelRT", panelRT);
+        SetPrivateField(toggle, "_panel",   panel);
 
         Debug.Log("[SpellCraftingUIBuilder] Canvas built successfully.");
 
@@ -153,43 +223,41 @@ public class SpellCraftingUIBuilder : MonoBehaviour
 #endif
     }
 
-    // ── EventSystem ──────────────────────────────────────────────────────
+    // ── EventSystem ──────────────────────────────────────────────────────────
 
     private static void EnsureEventSystem()
     {
         if (FindObjectOfType<EventSystem>() != null) return;
-
         var esGO = new GameObject("EventSystem");
         esGO.AddComponent<EventSystem>();
-
 #if ENABLE_INPUT_SYSTEM && !ENABLE_LEGACY_INPUT_MANAGER
         esGO.AddComponent<UnityEngine.InputSystem.UI.InputSystemUIInputModule>();
 #else
         esGO.AddComponent<StandaloneInputModule>();
 #endif
-        Debug.Log("[SpellCraftingUIBuilder] EventSystem créé.");
     }
 
-    // ── Prefab builders ──────────────────────────────────────────────────
+    // ── Prefab builders ──────────────────────────────────────────────────────
 
     private GameObject BuildNodeCardPrefab()
     {
+        // Horizontal card for the top inventory strip
         var go = NewGO("NodeCardPrefab");
-        go.AddComponent<RectTransform>().sizeDelta = new Vector2(0f, 56f);
+        go.AddComponent<RectTransform>();
         SetImage(go, NodeBg);
         go.AddComponent<NodeCardView>();
         var le = go.AddComponent<LayoutElement>();
-        le.minHeight       = 56f;
-        le.preferredHeight = 56f;
+        le.preferredWidth  = 90f;
+        le.minWidth        = 90f;
         var vl = go.AddComponent<VerticalLayoutGroup>();
-        vl.childControlWidth    = true;
-        vl.childControlHeight   = true;
+        vl.childControlWidth      = true;
+        vl.childControlHeight     = true;
         vl.childForceExpandHeight = false;
-        vl.childAlignment       = TextAnchor.MiddleLeft;
-        vl.padding              = new RectOffset(10, 10, 6, 6);
-        vl.spacing              = 2;
-        NewTextChild("NameLabel", go.transform, "NodeName", 14, true);
-        NewTextChild("CostLabel", go.transform, "Cost: 1",  11, false);
+        vl.childAlignment         = TextAnchor.MiddleCenter;
+        vl.padding                = new RectOffset(6, 6, 6, 6);
+        vl.spacing                = 2;
+        NewLegacyText("NameLabel", go.transform, "NodeName", 12, true);
+        NewLegacyText("CostLabel", go.transform, "Cost: 1",  10, false);
         go.SetActive(false);
         return go;
     }
@@ -202,23 +270,18 @@ public class SpellCraftingUIBuilder : MonoBehaviour
         go.AddComponent<NodeView>();
         go.AddComponent<CanvasGroup>();
 
-        // HLG : [InputPort 24px] [Content flex] [OutputPort 24px]
-        // Les ports occupent toute la hauteur → zone de clic généreuse
         var hlg = go.AddComponent<HorizontalLayoutGroup>();
         hlg.childControlWidth      = true;
         hlg.childControlHeight     = true;
         hlg.childForceExpandHeight = true;
         hlg.childForceExpandWidth  = false;
         hlg.spacing                = 0;
-        hlg.padding                = new RectOffset(0, 0, 0, 0);
 
-        // Port INPUT — bande bleue à gauche, toute la hauteur
         var inPort = NewRTChild("InputPort", go.transform);
         inPort.AddComponent<LayoutElement>().preferredWidth = 24f;
         SetImage(inPort, new Color(0.25f, 0.65f, 1f));
         inPort.AddComponent<PortView>();
 
-        // Contenu central — nom + coût
         var center = NewRTChild("Content", go.transform);
         center.AddComponent<LayoutElement>().flexibleWidth = 1f;
         var vl = center.AddComponent<VerticalLayoutGroup>();
@@ -228,10 +291,9 @@ public class SpellCraftingUIBuilder : MonoBehaviour
         vl.childAlignment         = TextAnchor.MiddleCenter;
         vl.padding                = new RectOffset(4, 4, 6, 6);
         vl.spacing                = 2;
-        NewTextChild("NameLabel", center.transform, "Node", 13, true);
-        NewTextChild("CostLabel", center.transform, "[1]",  11, false);
+        NewLegacyText("NameLabel", center.transform, "Node", 13, true);
+        NewLegacyText("CostLabel", center.transform, "[1]",  11, false);
 
-        // Port OUTPUT — bande orange à droite, toute la hauteur
         var outPort = NewRTChild("OutputPort", go.transform);
         outPort.AddComponent<LayoutElement>().preferredWidth = 24f;
         SetImage(outPort, new Color(1f, 0.55f, 0.15f));
@@ -251,7 +313,7 @@ public class SpellCraftingUIBuilder : MonoBehaviour
         return go;
     }
 
-    // ── UI helpers ───────────────────────────────────────────────────────
+    // ── UI helpers ───────────────────────────────────────────────────────────
 
     private static GameObject NewGO(string name) => new GameObject(name);
 
@@ -276,8 +338,8 @@ public class SpellCraftingUIBuilder : MonoBehaviour
         img.color = c;
     }
 
-    private static GameObject NewTextChild(string name, Transform parent, string text,
-                                            int fontSize = 12, bool bold = false)
+    private static GameObject NewLegacyText(string name, Transform parent, string text,
+                                             int fontSize = 12, bool bold = false)
     {
         var go  = NewRTChild(name, parent);
         var le  = go.AddComponent<LayoutElement>();
@@ -286,34 +348,6 @@ public class SpellCraftingUIBuilder : MonoBehaviour
         txt.text      = text;
         txt.fontSize  = fontSize;
         txt.fontStyle = bold ? FontStyle.Bold : FontStyle.Normal;
-        txt.color     = Color.white;
-        txt.alignment = TextAnchor.MiddleCenter;
-        return go;
-    }
-
-    private static GameObject NewSliderChild(string name, Transform parent)
-    {
-        var go = NewRTChild(name, parent);
-        var le = go.AddComponent<LayoutElement>();
-        le.preferredWidth  = 140f;
-        le.preferredHeight = 20f;
-        go.AddComponent<Slider>();
-        return go;
-    }
-
-    private static GameObject NewButtonChild(string name, Transform parent, string label)
-    {
-        var go = NewRTChild(name, parent);
-        var le = go.AddComponent<LayoutElement>();
-        le.preferredWidth  = 80f;
-        le.preferredHeight = 32f;
-        SetImage(go, new Color(0.2f, 0.2f, 0.35f));
-        go.AddComponent<Button>();
-        var lbl = NewRTChild("Label", go.transform);
-        StretchFull(lbl);
-        var txt = lbl.AddComponent<Text>();
-        txt.text      = label;
-        txt.fontSize  = 12;
         txt.color     = Color.white;
         txt.alignment = TextAnchor.MiddleCenter;
         return go;

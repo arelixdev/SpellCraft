@@ -76,7 +76,9 @@ public class SpellCaster : MonoBehaviour
     private bool IsSlotReady(int i)
     {
         var slot = _spellSlots[i];
-        return slot?.launcherConfig != null && slot.connectedSpell != null;
+        return slot?.launcherConfig != null
+            && slot.connectedSpell != null
+            && slot.connectedSpell.launcherConnected;
     }
 
     public SpellSlot   GetSlot(int i)  => (i >= 0 && i < _spellSlots.Length) ? _spellSlots[i] : null;

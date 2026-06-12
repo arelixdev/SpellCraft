@@ -217,4 +217,12 @@ public class GraphCanvasController : MonoBehaviour
             if (nv.NodeIndex == index) return nv;
         return null;
     }
+
+    public RectTransform GetNode0InputPortRT()
+    {
+        var node0 = GetNodeView(0);
+        return node0?.InputPort != null
+            ? node0.InputPort.GetComponent<RectTransform>()
+            : null;
+    }
 }

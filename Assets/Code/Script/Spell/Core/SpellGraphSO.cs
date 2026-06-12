@@ -34,6 +34,9 @@ public class SpellGraphSO : ScriptableObject
     private Color BudgetBarColor => TotalCost <= complexityBudget ? Color.green : Color.red;
 
     [HideInInspector]
+    public bool launcherConnected;
+
+    [HideInInspector]
     public List<NodePlacement> editorLayout = new();
 
     [Title("Nodes")]
