@@ -6,7 +6,6 @@ public class SpellCraftingPanel : MonoBehaviour
 {
     [Header("References")]
     public GraphCanvasController  CanvasController;
-    public NodeInventoryPanel     InventoryPanel;
     public SlotSidebarController  SlotSidebar;
     public SpellCaster            TargetCaster;
 
@@ -17,15 +16,14 @@ public class SpellCraftingPanel : MonoBehaviour
 
     public void OnOpen()
     {
-        InventoryPanel.Populate();
-        SlotSidebar.Init(this, TargetCaster);
+        SlotSidebar?.Init(this);
         LoadSlot(0);
     }
 
     public void OnClose()
     {
         if (_workingCopy != null) Destroy(_workingCopy);
-        CanvasController.ClearGraph();
+        CanvasController?.ClearGraph();
     }
 
     public void OnApply()
@@ -46,14 +44,8 @@ public class SpellCraftingPanel : MonoBehaviour
 
     public void OnSlotChanged(int slotIndex)
     {
-        if (_workingCopy != null) CanvasController.FlushToGraph();
+        if (_workingCopy != null) CanvasController?.FlushToGraph();
         LoadSlot(slotIndex);
-    }
-
-    public void RefreshBudget()
-    {
-        if (_workingCopy == null || SlotSidebar == null) return;
-        SlotSidebar.RefreshBudget(_workingCopy.TotalCost, _workingCopy.complexityBudget);
     }
 
     // ── Private ──────────────────────────────────────────────────────────────
@@ -63,14 +55,18 @@ public class SpellCraftingPanel : MonoBehaviour
         _activeSlot = index;
         if (_workingCopy != null) Destroy(_workingCopy);
 
-        var source = TargetCaster != null ? TargetCaster.GetSlot(index)?.connectedSpell : null;
+        var slot   = TargetCaster != null ? TargetCaster.GetSlot(index) : null;
+        var source = slot?.connectedSpell;
+
         _workingCopy = source != null
             ? ScriptableObject.Instantiate(source)
             : ScriptableObject.CreateInstance<SpellGraphSO>();
 
-        CanvasController.LoadGraph(_workingCopy);
-        RefreshBudget();
-        SlotSidebar.RefreshPortColor();
+        if (slot?.launcherConfig != null && source != null)
+            _workingCopy.launcherConnected = true;
+
+        CanvasController?.LoadGraph(_workingCopy);
+        SlotSidebar?.RefreshPortColor();
     }
 
     private static void CopyGraph(SpellGraphSO src, SpellGraphSO dst)

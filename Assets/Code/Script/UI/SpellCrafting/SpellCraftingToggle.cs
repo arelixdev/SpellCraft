@@ -7,9 +7,10 @@ public class SpellCraftingToggle : MonoBehaviour
 {
     public static SpellCraftingToggle Instance { get; private set; }
 
-    [SerializeField] private RectTransform _panelRT;
-    [SerializeField] private Camera        _gameCamera;
-    [SerializeField] private float         _slideDuration = 0.2f;
+    [SerializeField] private RectTransform      _panelRT;
+    [SerializeField] private SpellCraftingPanel _panel;
+    [SerializeField] private Camera             _gameCamera;
+    [SerializeField] private float              _slideDuration = 0.2f;
 
     public bool IsOpen { get; private set; }
 
@@ -41,6 +42,8 @@ public class SpellCraftingToggle : MonoBehaviour
 
     private IEnumerator SlidePanel(float targetX, float targetViewportW)
     {
+        if (IsOpen)  _panel?.OnOpen();
+
         float startX  = _panelRT.anchoredPosition.x;
         float elapsed = 0f;
 
@@ -61,5 +64,7 @@ public class SpellCraftingToggle : MonoBehaviour
         _panelRT.anchoredPosition = new Vector2(targetX, 0f);
         if (_gameCamera != null)
             _gameCamera.rect = new Rect(startViewport.x, startViewport.y, targetViewportW, startViewport.height);
+
+        if (!IsOpen) _panel?.OnClose();
     }
 }
