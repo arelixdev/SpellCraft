@@ -37,7 +37,7 @@ public class SpellCraftingToggle : MonoBehaviour
     {
         IsOpen = open;
         if (_slideCoroutine != null) StopCoroutine(_slideCoroutine);
-        _slideCoroutine = StartCoroutine(SlidePanel(open ? 0f : _panelWidth, open ? 0.5f : 1f));
+        _slideCoroutine = StartCoroutine(SlidePanel(open ? 0f : _panelWidth, open ? 0.6f : 1f));
     }
 
     private IEnumerator SlidePanel(float targetX, float targetViewportW)

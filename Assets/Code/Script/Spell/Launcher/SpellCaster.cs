@@ -107,6 +107,83 @@ public class SpellCaster : MonoBehaviour
         return name + " → " + BuildChainString(graph, outputs[0], depth + 1);
     }
 
+    // Called by NodePickup when the player walks over it
+    public void CollectNode(SpellNodeSO node)
+    {
+        var canvas = GraphCanvasController.Instance;
+        if (canvas != null && canvas.IsLoaded)
+        {
+            // Panel open — add through canvas so the node appears immediately and auto-applies
+            canvas.AddNodeAtRandom(node);
+            Debug.Log($"[SpellCaster] Collected '{node.nodeName}' — added to open graph");
+            return;
+        }
+
+        // Panel closed — make sure base spell nodes are already in craftingGraph before appending
+        EnsureCraftingGraphInitialized();
+
+        // Count legacy nodes and slot rows so the loot node lands BELOW all slot rows
+        int slotRowCount   = 0;
+        int legacyNodeCount = 0;
+        foreach (var s in _spellSlots)
+        {
+            if (s?.connectedSpell != null && s.connectedSpell.nodes.Count > 0)
+            {
+                slotRowCount++;
+                legacyNodeCount += s.connectedSpell.nodes.Count;
+            }
+        }
+
+        int newIdx  = craftingGraph.nodes.Count;
+        int lootCol = newIdx - legacyNodeCount; // 0 for first loot node, 1 for second, etc.
+        craftingGraph.nodes.Add(node);
+        craftingGraph.editorLayout.Add(new SpellGraphSO.NodePlacement
+        {
+            nodeIndex      = newIdx,
+            canvasPosition = new Vector2(-200f + lootCol * 180f, 80f - slotRowCount * 150f)
+        });
+
+        Debug.Log($"[SpellCaster] Collected '{node.nodeName}' — stored at loot row {slotRowCount}, will appear when panel opens");
+    }
+
+    // Merges legacy per-slot spells into craftingGraph (only if not already done).
+    // Mirrors SpellCraftingPanel.PopulateFromSlots but runs without the panel being open.
+    private void EnsureCraftingGraphInitialized()
+    {
+        if (craftingGraph != null && craftingGraph.nodes.Count > 0) return;
+
+        if (craftingGraph == null)
+            craftingGraph = ScriptableObject.CreateInstance<SpellGraphSO>();
+
+        int nodeOffset = 0;
+        for (int i = 0; i < _spellSlots.Length; i++)
+        {
+            var source = _spellSlots[i]?.connectedSpell;
+            if (source == null || source.nodes.Count == 0) continue;
+
+            craftingGraph.SetSlotEntry(i, nodeOffset);
+
+            for (int j = 0; j < source.nodes.Count; j++)
+            {
+                craftingGraph.nodes.Add(source.nodes[j]);
+                craftingGraph.editorLayout.Add(new SpellGraphSO.NodePlacement
+                {
+                    nodeIndex      = nodeOffset + j,
+                    canvasPosition = new Vector2(-200f + j * 180f, 80f - i * 150f)
+                });
+            }
+
+            foreach (var conn in source.connections)
+                craftingGraph.connections.Add(new SpellGraphSO.Connection
+                {
+                    fromIndex = conn.fromIndex + nodeOffset,
+                    toIndex   = conn.toIndex   + nodeOffset
+                });
+
+            nodeOffset += source.nodes.Count;
+        }
+    }
+
     public SpellSlot   GetSlot(int i)  => (i >= 0 && i < _spellSlots.Length) ? _spellSlots[i] : null;
     public SpellSlot[] GetSlots()      => _spellSlots;
     public void SetSlotGraph(int i, SpellGraphSO graph)

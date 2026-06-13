@@ -44,11 +44,22 @@ public class GraphCanvasController : MonoBehaviour
             if (node == null) continue;
             var view = SpawnNodeView(node, i);
 
-            // Use saved layout position if available, else compute a grid position
+            // Use saved layout position if available
             var placement = graph.editorLayout.Find(p => p.nodeIndex == i);
-            view.SetLocalPosition(placement.canvasPosition != default
-                ? placement.canvasPosition
-                : GridPosition(i));
+            if (placement.canvasPosition != default)
+            {
+                view.SetLocalPosition(placement.canvasPosition);
+            }
+            else
+            {
+                // Fallback: count nodes without a layout entry before this one,
+                // place them in a dedicated "overflow" row well below the slot rows
+                int overflowIdx = 0;
+                for (int k = 0; k < i; k++)
+                    if (!graph.editorLayout.Exists(p => p.nodeIndex == k)) overflowIdx++;
+                view.SetLocalPosition(new Vector2(ROW_START_X + overflowIdx * NODE_SPACING,
+                                                  ROW_START_Y - 4 * ROW_HEIGHT));
+            }
         }
 
         foreach (var conn in graph.connections)
@@ -91,6 +102,8 @@ public class GraphCanvasController : MonoBehaviour
 
     // ── Node Management ──────────────────────────────────────────────────────
 
+    public bool IsLoaded => _workingGraph != null;
+
     public void AddNode(SpellNodeSO data)
     {
         if (_workingGraph == null) return;
@@ -99,6 +112,65 @@ public class GraphCanvasController : MonoBehaviour
         var view = SpawnNodeView(data, newIdx);
         view.SetLocalPosition(GridPosition(newIdx));
         OnGraphModified?.Invoke();
+    }
+
+    // Called when a pickup is collected — places node at a random position inside GraphArea
+    public void AddNodeAtRandom(SpellNodeSO data)
+    {
+        if (_workingGraph == null) return;
+        _workingGraph.nodes.Add(data);
+        int newIdx = _workingGraph.nodes.Count - 1;
+        var view = SpawnNodeView(data, newIdx);
+        view.SetLocalPosition(RandomPositionInGraphArea());
+        OnGraphModified?.Invoke();
+    }
+
+    private Vector2 RandomPositionInGraphArea()
+    {
+        var rect = GraphArea.rect;
+
+        // Inset by half the node size so the entire node stays inside GraphArea
+        const float halfW   = 100f; // half node width
+        const float halfH   =  45f; // half node height
+        const float minGap  = 190f; // minimum centre-to-centre distance before we call it overlapping
+
+        float xMin = rect.xMin + halfW;
+        float xMax = rect.xMax - halfW;
+        float yMin = rect.yMin + halfH;
+        float yMax = rect.yMax - halfH;
+
+        // Fallback: if the area is too small just return the centre
+        if (xMin >= xMax || yMin >= yMax) return rect.center;
+
+        // Try up to 20 candidates and keep the one farthest from all existing nodes
+        Vector2 best       = new Vector2(Random.Range(xMin, xMax), Random.Range(yMin, yMax));
+        float   bestSpread = 0f;
+
+        for (int attempt = 0; attempt < 20; attempt++)
+        {
+            var candidate = new Vector2(Random.Range(xMin, xMax), Random.Range(yMin, yMax));
+
+            float closestDist = float.MaxValue;
+            foreach (var nv in _nodeViews)
+            {
+                float d = Vector2.Distance(candidate, nv.GetLocalPosition());
+                if (d < closestDist) closestDist = d;
+            }
+
+            // No existing nodes: first candidate is always fine
+            if (closestDist == float.MaxValue) return candidate;
+
+            if (closestDist > bestSpread)
+            {
+                best       = candidate;
+                bestSpread = closestDist;
+            }
+
+            // Found a spot with enough breathing room — stop early
+            if (bestSpread >= minGap) break;
+        }
+
+        return best;
     }
 
     public void DeleteNode(NodeView view)
