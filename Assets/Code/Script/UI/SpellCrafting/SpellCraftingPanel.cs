@@ -1,7 +1,8 @@
 using UnityEngine;
 
 /// Top-level coordinator for the spell crafting UI.
-/// Opens with a working copy of the graph; writes back to the real slot on Apply.
+/// All nodes live in ONE shared SpellGraphSO (SpellCaster.craftingGraph).
+/// Slots are entry-points into that graph — any slot can connect to any node.
 public class SpellCraftingPanel : MonoBehaviour
 {
     [Header("References")]
@@ -9,72 +10,106 @@ public class SpellCraftingPanel : MonoBehaviour
     public SlotSidebarController  SlotSidebar;
     public SpellCaster            TargetCaster;
 
-    private int          _activeSlot;
-    private SpellGraphSO _workingCopy;
+    private SpellGraphSO _workingGraph;
 
-    public SpellGraphSO WorkingGraph => _workingCopy;
+    public SpellGraphSO WorkingGraph => _workingGraph;
 
     public void OnOpen()
     {
-        SlotSidebar?.Init(this);
-        LoadSlot(0);
+        var cg = TargetCaster != null ? TargetCaster.craftingGraph : null;
+
+        if (cg != null && cg.nodes.Count > 0)
+        {
+            _workingGraph = Object.Instantiate(cg);
+        }
+        else
+        {
+            _workingGraph = ScriptableObject.CreateInstance<SpellGraphSO>();
+            PopulateFromSlots(_workingGraph);
+        }
+
+        if (SlotSidebar != null) SlotSidebar.Init(this);
+        if (CanvasController != null)
+        {
+            CanvasController.LoadGraph(_workingGraph);
+            CanvasController.OnGraphModified += AutoApply;
+        }
     }
 
     public void OnClose()
     {
-        if (_workingCopy != null) Destroy(_workingCopy);
-        CanvasController?.ClearGraph();
+        if (CanvasController != null)
+            CanvasController.OnGraphModified -= AutoApply;
+
+        if (CanvasController != null) CanvasController.ClearGraph();
+        if (_workingGraph != null) Object.Destroy(_workingGraph);
+        _workingGraph = null;
     }
 
-    public void OnApply()
+    public void AutoApply()
     {
-        if (_workingCopy == null || TargetCaster == null) return;
-        CanvasController.FlushToGraph();
+        if (_workingGraph == null || TargetCaster == null) return;
 
-        var target = TargetCaster.GetSlot(_activeSlot)?.connectedSpell;
-        if (target == null)
-        {
-            target = ScriptableObject.CreateInstance<SpellGraphSO>();
-            TargetCaster.SetSlotGraph(_activeSlot, target);
-        }
+        CanvasController.FlushToGraph(_workingGraph);
 
-        CopyGraph(_workingCopy, target);
-        Debug.Log($"[SpellCrafting] Applied graph to slot {_activeSlot}");
+        if (TargetCaster.craftingGraph == null)
+            TargetCaster.craftingGraph = ScriptableObject.CreateInstance<SpellGraphSO>();
+
+        CopyGraph(_workingGraph, TargetCaster.craftingGraph);
+
+        if (SlotSidebar != null) SlotSidebar.RefreshAllPortColors();
     }
 
-    public void OnSlotChanged(int slotIndex)
-    {
-        if (_workingCopy != null) CanvasController?.FlushToGraph();
-        LoadSlot(slotIndex);
-    }
+    // Called by sidebar / bottom-bar to track active slot (canvas no longer uses it)
+    public void OnSlotChanged(int slotIndex) { }
 
     // ── Private ──────────────────────────────────────────────────────────────
 
-    private void LoadSlot(int index)
+    // Merge per-slot connectedSpell assets into a single shared graph.
+    // Used only the first time (when craftingGraph is null/empty).
+    private void PopulateFromSlots(SpellGraphSO graph)
     {
-        _activeSlot = index;
-        if (_workingCopy != null) Destroy(_workingCopy);
+        if (TargetCaster == null) return;
+        var slots = TargetCaster.GetSlots();
+        int nodeOffset = 0;
 
-        var slot   = TargetCaster != null ? TargetCaster.GetSlot(index) : null;
-        var source = slot?.connectedSpell;
+        for (int i = 0; i < slots.Length; i++)
+        {
+            var source = slots[i]?.connectedSpell;
+            if (source == null || source.nodes.Count == 0) continue;
 
-        _workingCopy = source != null
-            ? ScriptableObject.Instantiate(source)
-            : ScriptableObject.CreateInstance<SpellGraphSO>();
+            graph.SetSlotEntry(i, nodeOffset);
 
-        if (slot?.launcherConfig != null && source != null)
-            _workingCopy.launcherConnected = true;
+            for (int j = 0; j < source.nodes.Count; j++)
+            {
+                graph.nodes.Add(source.nodes[j]);
+                graph.editorLayout.Add(new SpellGraphSO.NodePlacement
+                {
+                    nodeIndex      = nodeOffset + j,
+                    canvasPosition = RowPosition(i, j)
+                });
+            }
 
-        CanvasController?.LoadGraph(_workingCopy);
-        SlotSidebar?.RefreshPortColor();
+            foreach (var conn in source.connections)
+                graph.connections.Add(new SpellGraphSO.Connection
+                {
+                    fromIndex = conn.fromIndex + nodeOffset,
+                    toIndex   = conn.toIndex   + nodeOffset
+                });
+
+            nodeOffset += source.nodes.Count;
+        }
     }
+
+    private static Vector2 RowPosition(int slotIndex, int nodeIndex) =>
+        new Vector2(-200f + nodeIndex * 180f, 80f - slotIndex * 150f);
 
     private static void CopyGraph(SpellGraphSO src, SpellGraphSO dst)
     {
-        dst.complexityBudget  = src.complexityBudget;
-        dst.launcherConnected = src.launcherConnected;
-        dst.nodes             = new(src.nodes);
-        dst.connections       = new(src.connections);
-        dst.editorLayout      = new(src.editorLayout);
+        dst.complexityBudget = src.complexityBudget;
+        dst.slotEntries      = new(src.slotEntries);
+        dst.nodes            = new(src.nodes);
+        dst.connections      = new(src.connections);
+        dst.editorLayout     = new(src.editorLayout);
     }
 }

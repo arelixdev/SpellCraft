@@ -5,8 +5,8 @@ using TMPro;
 
 public class NodeView : MonoBehaviour, IPointerDownHandler, IBeginDragHandler, IDragHandler, IPointerClickHandler
 {
-    public SpellNodeSO Data       { get; private set; }
-    public int         NodeIndex  { get; set; }
+    public SpellNodeSO Data      { get; private set; }
+    public int         NodeIndex { get; set; }
     public PortView    InputPort  { get; private set; }
     public PortView    OutputPort { get; private set; }
 

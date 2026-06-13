@@ -5,10 +5,11 @@ using UnityEngine;
 public static class SpellExecutor
 {
     // Entry point called by SpellCaster
-    public static void Execute(SpellGraphSO graph, SpellContext ctx)
+    public static void Execute(SpellGraphSO graph, int startNodeIndex, SpellContext ctx)
     {
         if (graph == null || graph.nodes.Count == 0) return;
-        TraversePreSpawn(graph, 0, ctx);
+        int startIdx = Mathf.Clamp(startNodeIndex, 0, graph.nodes.Count - 1);
+        TraversePreSpawn(graph, startIdx, ctx);
         Spawn(graph, ctx);
     }
 

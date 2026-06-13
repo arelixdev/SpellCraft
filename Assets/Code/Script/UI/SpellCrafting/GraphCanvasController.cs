@@ -1,9 +1,8 @@
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 
-/// Manages the node canvas: creates/destroys NodeViews, draws connections,
-/// serialises back to a SpellGraphSO working copy.
+/// Manages the node canvas: all nodes live in one shared SpellGraphSO.
+/// Slots are entry-points — any slot can connect to any node.
 public class GraphCanvasController : MonoBehaviour
 {
     public static GraphCanvasController Instance { get; private set; }
@@ -16,14 +15,22 @@ public class GraphCanvasController : MonoBehaviour
     [Header("References (set by SpellCraftingUIBuilder)")]
     public RectTransform GraphArea;
 
-    private SpellGraphSO        _workingGraph;
-    private List<NodeView>       _nodeViews       = new();
-    private List<ConnectionView> _connectionViews = new();
+    // Fired after any mutation
+    public event System.Action OnGraphModified;
+
+    private SpellGraphSO          _workingGraph;
+    private List<NodeView>        _nodeViews       = new();
+    private List<ConnectionView>  _connectionViews = new();
     private PendingConnectionController _pending;
+
+    private const float NODE_SPACING = 180f;
+    private const float ROW_HEIGHT   = 150f;
+    private const float ROW_START_X  = -200f;
+    private const float ROW_START_Y  =  80f;
 
     private void Awake() => Instance = this;
 
-    // ── Graph Load / Flush ───────────────────────────────────────────────
+    // ── Graph Load / Flush ───────────────────────────────────────────────────
 
     public void LoadGraph(SpellGraphSO graph)
     {
@@ -37,10 +44,11 @@ public class GraphCanvasController : MonoBehaviour
             if (node == null) continue;
             var view = SpawnNodeView(node, i);
 
+            // Use saved layout position if available, else compute a grid position
             var placement = graph.editorLayout.Find(p => p.nodeIndex == i);
-            view.SetLocalPosition(placement.canvasPosition != Vector2.zero
+            view.SetLocalPosition(placement.canvasPosition != default
                 ? placement.canvasPosition
-                : new Vector2(-300f + i * 160f, 0f));
+                : GridPosition(i));
         }
 
         foreach (var conn in graph.connections)
@@ -51,22 +59,21 @@ public class GraphCanvasController : MonoBehaviour
         }
     }
 
-    public void FlushToGraph()
+    public void FlushToGraph(SpellGraphSO graph)
     {
-        if (_workingGraph == null) return;
-
-        _workingGraph.connections.Clear();
-        _workingGraph.editorLayout.Clear();
+        if (graph == null) return;
+        graph.connections.Clear();
+        graph.editorLayout.Clear();
 
         foreach (var cv in _connectionViews)
-            _workingGraph.connections.Add(new SpellGraphSO.Connection
+            graph.connections.Add(new SpellGraphSO.Connection
             {
                 fromIndex = cv.FromNodeIndex,
                 toIndex   = cv.ToNodeIndex
             });
 
         foreach (var nv in _nodeViews)
-            _workingGraph.editorLayout.Add(new SpellGraphSO.NodePlacement
+            graph.editorLayout.Add(new SpellGraphSO.NodePlacement
             {
                 nodeIndex      = nv.NodeIndex,
                 canvasPosition = nv.GetLocalPosition()
@@ -82,21 +89,23 @@ public class GraphCanvasController : MonoBehaviour
         _workingGraph = null;
     }
 
-    // ── Node Management ──────────────────────────────────────────────────
+    // ── Node Management ──────────────────────────────────────────────────────
 
     public void AddNode(SpellNodeSO data)
     {
         if (_workingGraph == null) return;
         _workingGraph.nodes.Add(data);
-        var view = SpawnNodeView(data, _workingGraph.nodes.Count - 1);
-        view.SetLocalPosition(new Vector2(Random.Range(-200f, 200f), Random.Range(-100f, 100f)));
+        int newIdx = _workingGraph.nodes.Count - 1;
+        var view = SpawnNodeView(data, newIdx);
+        view.SetLocalPosition(GridPosition(newIdx));
+        OnGraphModified?.Invoke();
     }
 
     public void DeleteNode(NodeView view)
     {
         int idx = view.NodeIndex;
 
-        // Remove connections that reference this node
+        // Remove connections touching this node
         for (int i = _connectionViews.Count - 1; i >= 0; i--)
         {
             var cv = _connectionViews[i];
@@ -107,21 +116,32 @@ public class GraphCanvasController : MonoBehaviour
             }
         }
 
-        // Update indices on remaining connections and node views
-        foreach (var cv in _connectionViews)  cv.UpdateIndices(idx);
-        foreach (var nv in _nodeViews)
-            if (nv.NodeIndex > idx) nv.NodeIndex--;
+        // Shift indices down past the deleted node
+        foreach (var cv in _connectionViews) cv.UpdateIndices(idx);
+        foreach (var nv in _nodeViews)       if (nv.NodeIndex > idx) nv.NodeIndex--;
+
+        // Shift slot entries
+        if (_workingGraph != null)
+        {
+            var entries = _workingGraph.slotEntries;
+            for (int i = entries.Count - 1; i >= 0; i--)
+            {
+                var e = entries[i];
+                if (e.nodeIndex == idx)
+                    entries.RemoveAt(i);
+                else if (e.nodeIndex > idx)
+                    entries[i] = new SpellGraphSO.SlotEntry { slotIndex = e.slotIndex, nodeIndex = e.nodeIndex - 1 };
+            }
+        }
 
         _workingGraph?.nodes.RemoveAt(idx);
         _nodeViews.Remove(view);
         Destroy(view.gameObject);
+        OnGraphModified?.Invoke();
     }
 
-    // ── Connection Wiring ────────────────────────────────────────────────
+    // ── Connection Wiring ────────────────────────────────────────────────────
 
-    /// Détache la connexion existante sur ce port (s'il y en a une) et
-    /// démarre un câble pendant depuis le port OUTPUT. Si aucune connexion
-    /// n'existe, démarre un nouveau câble (ports OUTPUT seulement).
     public void GrabConnection(PortView port)
     {
         if (_pending == null) _pending = GetComponentInChildren<PendingConnectionController>(true);
@@ -129,7 +149,6 @@ public class GraphCanvasController : MonoBehaviour
         var existing = FindConnectionForPort(port);
         if (existing != null)
         {
-            // Garder le port OUTPUT comme point d'ancrage du câble pendant
             PortView outputPort = port.Type == PortView.PortType.Output
                 ? port
                 : GetNodeView(existing.FromNodeIndex)?.OutputPort;
@@ -141,30 +160,13 @@ public class GraphCanvasController : MonoBehaviour
         {
             _pending?.StartFrom(port);
         }
-        // Clic sur un INPUT sans connexion : rien
-    }
-
-    public void BeginConnection(PortView outputPort)
-    {
-        if (_pending == null) _pending = GetComponentInChildren<PendingConnectionController>(true);
-        _pending?.StartFrom(outputPort);
     }
 
     public void DeleteConnection(ConnectionView cv)
     {
         _connectionViews.Remove(cv);
         Destroy(cv.gameObject);
-    }
-
-    private ConnectionView FindConnectionForPort(PortView port)
-    {
-        int idx = port.OwnerNodeView.NodeIndex;
-        foreach (var cv in _connectionViews)
-        {
-            if (port.Type == PortView.PortType.Output && cv.FromNodeIndex == idx) return cv;
-            if (port.Type == PortView.PortType.Input  && cv.ToNodeIndex   == idx) return cv;
-        }
-        return null;
+        OnGraphModified?.Invoke();
     }
 
     public void CompleteConnection(PortView inputPort)
@@ -179,14 +181,38 @@ public class GraphCanvasController : MonoBehaviour
         SpawnConnectionView(from, inputPort);
     }
 
-    // ── Helpers ──────────────────────────────────────────────────────────
+    public void CompleteLauncherConnection(LauncherPortView launcherPort, NodeView targetNode)
+    {
+        if (_workingGraph == null) return;
+        _workingGraph.SetSlotEntry(launcherPort.SlotIndex, targetNode.NodeIndex);
+        OnGraphModified?.Invoke();
+    }
 
-    private NodeView SpawnNodeView(SpellNodeSO data, int index)
+    // ── Port Queries ─────────────────────────────────────────────────────────
+
+    public RectTransform GetNodeInputPortRT(int nodeIndex)
+    {
+        var node = GetNodeView(nodeIndex);
+        return node?.InputPort != null ? node.InputPort.GetComponent<RectTransform>() : null;
+    }
+
+    // ── Helpers ──────────────────────────────────────────────────────────────
+
+    // Simple grid layout: nodes fill left-to-right, then wrap to next row
+    private static Vector2 GridPosition(int nodeIndex)
+    {
+        const int cols = 4;
+        int col = nodeIndex % cols;
+        int row = nodeIndex / cols;
+        return new Vector2(ROW_START_X + col * NODE_SPACING, ROW_START_Y - row * ROW_HEIGHT);
+    }
+
+    private NodeView SpawnNodeView(SpellNodeSO data, int nodeIndex)
     {
         var go   = Instantiate(NodeViewPrefab, GraphArea);
         go.SetActive(true);
         var view = go.GetComponent<NodeView>();
-        view.NodeIndex = index;
+        view.NodeIndex = nodeIndex;
         view.Init(data, this);
         _nodeViews.Add(view);
         return view;
@@ -199,9 +225,19 @@ public class GraphCanvasController : MonoBehaviour
         var conn = go.GetComponent<ConnectionView>();
         conn.Init(from, to, GraphArea);
         _connectionViews.Add(conn);
-
-        // Keep cable GO behind nodes
         go.transform.SetSiblingIndex(0);
+        OnGraphModified?.Invoke();
+    }
+
+    private ConnectionView FindConnectionForPort(PortView port)
+    {
+        int idx = port.OwnerNodeView.NodeIndex;
+        foreach (var cv in _connectionViews)
+        {
+            if (port.Type == PortView.PortType.Output && cv.FromNodeIndex == idx) return cv;
+            if (port.Type == PortView.PortType.Input  && cv.ToNodeIndex   == idx) return cv;
+        }
+        return null;
     }
 
     private bool ConnectionExists(int fromIdx, int toIdx)
@@ -211,18 +247,10 @@ public class GraphCanvasController : MonoBehaviour
         return false;
     }
 
-    private NodeView GetNodeView(int index)
+    private NodeView GetNodeView(int nodeIndex)
     {
         foreach (var nv in _nodeViews)
-            if (nv.NodeIndex == index) return nv;
+            if (nv.NodeIndex == nodeIndex) return nv;
         return null;
-    }
-
-    public RectTransform GetNode0InputPortRT()
-    {
-        var node0 = GetNodeView(0);
-        return node0?.InputPort != null
-            ? node0.InputPort.GetComponent<RectTransform>()
-            : null;
     }
 }

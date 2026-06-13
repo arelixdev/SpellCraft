@@ -28,7 +28,7 @@ public class BottomBarController : MonoBehaviour
                 _slotButtons[i]?.onClick.AddListener(() => SelectSlot(captured));
             }
 
-        ApplyButton?.onClick.AddListener(_panel.OnApply);
+        // Apply is now automatic — no button listener needed
         SelectSlot(0);
     }
 

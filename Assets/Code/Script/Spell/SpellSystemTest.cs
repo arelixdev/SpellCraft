@@ -71,7 +71,7 @@ public class SpellSystemTest : MonoBehaviour
             Direction = transform.forward,
         };
 
-        SpellExecutor.Execute(graph, ctx);
+        SpellExecutor.Execute(graph, 0, ctx);
 
         // Le proxy n'est plus nécessaire une fois le clone créé
         Destroy(prefabProxy);
@@ -129,7 +129,7 @@ public class SpellSystemTest : MonoBehaviour
             Direction = transform.forward,
         };
 
-        SpellExecutor.Execute(graph, ctx);
+        SpellExecutor.Execute(graph, 0, ctx);
         Destroy(projectilePrefab);
 
         Debug.Log($"[SpellTest] Trigger spell fired — PendingTriggers: {ctx.PendingTriggers.Count} " +

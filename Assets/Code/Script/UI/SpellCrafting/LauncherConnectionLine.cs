@@ -1,60 +1,82 @@
 using UnityEngine;
 
-/// Draws a live bezier from the active launcher slot's output port to node 0's input port,
-/// but ONLY when WorkingGraph.launcherConnected is true.
-/// Must be on a RectTransform that stretches over the full CraftingPanel.
-[RequireComponent(typeof(UIBezierLine))]
+/// Draws one bezier line per slot from its sidebar port to the slot's entry node,
+/// only when that slot has a SlotEntry in the shared crafting graph.
 public class LauncherConnectionLine : MonoBehaviour
 {
     public SlotSidebarController  Sidebar;
     public GraphCanvasController  Canvas;
     public SpellCraftingPanel     Panel;
 
-    private UIBezierLine  _line;
-    private RectTransform _rt;
+    private UIBezierLine[] _lines;
+    private RectTransform  _rt;
 
-    private void Awake()
-    {
-        _line = GetComponent<UIBezierLine>();
-        _rt   = GetComponent<RectTransform>();
-    }
+    private void Awake() => _rt = GetComponent<RectTransform>();
 
     private void Update()
     {
-        bool connected = Panel != null
-                      && Panel.WorkingGraph != null
-                      && Panel.WorkingGraph.launcherConnected;
+        EnsureLines();
+        if (_lines == null) return;
 
-        if (!connected)
+        var graph = Panel != null ? Panel.WorkingGraph : null;
+
+        for (int i = 0; i < _lines.Length; i++)
         {
-            _line.SetPoints(Vector2.zero, Vector2.zero);
-            return;
+            if (_lines[i] == null) continue;
+
+            if (graph == null || !graph.TryGetSlotEntry(i, out int targetNode))
+            {
+                _lines[i].SetPoints(Vector2.zero, Vector2.zero);
+                continue;
+            }
+
+            var fromRT = Sidebar != null ? Sidebar.GetPortRT(i) : null;
+            var toRT   = Canvas  != null ? Canvas.GetNodeInputPortRT(targetNode) : null;
+
+            if (fromRT == null || toRT == null)
+            {
+                _lines[i].SetPoints(Vector2.zero, Vector2.zero);
+                continue;
+            }
+
+            _lines[i].SetPoints(RightCenter(fromRT), LeftCenter(toRT));
         }
-
-        var fromRT = Sidebar != null ? Sidebar.GetActivePortRT() : null;
-        var toRT   = Canvas  != null ? Canvas.GetNode0InputPortRT() : null;
-
-        if (fromRT == null || toRT == null)
-        {
-            _line.SetPoints(Vector2.zero, Vector2.zero);
-            return;
-        }
-
-        _line.SetPoints(RightCenter(fromRT), LeftCenter(toRT));
     }
 
     // ── Helpers ──────────────────────────────────────────────────────────────
 
+    private void EnsureLines()
+    {
+        int needed = Sidebar != null ? Sidebar.SlotCount : 0;
+        if (_lines != null && _lines.Length == needed) return;
+
+        for (int i = transform.childCount - 1; i >= 0; i--)
+            Destroy(transform.GetChild(i).gameObject);
+
+        _lines = new UIBezierLine[needed];
+        for (int i = 0; i < needed; i++)
+        {
+            var go = new GameObject($"SlotLine_{i}", typeof(RectTransform));
+            go.transform.SetParent(transform, false);
+            var rt = go.GetComponent<RectTransform>();
+            rt.anchorMin = Vector2.zero;
+            rt.anchorMax = Vector2.one;
+            rt.offsetMin = Vector2.zero;
+            rt.offsetMax = Vector2.zero;
+            _lines[i] = go.AddComponent<UIBezierLine>();
+        }
+    }
+
     private Vector2 RightCenter(RectTransform rt)
     {
         var c = Corners(rt);
-        return ToLocal((c[2] + c[3]) * 0.5f); // top-right + bottom-right
+        return ToLocal((c[2] + c[3]) * 0.5f);
     }
 
     private Vector2 LeftCenter(RectTransform rt)
     {
         var c = Corners(rt);
-        return ToLocal((c[0] + c[1]) * 0.5f); // bottom-left + top-left
+        return ToLocal((c[0] + c[1]) * 0.5f);
     }
 
     private static Vector3[] Corners(RectTransform rt)

@@ -1516,7 +1516,7 @@ MonoBehaviour:
   - launcherConfig: {fileID: 11400000, guid: 672849ce509ec6b44a165e1f1e7745ba, type: 2}
     connectedSpell: {fileID: 11400000, guid: 1b8ba6bf6f9baa7429c30fa29c8d8e62, type: 2}
   - launcherConfig: {fileID: 11400000, guid: 6ee5e98ff80e925419b2bea4a8ac3d4b, type: 2}
-    connectedSpell: {fileID: 11400000, guid: e84f1a4e065adcb46b9910d63cff3ad1, type: 2}
+    connectedSpell: {fileID: 11400000, guid: 5e62e09598f7b1e4faf7e9c96ccba937, type: 2}
 --- !u!1 &1793771885
 GameObject:
   m_ObjectHideFlags: 0
@@ -1631,9 +1631,9 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 1793771886}
   - {fileID: 376434208}
   - {fileID: 570709982}
-  - {fileID: 1793771886}
   m_Father: {fileID: 278839536}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0}

@@ -4,7 +4,11 @@ using Sirenix.OdinInspector;
 
 public class SpellCaster : MonoBehaviour
 {
-    [Title("Spell Loadout")]
+    [Title("Crafting Graph")]
+    [Tooltip("Shared spell graph built in the crafting panel. Populated automatically on first open.")]
+    public SpellGraphSO craftingGraph;
+
+    [Title("Spell Loadout (initial defaults)")]
     [ListDrawerSettings(ShowIndexLabels = true, NumberOfItemsPerPage = 6)]
     [SerializeField] private SpellSlot[] _spellSlots;
 
@@ -68,17 +72,39 @@ public class SpellCaster : MonoBehaviour
             Origin    = transform.position,
             Direction = transform.forward,
         };
-
         ctx.Damage *= slot.launcherConfig.bonusMultiplier;
-        SpellExecutor.Execute(slot.connectedSpell, ctx);
+
+        if (craftingGraph != null && craftingGraph.TryGetSlotEntry(i, out int startNode))
+        {
+            if (slot.launcherConfig.launcherType == LauncherType.AutoCast)
+                Debug.Log($"[SpellCaster] AutoCast slot {i} → {BuildChainString(craftingGraph, startNode)}");
+            SpellExecutor.Execute(craftingGraph, startNode, ctx);
+        }
+        else if (slot.connectedSpell != null)
+        {
+            if (slot.launcherConfig.launcherType == LauncherType.AutoCast)
+                Debug.Log($"[SpellCaster] AutoCast slot {i} (legacy) → {BuildChainString(slot.connectedSpell, 0)}");
+            SpellExecutor.Execute(slot.connectedSpell, 0, ctx);
+        }
     }
 
     private bool IsSlotReady(int i)
     {
         var slot = _spellSlots[i];
-        return slot?.launcherConfig != null
-            && slot.connectedSpell != null
-            && slot.connectedSpell.launcherConnected;
+        if (slot?.launcherConfig == null) return false;
+        if (craftingGraph != null && craftingGraph.nodes.Count > 0)
+            return craftingGraph.HasSlotEntry(i);
+        return slot.connectedSpell != null;
+    }
+
+    private static string BuildChainString(SpellGraphSO graph, int startIndex, int depth = 0)
+    {
+        if (graph == null || startIndex < 0 || startIndex >= graph.nodes.Count || depth > 10) return "…";
+        var node = graph.nodes[startIndex];
+        string name = node != null ? node.nodeName : "?";
+        var outputs = graph.GetOutputIndices(startIndex);
+        if (outputs.Count == 0) return name;
+        return name + " → " + BuildChainString(graph, outputs[0], depth + 1);
     }
 
     public SpellSlot   GetSlot(int i)  => (i >= 0 && i < _spellSlots.Length) ? _spellSlots[i] : null;

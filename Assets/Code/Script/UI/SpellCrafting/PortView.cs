@@ -25,9 +25,20 @@ public class PortView : MonoBehaviour,
     // que la souris soit immobile entre press et release.
     public void OnPointerDown(PointerEventData e)
     {
+        if (OwnerNodeView == null) return; // uninitialized port (e.g. slot sidebar prefab)
+
         var gca     = GraphCanvasController.Instance;
         var pending = PendingConnectionController.Instance;
 
+        // Launcher cable dropped on an input port
+        if (pending != null && pending.IsLauncherActive && Type == PortType.Input)
+        {
+            gca.CompleteLauncherConnection(pending.LauncherSource, OwnerNodeView);
+            pending.Cancel();
+            return;
+        }
+
+        // Regular node cable dropped on an input port
         if (pending != null && pending.IsActive && Type == PortType.Input)
         {
             gca.CompleteConnection(this);

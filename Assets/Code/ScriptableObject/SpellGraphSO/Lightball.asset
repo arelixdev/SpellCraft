@@ -10,14 +10,14 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 93f5d18f6d5616643b12590d860e2f51, type: 3}
-  m_Name: Iceball
+  m_Name: Lightball
   m_EditorClassIdentifier: Assembly-CSharp::SpellGraphSO
   complexityBudget: 10
   launcherConnected: 0
   editorLayout: []
   nodes:
   - {fileID: 11400000, guid: a8eb528ebc02322468008ac21b80115d, type: 2}
-  - {fileID: 11400000, guid: 07d903bd20e68f84dbb40f331ea21bea, type: 2}
+  - {fileID: 11400000, guid: fe119872579bfc4439ba7ece48b2de5a, type: 2}
   connections:
   - fromIndex: 0
     toIndex: 1
