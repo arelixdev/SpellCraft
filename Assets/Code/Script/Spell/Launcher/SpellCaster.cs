@@ -122,28 +122,15 @@ public class SpellCaster : MonoBehaviour
         // Panel closed — make sure base spell nodes are already in craftingGraph before appending
         EnsureCraftingGraphInitialized();
 
-        // Count legacy nodes and slot rows so the loot node lands BELOW all slot rows
-        int slotRowCount   = 0;
-        int legacyNodeCount = 0;
-        foreach (var s in _spellSlots)
-        {
-            if (s?.connectedSpell != null && s.connectedSpell.nodes.Count > 0)
-            {
-                slotRowCount++;
-                legacyNodeCount += s.connectedSpell.nodes.Count;
-            }
-        }
-
-        int newIdx  = craftingGraph.nodes.Count;
-        int lootCol = newIdx - legacyNodeCount; // 0 for first loot node, 1 for second, etc.
+        int newIdx = craftingGraph.nodes.Count;
         craftingGraph.nodes.Add(node);
         craftingGraph.editorLayout.Add(new SpellGraphSO.NodePlacement
         {
             nodeIndex      = newIdx,
-            canvasPosition = new Vector2(-200f + lootCol * 180f, 80f - slotRowCount * 150f)
+            canvasPosition = GraphCanvasController.Instance.RandomPositionInGraphArea()
         });
 
-        Debug.Log($"[SpellCaster] Collected '{node.nodeName}' — stored at loot row {slotRowCount}, will appear when panel opens");
+        Debug.Log($"[SpellCaster] Collected '{node.nodeName}' — stored, will appear when panel opens");
     }
 
     // Merges legacy per-slot spells into craftingGraph (only if not already done).

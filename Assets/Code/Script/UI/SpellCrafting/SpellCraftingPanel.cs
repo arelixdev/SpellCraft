@@ -41,6 +41,14 @@ public class SpellCraftingPanel : MonoBehaviour
         if (CanvasController != null)
             CanvasController.OnGraphModified -= AutoApply;
 
+        // Flush positions before destroying so moves are persisted
+        if (CanvasController != null && _workingGraph != null)
+        {
+            CanvasController.FlushToGraph(_workingGraph);
+            if (TargetCaster?.craftingGraph != null)
+                CopyGraph(_workingGraph, TargetCaster.craftingGraph);
+        }
+
         if (CanvasController != null) CanvasController.ClearGraph();
         if (_workingGraph != null) Object.Destroy(_workingGraph);
         _workingGraph = null;

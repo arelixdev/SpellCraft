@@ -125,7 +125,7 @@ public class GraphCanvasController : MonoBehaviour
         OnGraphModified?.Invoke();
     }
 
-    private Vector2 RandomPositionInGraphArea()
+    public Vector2 RandomPositionInGraphArea()
     {
         var rect = GraphArea.rect;
 
