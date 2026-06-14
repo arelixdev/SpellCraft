@@ -27,7 +27,6 @@ public class LauncherPortView : MonoBehaviour, IPointerDownHandler
         if (graph != null)
         {
             graph.RemoveSlotEntry(SlotIndex);
-            Sidebar?.RefreshAllPortColors();
             panel?.AutoApply();
         }
 

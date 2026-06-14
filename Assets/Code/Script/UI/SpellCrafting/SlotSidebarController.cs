@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using System.Text;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -10,13 +12,10 @@ public class SlotSidebarController : MonoBehaviour
     public SpellCaster         Caster;
     public SpellCraftingPanel  Panel;
 
-    private readonly List<(Image shape, RectTransform port, Image portImg)> _slots = new();
+    private readonly List<(Image shape, RectTransform port, TextMeshProUGUI spellLabel)> _slots = new();
     private int _selected = -1;
 
     public int SlotCount => _slots.Count;
-
-    static readonly Color PortConnected = new(0.25f, 0.90f, 0.30f);
-    static readonly Color PortFree      = new(1.00f, 0.55f, 0.15f);
 
     private void Start()
     {
@@ -25,6 +24,7 @@ public class SlotSidebarController : MonoBehaviour
         for (int i = 0; i < slots.Length; i++)
             SpawnSlot(i, slots[i]);
         HighlightSlot(_selected >= 0 ? _selected : 0);
+        RefreshAllSlotLabels();
     }
 
     public void Init(SpellCraftingPanel panel)
@@ -33,26 +33,70 @@ public class SlotSidebarController : MonoBehaviour
         int initial = _selected >= 0 ? _selected : 0;
         Panel.OnSlotChanged(initial);
         HighlightSlot(initial);
-        RefreshAllPortColors();
+        RefreshAllSlotLabels();
     }
 
     /// Returns the output port RectTransform for a given slot index.
     public RectTransform GetPortRT(int slotIndex) =>
         (slotIndex >= 0 && slotIndex < _slots.Count) ? _slots[slotIndex].port : null;
 
-    public void RefreshAllPortColors()
+    public void RefreshAllSlotLabels()
     {
-        var graph = Panel != null ? Panel.WorkingGraph : null;
+        var graph = Panel?.WorkingGraph ?? Caster?.craftingGraph;
+        var slots = Caster?.GetSlots();
+
         for (int i = 0; i < _slots.Count; i++)
         {
-            var portImg = _slots[i].portImg;
-            if (portImg == null) continue;
-            bool connected = graph != null && graph.HasSlotEntry(i);
-            portImg.color = connected ? PortConnected : PortFree;
+            var lbl = _slots[i].spellLabel;
+            if (lbl == null) continue;
+
+            string text = "";
+
+            if (graph != null && graph.nodes.Count > 0)
+            {
+                text = BuildSlotLabel(i, graph);
+            }
+            else if (slots != null && i < slots.Length && slots[i]?.connectedSpell != null)
+            {
+                text = TraverseGraph(slots[i].connectedSpell, 0);
+            }
+
+            lbl.text = text;
         }
     }
 
     // ── Private ─────────────────────────────────────────────────────────────
+
+    private static string BuildSlotLabel(int slotIndex, SpellGraphSO graph)
+    {
+        if (graph == null || !graph.TryGetSlotEntry(slotIndex, out int entryNode))
+            return "";
+        return TraverseGraph(graph, entryNode);
+    }
+
+    private static string TraverseGraph(SpellGraphSO graph, int entryNode)
+    {
+        var visited = new HashSet<int>();
+        var queue   = new Queue<int>();
+        var sb      = new StringBuilder();
+
+        queue.Enqueue(entryNode);
+        while (queue.Count > 0)
+        {
+            int idx = queue.Dequeue();
+            if (!visited.Add(idx)) continue;
+            if (idx < 0 || idx >= graph.nodes.Count) continue;
+
+            var node = graph.nodes[idx];
+            if (node != null && !string.IsNullOrEmpty(node.nodeName))
+                sb.Append(node.nodeName[0]);
+
+            foreach (int next in graph.GetOutputIndices(idx))
+                queue.Enqueue(next);
+        }
+
+        return sb.ToString();
+    }
 
     private void SpawnSlot(int index, SpellSlot slot)
     {
@@ -60,11 +104,8 @@ public class SlotSidebarController : MonoBehaviour
         var view = go.GetComponent<SlotIconView>();
         go.SetActive(true);
 
-        if (view != null)
-        {
-            if (view.PortImage != null) view.PortImage.color = PortFree;
-            if (view.Label != null)     view.Label.text      = (index + 1).ToString();
-        }
+        if (view?.SpellLabelTemp != null)
+            view.SpellLabelTemp.text = "";
 
         int captured = index;
         go.GetComponent<Button>()?.onClick.AddListener(() => SelectSlot(captured));
@@ -77,7 +118,7 @@ public class SlotSidebarController : MonoBehaviour
             lp.Sidebar   = this;
         }
 
-        _slots.Add((view?.Shape, view?.Port, view?.PortImage));
+        _slots.Add((view?.Shape, view?.Port, view?.SpellLabelTemp));
     }
 
     private void HighlightSlot(int index)

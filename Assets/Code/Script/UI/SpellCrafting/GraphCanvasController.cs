@@ -250,6 +250,9 @@ public class GraphCanvasController : MonoBehaviour
         if (from.OwnerNodeView == inputPort.OwnerNodeView) return;
         if (ConnectionExists(from.OwnerNodeView.NodeIndex, inputPort.OwnerNodeView.NodeIndex)) return;
 
+        var existing = FindConnectionForPort(inputPort);
+        if (existing != null) DeleteConnection(existing);
+
         SpawnConnectionView(from, inputPort);
     }
 

@@ -7,5 +7,5 @@ public class SlotIconView : MonoBehaviour
     public Image           Shape;
     public RectTransform   Port;
     public Image           PortImage;
-    public TextMeshProUGUI Label;
+    public TextMeshProUGUI SpellLabelTemp;
 }
