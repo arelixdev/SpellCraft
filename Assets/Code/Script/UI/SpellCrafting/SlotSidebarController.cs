@@ -15,8 +15,6 @@ public class SlotSidebarController : MonoBehaviour
 
     public int SlotCount => _slots.Count;
 
-    static readonly Color ColActive     = new(1.00f, 0.75f, 0.20f);
-    static readonly Color ColInactive   = new(0.45f, 0.35f, 0.10f);
     static readonly Color PortConnected = new(0.25f, 0.90f, 0.30f);
     static readonly Color PortFree      = new(1.00f, 0.55f, 0.15f);
 
@@ -64,7 +62,6 @@ public class SlotSidebarController : MonoBehaviour
 
         if (view != null)
         {
-            if (view.Shape != null)     view.Shape.color     = ColInactive;
             if (view.PortImage != null) view.PortImage.color = PortFree;
             if (view.Label != null)     view.Label.text      = (index + 1).ToString();
         }
@@ -86,9 +83,6 @@ public class SlotSidebarController : MonoBehaviour
     private void HighlightSlot(int index)
     {
         _selected = index;
-        for (int i = 0; i < _slots.Count; i++)
-            if (_slots[i].shape != null)
-                _slots[i].shape.color = (i == _selected) ? ColActive : ColInactive;
     }
 
     private void SelectSlot(int index)
