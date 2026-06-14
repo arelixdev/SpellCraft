@@ -102,6 +102,11 @@ public static class SpellExecutor
             : Quaternion.identity;
 
         var go = Object.Instantiate(emitter.projectilePrefab, ctx.Origin, rotation);
+
+        if (ctx.OverrideMaterial != null)
+            foreach (var r in go.GetComponentsInChildren<Renderer>())
+                r.material = ctx.OverrideMaterial;
+
         go.AddComponent<SpellProjectile>().Initialize(ctx);
     }
 

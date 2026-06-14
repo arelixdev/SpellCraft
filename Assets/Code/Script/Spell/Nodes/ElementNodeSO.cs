@@ -18,9 +18,14 @@ public class ElementNodeSO : SpellNodeSO
     [BoxGroup("Stats")]
     [LabelWidth(120), MinValue(0)] public float statusDuration = 2f;
 
+    [Title("Visual")]
+    [LabelWidth(120)] public Material overrideMaterial;
+
     public override void Execute(SpellContext ctx)
     {
         ctx.Element  = element;
         ctx.Damage  *= damageMultiplier;
+        if (overrideMaterial != null)
+            ctx.OverrideMaterial = overrideMaterial;
     }
 }

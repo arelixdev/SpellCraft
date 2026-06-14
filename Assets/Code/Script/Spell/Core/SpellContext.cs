@@ -20,6 +20,7 @@ public class SpellContext
     public float       Speed   = 10f;
     public ElementType Element = ElementType.None;
     public EmitterType Emitter;
+    public Material    OverrideMaterial;
 
     public List<BehaviorType>   Behaviors       = new();
     public List<PendingTrigger> PendingTriggers = new();

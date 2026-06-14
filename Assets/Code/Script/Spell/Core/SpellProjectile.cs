@@ -77,14 +77,15 @@ public class SpellProjectile : MonoBehaviour
 
         var newCtx = new SpellContext
         {
-            Caster     = _ctx.Caster,
-            Origin     = transform.position,
-            Direction  = _ctx.Direction,
-            Generation = _ctx.Generation + 1,
-            Damage     = _ctx.Damage,
-            Size       = _ctx.Size,
-            Speed      = _ctx.Speed,
-            Element    = _ctx.Element,
+            Caster           = _ctx.Caster,
+            Origin           = transform.position,
+            Direction        = _ctx.Direction,
+            Generation       = _ctx.Generation + 1,
+            Damage           = _ctx.Damage,
+            Size             = _ctx.Size,
+            Speed            = _ctx.Speed,
+            Element          = _ctx.Element,
+            OverrideMaterial = _ctx.OverrideMaterial,
         };
 
         SpellExecutor.ExecuteFrom(trigger.Graph, trigger.OutputIndices, newCtx);
