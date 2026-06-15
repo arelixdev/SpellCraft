@@ -412,7 +412,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f7a701097e54ff74c901b701a9394fcf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SlotIconView
-  Shape: {fileID: 2573458586932163849}
+  Background: {fileID: 4573805255827715489}
+  Outline: {fileID: 2573458586932163849}
   Port: {fileID: 9006992200421698657}
   PortImage: {fileID: 6424238918916292195}
   SpellLabelTemp: {fileID: 3380785868504166872}

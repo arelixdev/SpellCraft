@@ -7,10 +7,11 @@ using UnityEngine.UI;
 public class SlotSidebarController : MonoBehaviour
 {
     [Header("References")]
-    public Transform           SlotContainer;
-    public GameObject          SlotPrefab;
-    public SpellCaster         Caster;
-    public SpellCraftingPanel  Panel;
+    public Transform                SlotContainer;
+    public GameObject               SlotPrefab;
+    public SpellCaster              Caster;
+    public SpellCraftingPanel       Panel;
+    public LauncherVisualRegistrySO VisualRegistry;
 
     private readonly List<(Image shape, RectTransform port, TextMeshProUGUI spellLabel)> _slots = new();
     private int _selected = -1;
@@ -107,6 +108,19 @@ public class SlotSidebarController : MonoBehaviour
         if (view?.SpellLabelTemp != null)
             view.SpellLabelTemp.text = "";
 
+        if (VisualRegistry != null && slot?.launcherConfig != null
+            && VisualRegistry.TryGet(slot.launcherConfig.launcherType, out var visual))
+        {
+            if (view?.Background != null) view.Background.sprite = visual.background;
+            if (view?.Outline != null)
+            {
+                view.Outline.sprite = visual.outline;
+                var rt = view.Outline.rectTransform;
+                rt.sizeDelta        = Vector2.one * visual.outlineSize;
+                rt.anchoredPosition = visual.outlineOffset;
+            }
+        }
+
         int captured = index;
         go.GetComponent<Button>()?.onClick.AddListener(() => SelectSlot(captured));
 
@@ -118,7 +132,7 @@ public class SlotSidebarController : MonoBehaviour
             lp.Sidebar   = this;
         }
 
-        _slots.Add((view?.Shape, view?.Port, view?.SpellLabelTemp));
+        _slots.Add((view?.Background, view?.Port, view?.SpellLabelTemp));
     }
 
     private void HighlightSlot(int index)

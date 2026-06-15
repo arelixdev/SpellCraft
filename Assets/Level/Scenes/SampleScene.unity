@@ -1890,6 +1890,7 @@ MonoBehaviour:
   SlotPrefab: {fileID: 8726796623274747693, guid: c2c08792b9d5a1745bc9fd2b953fd7b8, type: 3}
   Caster: {fileID: 1366729018}
   Panel: {fileID: 1856954425}
+  VisualRegistry: {fileID: 11400000, guid: e06fd9cfed0c06045b005a23978f0e9b, type: 2}
 --- !u!114 &376434210
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -132917,12 +132918,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SpellCaster
   _firePoint: {fileID: 357974375}
+  baseCritChance: 0.1
+  baseCritMultiplier: 1.5
   craftingGraph: {fileID: 0}
   _spellSlots:
-  - launcherConfig: {fileID: 11400000, guid: 672849ce509ec6b44a165e1f1e7745ba, type: 2}
-    connectedSpell: {fileID: 11400000, guid: 1b8ba6bf6f9baa7429c30fa29c8d8e62, type: 2}
   - launcherConfig: {fileID: 11400000, guid: 6ee5e98ff80e925419b2bea4a8ac3d4b, type: 2}
-    connectedSpell: {fileID: 0}
+    connectedSpell: {fileID: 11400000, guid: 1b8ba6bf6f9baa7429c30fa29c8d8e62, type: 2}
+  - launcherConfig: {fileID: 11400000, guid: 71c5b005c90dbd24ebbf3e8b98dcddac, type: 2}
+    connectedSpell: {fileID: 11400000, guid: 2f0c519fbee0e444e9240a9ea0d3a0c8, type: 2}
 --- !u!1 &1376072693
 GameObject:
   m_ObjectHideFlags: 0

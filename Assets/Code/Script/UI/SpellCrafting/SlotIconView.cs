@@ -4,7 +4,8 @@ using TMPro;
 
 public class SlotIconView : MonoBehaviour
 {
-    public Image           Shape;
+    public Image           Background;
+    public Image           Outline;
     public RectTransform   Port;
     public Image           PortImage;
     public TextMeshProUGUI SpellLabelTemp;
