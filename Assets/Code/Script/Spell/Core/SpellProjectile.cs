@@ -45,12 +45,12 @@ public class SpellProjectile : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (!other.CompareTag("Enemy")) return;
-
-        // TODO: apply damage via Health component when available
-        // other.GetComponent<Health>()?.TakeDamage(_ctx.Damage, _ctx.Element);
-
-        FireTriggers(TriggerType.OnHit, other.gameObject);
+        if (other.CompareTag("Enemy"))
+        {
+            // TODO: apply damage via Health component when available
+            // other.GetComponent<Health>()?.TakeDamage(_ctx.Damage, _ctx.Element);
+            FireTriggers(TriggerType.OnHit, other.gameObject);
+        }
 
         if (!_ctx.Behaviors.Contains(BehaviorType.Pierce))
             Destroy(gameObject);

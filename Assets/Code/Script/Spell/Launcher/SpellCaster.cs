@@ -4,6 +4,10 @@ using Sirenix.OdinInspector;
 
 public class SpellCaster : MonoBehaviour
 {
+    [Title("Casting")]
+    [Tooltip("Point from which projectiles are spawned. If null, uses the caster's transform position.")]
+    [SerializeField] private Transform _firePoint;
+
     [Title("Crafting Graph")]
     [Tooltip("Shared spell graph built in the crafting panel. Populated automatically on first open.")]
     public SpellGraphSO craftingGraph;
@@ -69,8 +73,8 @@ public class SpellCaster : MonoBehaviour
         var ctx = new SpellContext
         {
             Caster    = gameObject,
-            Origin    = transform.position,
-            Direction = transform.forward,
+            Origin    = _firePoint != null ? _firePoint.position : transform.position,
+            Direction = _firePoint != null ? _firePoint.forward  : transform.forward,
         };
         ctx.Damage *= slot.launcherConfig.bonusMultiplier;
 
