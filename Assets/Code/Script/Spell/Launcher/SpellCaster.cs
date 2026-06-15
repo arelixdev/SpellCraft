@@ -8,6 +8,10 @@ public class SpellCaster : MonoBehaviour
     [Tooltip("Point from which projectiles are spawned. If null, uses the caster's transform position.")]
     [SerializeField] private Transform _firePoint;
 
+    [Title("Crit (base values, boostable via nodes)")]
+    [Range(0f, 1f)]  public float baseCritChance     = 0f;
+    [Range(1f, 5f)]  public float baseCritMultiplier = 1.5f;
+
     [Title("Crafting Graph")]
     [Tooltip("Shared spell graph built in the crafting panel. Populated automatically on first open.")]
     public SpellGraphSO craftingGraph;
@@ -72,9 +76,11 @@ public class SpellCaster : MonoBehaviour
 
         var ctx = new SpellContext
         {
-            Caster    = gameObject,
-            Origin    = _firePoint != null ? _firePoint.position : transform.position,
-            Direction = _firePoint != null ? _firePoint.forward  : transform.forward,
+            Caster         = gameObject,
+            Origin         = _firePoint != null ? _firePoint.position : transform.position,
+            Direction      = _firePoint != null ? _firePoint.forward  : transform.forward,
+            CritChance     = baseCritChance,
+            CritMultiplier = baseCritMultiplier,
         };
         ctx.Damage *= slot.launcherConfig.bonusMultiplier;
 

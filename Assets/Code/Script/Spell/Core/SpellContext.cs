@@ -15,9 +15,11 @@ public class SpellContext
     public Vector3    Origin;
     public Vector3    Direction;
 
-    public float       Damage  = 10f;
-    public float       Size    =  1f;
-    public float       Speed   = 10f;
+    public float       Damage          = 10f;
+    public float       Size            =  1f;
+    public float       Speed           = 10f;
+    public float       CritChance      =  0f;   // 0–1, boostable via nodes
+    public float       CritMultiplier  =  1.5f; // +50% dmg on crit, boostable via nodes
     public ElementType Element = ElementType.None;
     public EmitterType Emitter;
     public Material    OverrideMaterial;
