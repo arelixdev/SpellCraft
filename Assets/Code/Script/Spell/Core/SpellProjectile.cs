@@ -51,7 +51,7 @@ public class SpellProjectile : MonoBehaviour
             float finalDamage = isCrit ? _ctx.Damage * _ctx.CritMultiplier : _ctx.Damage;
             string critLabel  = isCrit ? " [CRIT]" : "";
             Debug.Log($"[SpellProjectile] Hit '{other.name}' → {finalDamage} dmg ({_ctx.Element}){critLabel}");
-            // TODO: other.GetComponent<Health>()?.TakeDamage(finalDamage, _ctx.Element, isCrit);
+            other.GetComponent<EnemyHealth>()?.TakeDamage(finalDamage, _ctx.Element, isCrit);
             FireTriggers(TriggerType.OnHit, other.gameObject);
         }
 
