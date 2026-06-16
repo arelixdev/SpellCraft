@@ -19,7 +19,6 @@ public class DamagePopup : MonoBehaviour
     public void Setup(float damage, bool isCrit, ElementType element)
     {
         _label.text     = isCrit ? $"<b>{Mathf.RoundToInt(damage)}</b>" : Mathf.RoundToInt(damage).ToString();
-        _label.color    = GetElementColor(element);
         _label.fontSize = isCrit ? _label.fontSize * 1.4f : _label.fontSize;
         _baseColor      = _label.color;
         _startFontSize  = _label.fontSize;

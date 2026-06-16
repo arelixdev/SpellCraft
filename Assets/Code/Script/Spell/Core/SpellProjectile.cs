@@ -45,6 +45,8 @@ public class SpellProjectile : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
+        if (other.CompareTag("Pickup")) return;
+
         if (other.CompareTag("Enemy"))
         {
             bool  isCrit      = Random.value < _ctx.CritChance;
