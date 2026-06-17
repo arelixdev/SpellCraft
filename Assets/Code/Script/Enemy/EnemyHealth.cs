@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public class EnemyHealth : MonoBehaviour
@@ -14,6 +15,8 @@ public class EnemyHealth : MonoBehaviour
     public float CurrentHealth => _currentHealth;
     public float MaxHealth     => _maxHealth;
     public bool  IsDead        => _currentHealth <= 0f;
+
+    public event Action OnDied;
 
     private void Awake()
     {
@@ -43,6 +46,7 @@ public class EnemyHealth : MonoBehaviour
 
     private void Die()
     {
+        OnDied?.Invoke();
         Debug.Log($"[EnemyHealth] {name} died.");
         Destroy(gameObject);
     }

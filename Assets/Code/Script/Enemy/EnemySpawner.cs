@@ -42,6 +42,10 @@ public class EnemySpawner : MonoBehaviour
     [FoldoutGroup("Debug"), ShowInInspector, ReadOnly, LabelText("Spawn actif")]
     private bool DebugIsRunning => _spawnCoroutine != null;
 
+    [BoxGroup("Spawn"), LabelText("Démarrage automatique")]
+    [Tooltip("Décocher si ce spawner est contrôlé par un ZoneManager")]
+    public bool AutoStart = true;
+
     // ── Privé ──────────────────────────────────────────────────────────────────
     private Transform _player;
     private Camera _camera;
@@ -58,7 +62,8 @@ public class EnemySpawner : MonoBehaviour
 
         _spawnParent = new GameObject("[SpawnedEnemies]").transform;
 
-        StartSpawning();
+        if (AutoStart)
+            StartSpawning();
     }
 
     private void OnDestroy()
