@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 using Sirenix.OdinInspector;
 
 public class SpellCaster : MonoBehaviour
@@ -21,15 +22,32 @@ public class SpellCaster : MonoBehaviour
     [SerializeField] private SpellSlot[] _spellSlots;
 
     private float[] _cooldownTimers;
+    private bool    _castingEnabled = true;
 
     private void Awake()
     {
         _spellSlots     ??= System.Array.Empty<SpellSlot>();
         _cooldownTimers   = new float[_spellSlots.Length];
+        SceneManager.sceneLoaded += OnSceneLoaded;
     }
+
+    private void OnDestroy()
+    {
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
+
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        _castingEnabled = true;
+    }
+
+    // Appeler depuis OnZoneCompleted du ZoneManager (via l'Inspector)
+    public void DisableCasting() => _castingEnabled = false;
 
     private void Update()
     {
+        if (!_castingEnabled) return;
+
         for (int i = 0; i < _spellSlots.Length; i++)
         {
             if (!IsSlotReady(i)) continue;
@@ -44,7 +62,7 @@ public class SpellCaster : MonoBehaviour
     // Called by input events wired in the Inspector (e.g. via PlayerInput component)
     public void TryCastKeybind(InputAction.CallbackContext context)
     {
-        if (!context.performed) return;
+        if (!_castingEnabled || !context.performed) return;
 
         for (int i = 0; i < _spellSlots.Length; i++)
         {
@@ -59,6 +77,7 @@ public class SpellCaster : MonoBehaviour
     // Called by other systems (kill feed, damage events, etc.)
     public void NotifyEvent(GameEventType eventType)
     {
+        if (!_castingEnabled) return;
         for (int i = 0; i < _spellSlots.Length; i++)
         {
             var config = _spellSlots[i].launcherConfig;

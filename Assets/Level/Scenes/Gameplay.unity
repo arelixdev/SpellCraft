@@ -154,7 +154,7 @@ MonoBehaviour:
   SpawnRadius: 15
   NavMeshSampleDistance: 2
   TotalWaves: 3
-  EnemiesPerWave: 5
+  EnemiesPerWave: 1
   TimeBetweenWaves: 3
   ElitePrefab: {fileID: 0}
   EliteSpawnPoint: {fileID: 0}
@@ -165,7 +165,31 @@ MonoBehaviour:
       m_Calls: []
   OnZoneCompleted:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1596595451}
+        m_TargetAssemblyTypeName: ZonePortal, Assembly-CSharp
+        m_MethodName: Open
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 1366729018}
+        m_TargetAssemblyTypeName: SpellCaster, Assembly-CSharp
+        m_MethodName: DisableCasting
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   OnWaveStarted:
     m_PersistentCalls:
       m_Calls: []
@@ -133103,6 +133127,7 @@ GameObject:
   - component: {fileID: 1366729011}
   - component: {fileID: 1366729017}
   - component: {fileID: 1366729019}
+  - component: {fileID: 1366729020}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -133272,6 +133297,18 @@ MonoBehaviour:
   _maxHealth: 100
   _isInvincible: 0
   _invincibilityDuration: 0.2
+--- !u!114 &1366729020
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1366729010}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 104de94b2083691439e0262ab2e4f46c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerPersistence
 --- !u!1 &1376072693
 GameObject:
   m_ObjectHideFlags: 0
@@ -145662,8 +145699,9 @@ GameObject:
   - component: {fileID: 1596595449}
   - component: {fileID: 1596595448}
   - component: {fileID: 1596595447}
+  - component: {fileID: 1596595451}
   m_Layer: 0
-  m_Name: Capsule
+  m_Name: Portal
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -145717,7 +145755,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
+  - {fileID: 2100000, guid: e5411b9fcb7d8704cb62753b6bdc5071, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -145764,6 +145802,20 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1596595451
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1596595446}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 14af955b704563f45a55d531d8b7d627, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ZonePortal
+  _nextSceneName: Gameplay
+  _mesh: {fileID: 1596595446}
 --- !u!1 &1597966820
 GameObject:
   m_ObjectHideFlags: 0

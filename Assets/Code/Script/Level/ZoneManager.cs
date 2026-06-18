@@ -179,6 +179,10 @@ public class ZoneManager : MonoBehaviour
             if (!health.IsInvincible) Destroy(health.gameObject);
         _trackedEnemies.Clear();
 
+        var playerGO = GameObject.FindWithTag("Player");
+        if (playerGO != null)
+            playerGO.GetComponent<SpellCaster>()?.DisableCasting();
+
         OnZoneCompleted?.Invoke();
         Debug.Log($"[ZoneManager] Zone '{Type}' terminée.");
     }

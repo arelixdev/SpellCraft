@@ -28,6 +28,10 @@ public class PlayerRotation : MonoBehaviour
 
     private Vector3 GetCursorWorldPosition()
     {
+        if (mainCamera == null)
+            mainCamera = Camera.main;
+        if (mainCamera == null) return Vector3.zero;
+
         Vector2 mousePosition = Mouse.current.position.ReadValue();
         Ray ray = mainCamera.ScreenPointToRay(mousePosition);
         Plane groundPlane = new Plane(Vector3.up, Vector3.up * transform.position.y);
