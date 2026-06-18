@@ -9,8 +9,10 @@ public class PlayerHealth : MonoBehaviour
     [Header("Invincibility Frames")]
     [SerializeField] private float _invincibilityDuration = 0f;
 
-    private float _currentHealth;
-    private float _invincibilityTimer;
+    private float            _currentHealth;
+    private float            _invincibilityTimer;
+    private PlayerController _playerController;
+    private SpellCaster      _spellCaster;
 
     public float CurrentHealth => _currentHealth;
     public float MaxHealth     => _maxHealth;
@@ -22,7 +24,9 @@ public class PlayerHealth : MonoBehaviour
 
     private void Awake()
     {
-        _currentHealth = _maxHealth;
+        _currentHealth    = _maxHealth;
+        _playerController = GetComponent<PlayerController>();
+        _spellCaster      = GetComponent<SpellCaster>();
     }
 
     private void Update()
@@ -61,6 +65,9 @@ public class PlayerHealth : MonoBehaviour
 
     private void Die()
     {
+        if (_playerController != null) _playerController.enabled = false;
+        if (_spellCaster      != null) _spellCaster.enabled      = false;
+
         OnDied?.Invoke();
         Debug.Log("[PlayerHealth] Player died.");
     }
