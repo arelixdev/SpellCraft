@@ -43,8 +43,8 @@ public class EnemySpawner : MonoBehaviour
     private bool DebugIsRunning => _spawnCoroutine != null;
 
     [BoxGroup("Spawn"), LabelText("Démarrage automatique")]
-    [Tooltip("Décocher si ce spawner est contrôlé par un ZoneManager")]
-    public bool AutoStart = true;
+    [Tooltip("Cocher uniquement si ce spawner est indépendant (pas contrôlé par un ZoneManager)")]
+    public bool AutoStart = false;
 
     // ── Privé ──────────────────────────────────────────────────────────────────
     private Transform _player;
