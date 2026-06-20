@@ -13,9 +13,10 @@ MonoBehaviour:
   m_Name: Fireball
   m_EditorClassIdentifier: Assembly-CSharp::SpellGraphSO
   complexityBudget: 10
+  slotEntries: []
   editorLayout: []
   nodes:
-  - {fileID: 11400000, guid: a8eb528ebc02322468008ac21b80115d, type: 2}
+  - {fileID: 11400000, guid: bdd3977cbe001f141a3787b08c42c5a9, type: 2}
   - {fileID: 11400000, guid: 9024edfe89b5add4eaf97856a8b8167c, type: 2}
   connections:
   - fromIndex: 0

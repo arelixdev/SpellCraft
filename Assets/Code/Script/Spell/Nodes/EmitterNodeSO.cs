@@ -14,19 +14,66 @@ public class EmitterNodeSO : SpellNodeSO
 
     [BoxGroup("Base Stats")]
     [HorizontalGroup("Base Stats/Values")]
-    [LabelWidth(60), MinValue(0)] public float baseDamage = 10f;
+    [LabelWidth(60), MinValue(0), HideIf("enableRoll")] public float baseDamage = 10f;
 
     [HorizontalGroup("Base Stats/Values")]
-    [LabelWidth(50), MinValue(0)] public float baseSpeed = 10f;
+    [LabelWidth(50), MinValue(0), HideIf("enableRoll")] public float baseSpeed = 10f;
 
     [HorizontalGroup("Base Stats/Values")]
-    [LabelWidth(45), MinValue(0)] public float baseSize = 1f;
+    [LabelWidth(45), MinValue(0), HideIf("enableRoll")] public float baseSize = 1f;
+
+    [BoxGroup("Base Stats")]
+    [ShowIf("@emitterType == EmitterType.Projectile && !enableRoll")]
+    [LabelWidth(140), MinValue(0)] public int pierceCount = 0;
+
+    [BoxGroup("Base Stats")]
+    [ShowIf("@emitterType == EmitterType.Projectile && pierceCount > 0")]
+    [LabelWidth(140)] public bool reduceDamageOnPierce = false;
+
+    [BoxGroup("Base Stats")]
+    [ShowIf("@emitterType == EmitterType.Projectile && pierceCount > 0 && reduceDamageOnPierce")]
+    [LabelWidth(140), Range(0f, 100f)] public float damageReductionPerHit = 25f;
+
+    // --- Tirage ---
+    [Title("Tirage")]
+    [ToggleLeft] public bool enableRoll = false;
+
+    [ShowIf("enableRoll"), BoxGroup("Tirage/Ranges")]
+    [MinMaxSlider(0f, 200f, true), LabelWidth(80)]
+    public Vector2 damageRange = new(5f, 15f);
+
+    [ShowIf("enableRoll"), BoxGroup("Tirage/Ranges")]
+    [MinMaxSlider(0f, 50f, true), LabelWidth(80)]
+    public Vector2 speedRange = new(8f, 12f);
+
+    [ShowIf("enableRoll"), BoxGroup("Tirage/Ranges")]
+    [MinMaxSlider(0f, 10f, true), LabelWidth(80)]
+    public Vector2 sizeRange = new(0.5f, 2f);
+
+    [ShowIf("@enableRoll && emitterType == EmitterType.Projectile"), BoxGroup("Tirage/Ranges")]
+    [MinMaxSlider(0, 10, true), LabelWidth(80)]
+    public Vector2Int pierceRange = new(0, 3);
+
+    [ShowIf("enableRoll"), BoxGroup("Tirage")]
+    [Button("Tirer les valeurs", ButtonSizes.Medium), GUIColor(0.4f, 0.8f, 0.4f)]
+    public void RollValues()
+    {
+        baseDamage = Random.Range(damageRange.x, damageRange.y);
+        baseSpeed  = Random.Range(speedRange.x,  speedRange.y);
+        baseSize   = Random.Range(sizeRange.x,   sizeRange.y);
+
+        if (emitterType == EmitterType.Projectile)
+            pierceCount = Random.Range(pierceRange.x, pierceRange.y + 1);
+    }
 
     public override void Execute(SpellContext ctx)
     {
-        ctx.Emitter = emitterType;
-        ctx.Damage  = baseDamage;
-        ctx.Speed   = baseSpeed;
-        ctx.Size    = baseSize;
+        ctx.Emitter     = emitterType;
+        ctx.Damage      = baseDamage;
+        ctx.Speed       = baseSpeed;
+        ctx.Size        = baseSize;
+        ctx.PierceCount            = pierceCount;
+        ctx.ReduceDamageOnPierce   = reduceDamageOnPierce;
+        ctx.DamageReductionPerHit  = damageReductionPerHit;
     }
 }

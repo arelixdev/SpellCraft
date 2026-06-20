@@ -16,5 +16,8 @@ public abstract class SpellNodeSO : ScriptableObject
     [VerticalGroup("Header/Info"), LabelWidth(130)]
     [MinValue(1)] public int complexityCost = 1;
 
+    [VerticalGroup("Header/Info"), LabelWidth(130)]
+    public NodeRarity rarity = NodeRarity.Commun;
+
     public abstract void Execute(SpellContext ctx);
 }

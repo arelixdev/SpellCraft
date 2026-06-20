@@ -1,4 +1,5 @@
 public enum NodeType      { Emitter, Element, Behavior, Condition, Trigger, Effect }
+public enum NodeRarity    { Commun, Rare, Epique, Boss, Corrompu }
 public enum ElementType   { None, Fire, Ice, Lightning, Arcane, Poison }
 public enum EmitterType   { None, Projectile, Zone, Cone, Beam, Self }
 public enum BehaviorType  { Pierce, Bounce, Split, Homing, Orbit }

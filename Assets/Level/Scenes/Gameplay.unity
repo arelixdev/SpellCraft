@@ -154,7 +154,7 @@ MonoBehaviour:
   SpawnRadius: 15
   NavMeshSampleDistance: 2
   TotalWaves: 3
-  EnemiesPerWave: 1
+  EnemiesPerWave: 3
   TimeBetweenWaves: 3
   ElitePrefab: {fileID: 0}
   EliteSpawnPoint: {fileID: 0}

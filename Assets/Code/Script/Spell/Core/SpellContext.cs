@@ -24,6 +24,9 @@ public class SpellContext
     public EmitterType Emitter;
     public Material    OverrideMaterial;
 
+    public int                  PierceCount            = 0;
+    public bool                 ReduceDamageOnPierce   = false;
+    public float                DamageReductionPerHit  = 0f;
     public List<BehaviorType>   Behaviors       = new();
     public List<PendingTrigger> PendingTriggers = new();
     public List<EffectNodeSO>   ActiveEffects   = new();

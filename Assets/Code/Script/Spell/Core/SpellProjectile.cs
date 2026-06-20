@@ -5,6 +5,7 @@ using UnityEngine;
 public class SpellProjectile : MonoBehaviour
 {
     private SpellContext _ctx;
+    private int          _pierceHitsRemaining;
 
     // Parallel lists to track OnTick timers without a struct-key dictionary
     private List<SpellContext.PendingTrigger> _tickTriggers = new();
@@ -14,8 +15,9 @@ public class SpellProjectile : MonoBehaviour
 
     public void Initialize(SpellContext ctx)
     {
-        _ctx    = ctx;
-        enabled = true;
+        _ctx                 = ctx;
+        _pierceHitsRemaining = ctx.PierceCount;
+        enabled              = true;
         transform.localScale = Vector3.one * ctx.Size;
 
         foreach (var trigger in ctx.PendingTriggers)
@@ -55,10 +57,16 @@ public class SpellProjectile : MonoBehaviour
             Debug.Log($"[SpellProjectile] Hit '{other.name}' → {finalDamage} dmg ({_ctx.Element}){critLabel}");
             other.GetComponent<EnemyHealth>()?.TakeDamage(finalDamage, _ctx.Element, isCrit);
             FireTriggers(TriggerType.OnHit, other.gameObject);
-        }
 
-        if (!_ctx.Behaviors.Contains(BehaviorType.Pierce))
-            Destroy(gameObject);
+            if (_pierceHitsRemaining > 0)
+            {
+                _pierceHitsRemaining--;
+                if (_ctx.ReduceDamageOnPierce)
+                    _ctx.Damage *= 1f - _ctx.DamageReductionPerHit / 100f;
+            }
+            else
+                Destroy(gameObject);
+        }
     }
 
     private void OnDestroy()
