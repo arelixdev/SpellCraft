@@ -73,11 +73,15 @@ public static class SpellExecutor
 
     private static void Spawn(SpellGraphSO graph, SpellContext ctx)
     {
+        var emitterNode = graph.nodes.OfType<EmitterNodeSO>().FirstOrDefault();
+
         switch (ctx.Emitter)
         {
             case EmitterType.Projectile:
-                var emitter = graph.nodes.OfType<EmitterNodeSO>().FirstOrDefault();
-                if (emitter != null) SpawnProjectile(emitter, ctx);
+                if (emitterNode != null) SpawnProjectile(emitterNode, ctx);
+                break;
+            case EmitterType.Grenade:
+                if (emitterNode != null) SpawnGrenade(emitterNode, ctx);
                 break;
             case EmitterType.Zone:
             case EmitterType.Cone:
@@ -139,6 +143,56 @@ public static class SpellExecutor
             };
 
             go.AddComponent<SpellProjectile>().Initialize(projCtx);
+        }
+    }
+
+    private static void SpawnGrenade(EmitterNodeSO emitter, SpellContext ctx)
+    {
+        if (emitter.projectilePrefab == null)
+        {
+            Debug.LogWarning($"[SpellExecutor] Grenade '{emitter.nodeName}' has no prefab assigned.");
+            return;
+        }
+
+        int   count  = Mathf.Max(1, emitter.projectileCount);
+        float spread = emitter.spreadAngle;
+
+        for (int i = 0; i < count; i++)
+        {
+            float   angle = count == 1 ? 0f : -spread / 2f + i * (spread / (count - 1));
+            Vector3 dir   = Quaternion.AngleAxis(angle, Vector3.up) * ctx.Direction;
+
+            var go = Object.Instantiate(emitter.projectilePrefab, ctx.Origin, Quaternion.identity);
+
+            if (ctx.OverrideMaterial != null)
+                foreach (var r in go.GetComponentsInChildren<Renderer>())
+                    r.material = ctx.OverrideMaterial;
+
+            var projCtx = new SpellContext
+            {
+                Caster           = ctx.Caster,
+                Origin           = ctx.Origin,
+                Direction        = dir,
+                Damage           = ctx.Damage,
+                Size             = ctx.Size,
+                Speed            = ctx.Speed,
+                CritChance       = ctx.CritChance,
+                CritMultiplier   = ctx.CritMultiplier,
+                Element          = ctx.Element,
+                Lifetime         = ctx.Lifetime,
+                OverrideMaterial = ctx.OverrideMaterial,
+                Generation       = ctx.Generation,
+            };
+
+            go.AddComponent<GrenadeProjectile>().Initialize(
+                projCtx,
+                emitter.bounceCount,
+                emitter.launchAngle,
+                emitter.gravityMultiplier,
+                emitter.explosionRadius,
+                emitter.explosionDamageMultiplier,
+                emitter.explosionPrefab
+            );
         }
     }
 
