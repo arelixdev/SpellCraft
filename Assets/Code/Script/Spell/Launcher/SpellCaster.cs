@@ -31,6 +31,14 @@ public class SpellCaster : MonoBehaviour
         SceneManager.sceneLoaded += OnSceneLoaded;
     }
 
+    private void Start()
+    {
+        EnsureCraftingGraphInitialized();
+        if (craftingGraph == null) return;
+        foreach (var node in craftingGraph.nodes)
+            node?.RuntimeInit();
+    }
+
     private void OnDestroy()
     {
         SceneManager.sceneLoaded -= OnSceneLoaded;

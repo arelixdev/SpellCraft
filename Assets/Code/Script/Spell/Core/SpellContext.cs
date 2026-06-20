@@ -24,6 +24,7 @@ public class SpellContext
     public EmitterType Emitter;
     public Material    OverrideMaterial;
 
+    public float                Lifetime               = 3f;
     public int                  PierceCount            = 0;
     public bool                 ReduceDamageOnPierce   = false;
     public float                DamageReductionPerHit  = 0f;

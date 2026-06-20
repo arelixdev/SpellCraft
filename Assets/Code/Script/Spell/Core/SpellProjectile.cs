@@ -6,6 +6,7 @@ public class SpellProjectile : MonoBehaviour
 {
     private SpellContext _ctx;
     private int          _pierceHitsRemaining;
+    private float        _lifetimeRemaining;
 
     // Parallel lists to track OnTick timers without a struct-key dictionary
     private List<SpellContext.PendingTrigger> _tickTriggers = new();
@@ -17,6 +18,7 @@ public class SpellProjectile : MonoBehaviour
     {
         _ctx                 = ctx;
         _pierceHitsRemaining = ctx.PierceCount;
+        _lifetimeRemaining   = ctx.Lifetime;
         enabled              = true;
         transform.localScale = Vector3.one * ctx.Size;
 
@@ -32,6 +34,10 @@ public class SpellProjectile : MonoBehaviour
     {
         transform.position += _ctx.Direction * _ctx.Speed * Time.deltaTime;
         TickTriggers();
+
+        _lifetimeRemaining -= Time.deltaTime;
+        if (_lifetimeRemaining <= 0f)
+            Destroy(gameObject);
     }
 
     private void TickTriggers()

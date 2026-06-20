@@ -99,17 +99,47 @@ public static class SpellExecutor
             return;
         }
 
-        var rotation = ctx.Direction != Vector3.zero
-            ? Quaternion.LookRotation(ctx.Direction)
-            : Quaternion.identity;
+        int   count  = Mathf.Max(1, emitter.projectileCount);
+        float spread = emitter.spreadAngle;
 
-        var go = Object.Instantiate(emitter.projectilePrefab, ctx.Origin, rotation);
+        for (int i = 0; i < count; i++)
+        {
+            float   angle = count == 1 ? 0f : -spread / 2f + i * (spread / (count - 1));
+            Vector3 dir   = Quaternion.AngleAxis(angle, Vector3.up) * ctx.Direction;
 
-        if (ctx.OverrideMaterial != null)
-            foreach (var r in go.GetComponentsInChildren<Renderer>())
-                r.material = ctx.OverrideMaterial;
+            var rotation = dir != Vector3.zero ? Quaternion.LookRotation(dir) : Quaternion.identity;
+            var go       = Object.Instantiate(emitter.projectilePrefab, ctx.Origin, rotation);
 
-        go.AddComponent<SpellProjectile>().Initialize(ctx);
+            if (ctx.OverrideMaterial != null)
+                foreach (var r in go.GetComponentsInChildren<Renderer>())
+                    r.material = ctx.OverrideMaterial;
+
+            var projCtx = new SpellContext
+            {
+                Caster                = ctx.Caster,
+                Origin                = ctx.Origin,
+                Direction             = dir,
+                Damage                = ctx.Damage,
+                Size                  = ctx.Size,
+                Speed                 = ctx.Speed,
+                CritChance            = ctx.CritChance,
+                CritMultiplier        = ctx.CritMultiplier,
+                Element               = ctx.Element,
+                Emitter               = ctx.Emitter,
+                OverrideMaterial      = ctx.OverrideMaterial,
+                Lifetime              = ctx.Lifetime,
+                PierceCount           = ctx.PierceCount,
+                ReduceDamageOnPierce  = ctx.ReduceDamageOnPierce,
+                DamageReductionPerHit = ctx.DamageReductionPerHit,
+                Behaviors             = new List<BehaviorType>(ctx.Behaviors),
+                PendingTriggers       = new List<SpellContext.PendingTrigger>(ctx.PendingTriggers),
+                ActiveEffects         = new List<EffectNodeSO>(ctx.ActiveEffects),
+                ConditionMultiplier   = ctx.ConditionMultiplier,
+                Generation            = ctx.Generation,
+            };
+
+            go.AddComponent<SpellProjectile>().Initialize(projCtx);
+        }
     }
 
     // Used when a trigger fires effects directly (no emitter in the sub-path).

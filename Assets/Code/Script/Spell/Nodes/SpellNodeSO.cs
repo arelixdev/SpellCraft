@@ -22,5 +22,6 @@ public abstract class SpellNodeSO : ScriptableObject
     [FoldoutGroup("Corruption"), InlineEditor(InlineEditorObjectFieldModes.Boxed)]
     public CorruptedEffectSO corruptedEffect;
 
+    public virtual  void RuntimeInit()          { }
     public abstract void Execute(SpellContext ctx);
 }

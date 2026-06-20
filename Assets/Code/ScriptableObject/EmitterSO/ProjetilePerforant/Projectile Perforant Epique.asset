@@ -17,11 +17,15 @@ MonoBehaviour:
   nodeType: 0
   complexityCost: 5
   rarity: 2
+  corruptedEffect: {fileID: 0}
   emitterType: 1
   projectilePrefab: {fileID: 7326707846551993688, guid: 5bd8f0eae267a5f4c8b98a633db1e76f, type: 3}
   baseDamage: 10
   baseSpeed: 12
   baseSize: 0.5
+  projectileCount: 1
+  spreadAngle: 30
+  baseLifetime: 3
   pierceCount: 3
   reduceDamageOnPierce: 1
   damageReductionPerHit: 15
@@ -30,3 +34,5 @@ MonoBehaviour:
   speedRange: {x: 10, y: 14}
   sizeRange: {x: 0.5, y: 0.5}
   pierceRange: {x: 1, y: 3}
+  projectileCountRange: {x: 1, y: 3}
+  lifetimeRange: {x: 3, y: 5}
