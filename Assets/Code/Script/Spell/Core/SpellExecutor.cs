@@ -40,6 +40,8 @@ public static class SpellExecutor
         else
             node.Execute(ctx);
 
+        node.corruptedEffect?.ApplyTo(ctx);
+
         foreach (var outputIdx in graph.GetOutputIndices(idx))
             TraversePreSpawn(graph, outputIdx, ctx);
     }

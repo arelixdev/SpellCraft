@@ -19,5 +19,8 @@ public abstract class SpellNodeSO : ScriptableObject
     [VerticalGroup("Header/Info"), LabelWidth(130)]
     public NodeRarity rarity = NodeRarity.Commun;
 
+    [FoldoutGroup("Corruption"), InlineEditor(InlineEditorObjectFieldModes.Boxed)]
+    public CorruptedEffectSO corruptedEffect;
+
     public abstract void Execute(SpellContext ctx);
 }
