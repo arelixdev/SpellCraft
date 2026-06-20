@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c07816cde7204304e9395454d8eb804b, type: 3}
-  m_Name: Grende(Spell)
+  m_Name: Grende Rare
   m_EditorClassIdentifier: Assembly-CSharp::EmitterNodeSO
   icon: {fileID: 0}
   nodeName: Grenade
@@ -20,28 +20,28 @@ MonoBehaviour:
   corruptedEffect: {fileID: 0}
   emitterType: 6
   projectilePrefab: {fileID: 7326707846551993688, guid: 65ebfbefac608cd4e9680ec18a59d6eb, type: 3}
-  baseDamage: 20
-  baseSpeed: 10
-  baseSize: 0.75
+  baseDamage: 28.476597
+  baseSpeed: 10.315306
+  baseSize: 0.9497908
   projectileCount: 1
   spreadAngle: 30
   baseLifetime: 3
   pierceCount: 0
   reduceDamageOnPierce: 0
   damageReductionPerHit: 25
-  bounceCount: 3
-  launchAngle: 60
+  bounceCount: 4
+  launchAngle: 62.273926
   baseLifetimeGrenade: 10
   gravityMultiplier: 2
-  explosionRadius: 3
+  explosionRadius: 4
   explosionDamageMultiplier: 1.5
   explosionPrefab: {fileID: 0}
-  enableRoll: 0
-  damageRange: {x: 5, y: 15}
+  enableRoll: 1
+  damageRange: {x: 20, y: 30}
   speedRange: {x: 8, y: 12}
-  sizeRange: {x: 0.5, y: 2}
+  sizeRange: {x: 0.75, y: 1}
   pierceRange: {x: 0, y: 3}
-  projectileCountRange: {x: 1, y: 3}
+  projectileCountRange: {x: 1, y: 2}
   lifetimeRange: {x: 1, y: 5}
-  bounceCountRange: {x: 2, y: 5}
-  launchAngleRange: {x: 30, y: 60}
+  bounceCountRange: {x: 2, y: 4}
+  launchAngleRange: {x: 50, y: 70}

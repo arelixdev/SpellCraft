@@ -208,6 +208,30 @@ public class SpellCaster : MonoBehaviour
         }
     }
 
+    public void RefreshPermanentOrbitals()
+    {
+        if (craftingGraph == null) return;
+
+        for (int i = 0; i < _spellSlots.Length; i++)
+        {
+            if (!craftingGraph.TryGetSlotEntry(i, out int startNode)) continue;
+
+            var ctx = new SpellContext
+            {
+                Caster         = gameObject,
+                Origin         = transform.position,
+                Direction      = transform.forward,
+                CritChance     = baseCritChance,
+                CritMultiplier = baseCritMultiplier,
+            };
+
+            if (_spellSlots[i]?.launcherConfig != null)
+                ctx.Damage *= _spellSlots[i].launcherConfig.bonusMultiplier;
+
+            SpellExecutor.RefreshPermanentOrbitals(craftingGraph, startNode, ctx);
+        }
+    }
+
     public SpellSlot   GetSlot(int i)  => (i >= 0 && i < _spellSlots.Length) ? _spellSlots[i] : null;
     public SpellSlot[] GetSlots()      => _spellSlots;
     public void SetSlotGraph(int i, SpellGraphSO graph)

@@ -1,7 +1,7 @@
 public enum NodeType      { Emitter, Element, Behavior, Condition, Trigger, Effect }
 public enum NodeRarity    { Commun, Rare, Epique, Boss, Corrompu }
 public enum ElementType   { None, Fire, Ice, Lightning, Arcane, Poison }
-public enum EmitterType   { None, Projectile, Zone, Cone, Beam, Self, Grenade }
+public enum EmitterType   { None, Projectile, Zone, Cone, Beam, Self, Grenade, Orbital }
 public enum BehaviorType  { Pierce, Bounce, Split, Homing, Orbit }
 public enum ConditionType { TargetHasStatus, SelfAtFullHP, ComboCount, EnemiesNearby }
 public enum TriggerType   { OnHit, OnKill, OnExpire, OnTick }

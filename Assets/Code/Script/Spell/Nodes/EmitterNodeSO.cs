@@ -19,7 +19,7 @@ public class EmitterNodeSO : SpellNodeSO
     [LabelWidth(60), MinValue(0), HideIf("enableRoll")] public float baseDamage = 10f;
 
     [HorizontalGroup("Base Stats/Values")]
-    [LabelWidth(50), MinValue(0), HideIf("enableRoll")] public float baseSpeed = 10f;
+    [LabelWidth(50), MinValue(0), HideIf("@enableRoll || emitterType == EmitterType.Orbital")] public float baseSpeed = 10f;
 
     [HorizontalGroup("Base Stats/Values")]
     [LabelWidth(45), MinValue(0), HideIf("enableRoll")] public float baseSize = 1f;
@@ -80,6 +80,28 @@ public class EmitterNodeSO : SpellNodeSO
     [ShowIf("@emitterType == EmitterType.Grenade")]
     [LabelWidth(140)] public GameObject explosionPrefab;
 
+    // ── Stats Orbital ─────────────────────────────────────────────────────────
+
+    [BoxGroup("Orbital")]
+    [ShowIf("@emitterType == EmitterType.Orbital && !enableRoll")]
+    [LabelWidth(140), Range(1, 10)] public int orbitalCount = 3;
+
+    [BoxGroup("Orbital")]
+    [ShowIf("@emitterType == EmitterType.Orbital && !enableRoll")]
+    [LabelWidth(140), MinValue(0.5f)] public float orbitalRadius = 3f;
+
+    [BoxGroup("Orbital")]
+    [ShowIf("@emitterType == EmitterType.Orbital && !enableRoll")]
+    [LabelWidth(140), Range(10f, 720f)] public float orbitalSpeed = 90f;
+
+    [BoxGroup("Orbital")]
+    [ShowIf("@emitterType == EmitterType.Orbital")]
+    [LabelWidth(140), ToggleLeft] public bool orbitalPermanent = true;
+
+    [BoxGroup("Orbital")]
+    [ShowIf("@emitterType == EmitterType.Orbital && !enableRoll && !orbitalPermanent")]
+    [LabelWidth(140), MinValue(0.1f)] public float orbitalLifetime = 5f;
+
     // ── Tirage ────────────────────────────────────────────────────────────────
 
     [Title("Tirage")]
@@ -89,7 +111,7 @@ public class EmitterNodeSO : SpellNodeSO
     [MinMaxSlider(0f, 200f, true), LabelWidth(80)]
     public Vector2 damageRange = new(5f, 15f);
 
-    [ShowIf("enableRoll"), BoxGroup("Tirage/Ranges")]
+    [ShowIf("@enableRoll && emitterType != EmitterType.Orbital"), BoxGroup("Tirage/Ranges")]
     [MinMaxSlider(0f, 50f, true), LabelWidth(80)]
     public Vector2 speedRange = new(8f, 12f);
 
@@ -117,6 +139,22 @@ public class EmitterNodeSO : SpellNodeSO
     [MinMaxSlider(10f, 80f, true), LabelWidth(80)]
     public Vector2 launchAngleRange = new(30f, 60f);
 
+    [ShowIf("@enableRoll && emitterType == EmitterType.Orbital"), BoxGroup("Tirage/Ranges")]
+    [MinMaxSlider(1, 10, true), LabelWidth(80)]
+    public Vector2Int orbitalCountRange = new(2, 4);
+
+    [ShowIf("@enableRoll && emitterType == EmitterType.Orbital"), BoxGroup("Tirage/Ranges")]
+    [MinMaxSlider(0.5f, 15f, true), LabelWidth(80)]
+    public Vector2 orbitalRadiusRange = new(2f, 5f);
+
+    [ShowIf("@enableRoll && emitterType == EmitterType.Orbital"), BoxGroup("Tirage/Ranges")]
+    [MinMaxSlider(10f, 720f, true), LabelWidth(80)]
+    public Vector2 orbitalSpeedRange = new(60f, 180f);
+
+    [ShowIf("@enableRoll && emitterType == EmitterType.Orbital && !orbitalPermanent"), BoxGroup("Tirage/Ranges")]
+    [MinMaxSlider(0.5f, 30f, true), LabelWidth(80)]
+    public Vector2 orbitalLifetimeRange = new(3f, 10f);
+
     [ShowIf("enableRoll"), BoxGroup("Tirage")]
     [Button("Tirer les valeurs", ButtonSizes.Medium), GUIColor(0.4f, 0.8f, 0.4f)]
     public void RollValues()
@@ -137,6 +175,15 @@ public class EmitterNodeSO : SpellNodeSO
             bounceCount     = Random.Range(bounceCountRange.x,  bounceCountRange.y + 1);
             launchAngle     = Random.Range(launchAngleRange.x,  launchAngleRange.y);
             projectileCount = Random.Range(projectileCountRange.x, projectileCountRange.y + 1);
+        }
+
+        if (emitterType == EmitterType.Orbital)
+        {
+            orbitalCount  = Random.Range(orbitalCountRange.x,  orbitalCountRange.y + 1);
+            orbitalRadius = Random.Range(orbitalRadiusRange.x, orbitalRadiusRange.y);
+            orbitalSpeed  = Random.Range(orbitalSpeedRange.x,  orbitalSpeedRange.y);
+            if (!orbitalPermanent)
+                orbitalLifetime = Random.Range(orbitalLifetimeRange.x, orbitalLifetimeRange.y);
         }
     }
 
@@ -162,5 +209,13 @@ public class EmitterNodeSO : SpellNodeSO
 
         if (emitterType == EmitterType.Grenade)
             ctx.Lifetime = baseLifetimeGrenade;
+
+        if (emitterType == EmitterType.Orbital)
+        {
+            ctx.OrbitalRadius    = orbitalRadius;
+            ctx.OrbitalSpeed     = orbitalSpeed;
+            ctx.OrbitalPermanent = orbitalPermanent;
+            ctx.OrbitalLifetime  = orbitalLifetime;
+        }
     }
 }

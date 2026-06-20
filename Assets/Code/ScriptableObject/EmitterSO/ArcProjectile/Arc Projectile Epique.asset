@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Arc Projectile Epique
   m_EditorClassIdentifier: Assembly-CSharp::EmitterNodeSO
   icon: {fileID: 0}
-  nodeName: Projectile
+  nodeName: Arc Projectile
   nodeType: 0
   complexityCost: 5
   rarity: 1
@@ -32,6 +32,7 @@ MonoBehaviour:
   bounceCount: 3
   launchAngle: 45
   baseLifetimeGrenade: 10
+  gravityMultiplier: 3
   explosionRadius: 3
   explosionDamageMultiplier: 1.5
   explosionPrefab: {fileID: 0}

@@ -10,19 +10,19 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c07816cde7204304e9395454d8eb804b, type: 3}
-  m_Name: Grende(Spell)
+  m_Name: Orbital Projectile (Spell)
   m_EditorClassIdentifier: Assembly-CSharp::EmitterNodeSO
   icon: {fileID: 0}
-  nodeName: Grenade
+  nodeName: Orbital Projectile
   nodeType: 0
-  complexityCost: 3
+  complexityCost: 1
   rarity: 0
   corruptedEffect: {fileID: 0}
-  emitterType: 6
-  projectilePrefab: {fileID: 7326707846551993688, guid: 65ebfbefac608cd4e9680ec18a59d6eb, type: 3}
-  baseDamage: 20
+  emitterType: 7
+  projectilePrefab: {fileID: 7326707846551993688, guid: 5bd8f0eae267a5f4c8b98a633db1e76f, type: 3}
+  baseDamage: 10
   baseSpeed: 10
-  baseSize: 0.75
+  baseSize: 0.5
   projectileCount: 1
   spreadAngle: 30
   baseLifetime: 3
@@ -30,13 +30,18 @@ MonoBehaviour:
   reduceDamageOnPierce: 0
   damageReductionPerHit: 25
   bounceCount: 3
-  launchAngle: 60
+  launchAngle: 45
   baseLifetimeGrenade: 10
-  gravityMultiplier: 2
+  gravityMultiplier: 3
   explosionRadius: 3
   explosionDamageMultiplier: 1.5
   explosionPrefab: {fileID: 0}
-  enableRoll: 0
+  orbitalCount: 3
+  orbitalRadius: 3
+  orbitalSpeed: 360
+  orbitalPermanent: 1
+  orbitalLifetime: 0.8
+  enableRoll: 1
   damageRange: {x: 5, y: 15}
   speedRange: {x: 8, y: 12}
   sizeRange: {x: 0.5, y: 2}
@@ -45,3 +50,7 @@ MonoBehaviour:
   lifetimeRange: {x: 1, y: 5}
   bounceCountRange: {x: 2, y: 5}
   launchAngleRange: {x: 30, y: 60}
+  orbitalCountRange: {x: 2, y: 4}
+  orbitalRadiusRange: {x: 2, y: 5}
+  orbitalSpeedRange: {x: 60, y: 180}
+  orbitalLifetimeRange: {x: 3, y: 10}

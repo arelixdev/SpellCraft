@@ -13,6 +13,19 @@ public static class SpellExecutor
         Spawn(graph, ctx);
     }
 
+    // Re-traverses graph and refreshes OrbitalManager without spawning any other emitter type.
+    // Safe to call on graph change — won't duplicate projectiles or trigger side-effects.
+    public static void RefreshPermanentOrbitals(SpellGraphSO graph, int startNodeIndex, SpellContext ctx)
+    {
+        if (graph == null || graph.nodes.Count == 0) return;
+        int startIdx = Mathf.Clamp(startNodeIndex, 0, graph.nodes.Count - 1);
+        TraversePreSpawn(graph, startIdx, ctx);
+
+        if (ctx.Emitter != EmitterType.Orbital || !ctx.OrbitalPermanent) return;
+        var emitterNode = graph.nodes.OfType<EmitterNodeSO>().FirstOrDefault();
+        if (emitterNode != null) SpawnOrbital(emitterNode, ctx);
+    }
+
     // Called by SpellProjectile when a trigger fires
     public static void ExecuteFrom(SpellGraphSO graph, List<int> startIndices, SpellContext ctx)
     {
@@ -82,6 +95,9 @@ public static class SpellExecutor
                 break;
             case EmitterType.Grenade:
                 if (emitterNode != null) SpawnGrenade(emitterNode, ctx);
+                break;
+            case EmitterType.Orbital:
+                if (emitterNode != null) SpawnOrbital(emitterNode, ctx);
                 break;
             case EmitterType.Zone:
             case EmitterType.Cone:
@@ -193,6 +209,62 @@ public static class SpellExecutor
                 emitter.explosionDamageMultiplier,
                 emitter.explosionPrefab
             );
+        }
+    }
+
+    private static void SpawnOrbital(EmitterNodeSO emitter, SpellContext ctx)
+    {
+        if (emitter.projectilePrefab == null)
+        {
+            Debug.LogWarning($"[SpellExecutor] Orbital '{emitter.nodeName}' has no prefab assigned.");
+            return;
+        }
+
+        int count = Mathf.Max(1, emitter.orbitalCount);
+
+        var projCtx = new SpellContext
+        {
+            Caster              = ctx.Caster,
+            Origin              = ctx.Origin,
+            Direction           = ctx.Direction,
+            Damage              = ctx.Damage,
+            Size                = ctx.Size,
+            Speed               = ctx.Speed,
+            CritChance          = ctx.CritChance,
+            CritMultiplier      = ctx.CritMultiplier,
+            Element             = ctx.Element,
+            Emitter             = ctx.Emitter,
+            OverrideMaterial    = ctx.OverrideMaterial,
+            OrbitalRadius       = ctx.OrbitalRadius,
+            OrbitalSpeed        = ctx.OrbitalSpeed,
+            OrbitalPermanent    = ctx.OrbitalPermanent,
+            OrbitalLifetime     = ctx.OrbitalLifetime,
+            Behaviors           = new List<BehaviorType>(ctx.Behaviors),
+            PendingTriggers     = new List<SpellContext.PendingTrigger>(ctx.PendingTriggers),
+            ActiveEffects       = new List<EffectNodeSO>(ctx.ActiveEffects),
+            ConditionMultiplier = ctx.ConditionMultiplier,
+            Generation          = ctx.Generation,
+        };
+
+        if (ctx.OrbitalPermanent)
+        {
+            var manager = ctx.Caster.GetComponent<OrbitalManager>()
+                       ?? ctx.Caster.AddComponent<OrbitalManager>();
+            manager.Register(emitter.projectilePrefab, projCtx, count);
+        }
+        else
+        {
+            for (int i = 0; i < count; i++)
+            {
+                float baseAngle = 360f / count * i;
+                var   go        = Object.Instantiate(emitter.projectilePrefab, ctx.Origin, Quaternion.identity);
+
+                if (ctx.OverrideMaterial != null)
+                    foreach (var r in go.GetComponentsInChildren<Renderer>())
+                        r.material = ctx.OverrideMaterial;
+
+                go.AddComponent<OrbitalProjectile>().Initialize(projCtx, baseAngle);
+            }
         }
     }
 

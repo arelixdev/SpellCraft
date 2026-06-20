@@ -24,6 +24,11 @@ public class SpellContext
     public EmitterType Emitter;
     public Material    OverrideMaterial;
 
+    public float OrbitalRadius    = 3f;
+    public float OrbitalSpeed     = 90f;
+    public bool  OrbitalPermanent = true;
+    public float OrbitalLifetime  = 5f;
+
     public float                Lifetime               = 3f;
     public int                  PierceCount            = 0;
     public bool                 ReduceDamageOnPierce   = false;
