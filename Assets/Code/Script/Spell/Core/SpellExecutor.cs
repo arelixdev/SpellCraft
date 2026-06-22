@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -111,6 +112,8 @@ public static class SpellExecutor
         }
     }
 
+    private const float BurstDelay = 0.15f;
+
     private static void SpawnProjectile(EmitterNodeSO emitter, SpellContext ctx)
     {
         if (emitter.projectilePrefab == null)
@@ -119,6 +122,32 @@ public static class SpellExecutor
             return;
         }
 
+        int burst = Mathf.Max(1, ctx.BurstCount);
+        if (burst <= 1)
+        {
+            SpawnProjectileVolley(emitter, ctx);
+            return;
+        }
+
+        var mb = ctx.Caster.GetComponent<MonoBehaviour>();
+        if (mb != null)
+            mb.StartCoroutine(BurstCoroutine(emitter, ctx, burst));
+        else
+            SpawnProjectileVolley(emitter, ctx);
+    }
+
+    private static IEnumerator BurstCoroutine(EmitterNodeSO emitter, SpellContext ctx, int burst)
+    {
+        for (int b = 0; b < burst; b++)
+        {
+            SpawnProjectileVolley(emitter, ctx);
+            if (b < burst - 1)
+                yield return new WaitForSeconds(BurstDelay);
+        }
+    }
+
+    private static void SpawnProjectileVolley(EmitterNodeSO emitter, SpellContext ctx)
+    {
         int   count  = Mathf.Max(1, emitter.projectileCount);
         float spread = emitter.spreadAngle;
 

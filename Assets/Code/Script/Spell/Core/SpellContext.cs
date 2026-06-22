@@ -33,6 +33,7 @@ public class SpellContext
     public int                  PierceCount            = 0;
     public bool                 ReduceDamageOnPierce   = false;
     public float                DamageReductionPerHit  = 0f;
+    public int                  BurstCount             = 1;
     public List<BehaviorType>   Behaviors       = new();
     public List<PendingTrigger> PendingTriggers = new();
     public List<EffectNodeSO>   ActiveEffects   = new();

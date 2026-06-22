@@ -50,6 +50,10 @@ public class EmitterNodeSO : SpellNodeSO
     [ShowIf("@emitterType == EmitterType.Projectile && pierceCount > 0 && reduceDamageOnPierce")]
     [LabelWidth(140), Range(0f, 100f)] public float damageReductionPerHit = 25f;
 
+    [BoxGroup("Projectile")]
+    [ShowIf("@emitterType == EmitterType.Projectile && !enableRoll")]
+    [LabelWidth(140), Range(1, 10)] public int burstCount = 1;
+
     // ── Stats Grenade ─────────────────────────────────────────────────────────
 
     [BoxGroup("Grenade")]
@@ -131,6 +135,10 @@ public class EmitterNodeSO : SpellNodeSO
     [MinMaxSlider(0.1f, 20f, true), LabelWidth(80)]
     public Vector2 lifetimeRange = new(1f, 5f);
 
+    [ShowIf("@enableRoll && emitterType == EmitterType.Projectile"), BoxGroup("Tirage/Ranges")]
+    [MinMaxSlider(1, 10, true), LabelWidth(80)]
+    public Vector2Int burstCountRange = new(1, 3);
+
     [ShowIf("@enableRoll && emitterType == EmitterType.Grenade"), BoxGroup("Tirage/Ranges")]
     [MinMaxSlider(1, 10, true), LabelWidth(80)]
     public Vector2Int bounceCountRange = new(2, 5);
@@ -168,6 +176,7 @@ public class EmitterNodeSO : SpellNodeSO
             pierceCount     = Random.Range(pierceRange.x,          pierceRange.y + 1);
             projectileCount = Random.Range(projectileCountRange.x, projectileCountRange.y + 1);
             baseLifetime    = Random.Range(lifetimeRange.x,        lifetimeRange.y);
+            burstCount      = Random.Range(burstCountRange.x,      burstCountRange.y + 1);
         }
 
         if (emitterType == EmitterType.Grenade)
@@ -205,6 +214,7 @@ public class EmitterNodeSO : SpellNodeSO
             ctx.PierceCount           = pierceCount;
             ctx.ReduceDamageOnPierce  = reduceDamageOnPierce;
             ctx.DamageReductionPerHit = damageReductionPerHit;
+            ctx.BurstCount            = burstCount;
         }
 
         if (emitterType == EmitterType.Grenade)

@@ -10,25 +10,26 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c07816cde7204304e9395454d8eb804b, type: 3}
-  m_Name: Arc Projectile Epique
+  m_Name: RafaleProjectileEpic
   m_EditorClassIdentifier: Assembly-CSharp::EmitterNodeSO
   icon: {fileID: 0}
-  nodeName: Arc Projectile
+  nodeName: 
   nodeType: 0
-  complexityCost: 5
-  rarity: 2
+  complexityCost: 6
+  rarity: 1
   corruptedEffect: {fileID: 0}
-  emitterType: 1
+  emitterType: 2
   projectilePrefab: {fileID: 7326707846551993688, guid: 5bd8f0eae267a5f4c8b98a633db1e76f, type: 3}
-  baseDamage: 20.916462
-  baseSpeed: 12.001047
+  baseDamage: 3
+  baseSpeed: 10
   baseSize: 0.5
-  projectileCount: 4
+  projectileCount: 1
   spreadAngle: 30
-  baseLifetime: 2.4789958
+  baseLifetime: 1.5
   pierceCount: 0
   reduceDamageOnPierce: 0
   damageReductionPerHit: 25
+  burstCount: 3
   bounceCount: 3
   launchAngle: 45
   baseLifetimeGrenade: 10
@@ -42,12 +43,13 @@ MonoBehaviour:
   orbitalPermanent: 1
   orbitalLifetime: 5
   enableRoll: 1
-  damageRange: {x: 15, y: 25}
-  speedRange: {x: 10, y: 18}
+  damageRange: {x: 5, y: 8}
+  speedRange: {x: 8, y: 12}
   sizeRange: {x: 0.5, y: 0.5}
   pierceRange: {x: 0, y: 0}
-  projectileCountRange: {x: 2, y: 4}
-  lifetimeRange: {x: 1, y: 3}
+  projectileCountRange: {x: 1, y: 1}
+  lifetimeRange: {x: 1.25, y: 2}
+  burstCountRange: {x: 4, y: 6}
   bounceCountRange: {x: 2, y: 5}
   launchAngleRange: {x: 30, y: 60}
   orbitalCountRange: {x: 2, y: 4}

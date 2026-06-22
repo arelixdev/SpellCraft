@@ -10,22 +10,22 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c07816cde7204304e9395454d8eb804b, type: 3}
-  m_Name: Arc Projectile Epique
+  m_Name: Orbital Projectile Epic
   m_EditorClassIdentifier: Assembly-CSharp::EmitterNodeSO
   icon: {fileID: 0}
-  nodeName: Arc Projectile
+  nodeName: Orbital Projectile
   nodeType: 0
   complexityCost: 5
   rarity: 2
   corruptedEffect: {fileID: 0}
-  emitterType: 1
+  emitterType: 7
   projectilePrefab: {fileID: 7326707846551993688, guid: 5bd8f0eae267a5f4c8b98a633db1e76f, type: 3}
-  baseDamage: 20.916462
-  baseSpeed: 12.001047
-  baseSize: 0.5
-  projectileCount: 4
+  baseDamage: 7.041305
+  baseSpeed: 11.086443
+  baseSize: 0.60951495
+  projectileCount: 1
   spreadAngle: 30
-  baseLifetime: 2.4789958
+  baseLifetime: 3
   pierceCount: 0
   reduceDamageOnPierce: 0
   damageReductionPerHit: 25
@@ -36,21 +36,21 @@ MonoBehaviour:
   explosionRadius: 3
   explosionDamageMultiplier: 1.5
   explosionPrefab: {fileID: 0}
-  orbitalCount: 3
-  orbitalRadius: 3
-  orbitalSpeed: 90
+  orbitalCount: 2
+  orbitalRadius: 4.7784457
+  orbitalSpeed: 174.30351
   orbitalPermanent: 1
-  orbitalLifetime: 5
+  orbitalLifetime: 0.8
   enableRoll: 1
   damageRange: {x: 15, y: 25}
-  speedRange: {x: 10, y: 18}
-  sizeRange: {x: 0.5, y: 0.5}
-  pierceRange: {x: 0, y: 0}
-  projectileCountRange: {x: 2, y: 4}
-  lifetimeRange: {x: 1, y: 3}
+  speedRange: {x: 8, y: 12}
+  sizeRange: {x: 0.5, y: 1.5}
+  pierceRange: {x: 0, y: 3}
+  projectileCountRange: {x: 1, y: 3}
+  lifetimeRange: {x: 1, y: 5}
   bounceCountRange: {x: 2, y: 5}
   launchAngleRange: {x: 30, y: 60}
-  orbitalCountRange: {x: 2, y: 4}
-  orbitalRadiusRange: {x: 2, y: 5}
-  orbitalSpeedRange: {x: 60, y: 180}
+  orbitalCountRange: {x: 2, y: 5}
+  orbitalRadiusRange: {x: 1.5, y: 4}
+  orbitalSpeedRange: {x: 130, y: 200}
   orbitalLifetimeRange: {x: 3, y: 10}

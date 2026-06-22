@@ -10,22 +10,22 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c07816cde7204304e9395454d8eb804b, type: 3}
-  m_Name: Arc Projectile Epique
+  m_Name: Projectile Rapide Epic
   m_EditorClassIdentifier: Assembly-CSharp::EmitterNodeSO
   icon: {fileID: 0}
-  nodeName: Arc Projectile
+  nodeName: Projectile Rapide
   nodeType: 0
-  complexityCost: 5
+  complexityCost: 4
   rarity: 2
   corruptedEffect: {fileID: 0}
   emitterType: 1
   projectilePrefab: {fileID: 7326707846551993688, guid: 5bd8f0eae267a5f4c8b98a633db1e76f, type: 3}
-  baseDamage: 20.916462
-  baseSpeed: 12.001047
-  baseSize: 0.5
-  projectileCount: 4
+  baseDamage: 8
+  baseSpeed: 20
+  baseSize: 0.25
+  projectileCount: 1
   spreadAngle: 30
-  baseLifetime: 2.4789958
+  baseLifetime: 3
   pierceCount: 0
   reduceDamageOnPierce: 0
   damageReductionPerHit: 25
@@ -42,12 +42,12 @@ MonoBehaviour:
   orbitalPermanent: 1
   orbitalLifetime: 5
   enableRoll: 1
-  damageRange: {x: 15, y: 25}
-  speedRange: {x: 10, y: 18}
+  damageRange: {x: 9, y: 15}
+  speedRange: {x: 19, y: 29}
   sizeRange: {x: 0.5, y: 0.5}
-  pierceRange: {x: 0, y: 0}
-  projectileCountRange: {x: 2, y: 4}
-  lifetimeRange: {x: 1, y: 3}
+  pierceRange: {x: 0, y: 2}
+  projectileCountRange: {x: 1, y: 2}
+  lifetimeRange: {x: 1, y: 1.85}
   bounceCountRange: {x: 2, y: 5}
   launchAngleRange: {x: 30, y: 60}
   orbitalCountRange: {x: 2, y: 4}

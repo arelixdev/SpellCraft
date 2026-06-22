@@ -10,22 +10,22 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c07816cde7204304e9395454d8eb804b, type: 3}
-  m_Name: Orbital Projectile (Spell)
+  m_Name: Projectile Rapide(Spell)
   m_EditorClassIdentifier: Assembly-CSharp::EmitterNodeSO
   icon: {fileID: 0}
-  nodeName: Orbital Projectile
+  nodeName: Projectile Rapide
   nodeType: 0
-  complexityCost: 1
+  complexityCost: 2
   rarity: 0
   corruptedEffect: {fileID: 0}
-  emitterType: 7
+  emitterType: 1
   projectilePrefab: {fileID: 7326707846551993688, guid: 5bd8f0eae267a5f4c8b98a633db1e76f, type: 3}
-  baseDamage: 10
-  baseSpeed: 10
-  baseSize: 0.5
+  baseDamage: 8
+  baseSpeed: 20
+  baseSize: 0.25
   projectileCount: 1
   spreadAngle: 30
-  baseLifetime: 3
+  baseLifetime: 1
   pierceCount: 0
   reduceDamageOnPierce: 0
   damageReductionPerHit: 25
@@ -38,10 +38,10 @@ MonoBehaviour:
   explosionPrefab: {fileID: 0}
   orbitalCount: 3
   orbitalRadius: 3
-  orbitalSpeed: 360
+  orbitalSpeed: 90
   orbitalPermanent: 1
-  orbitalLifetime: 0.8
-  enableRoll: 1
+  orbitalLifetime: 5
+  enableRoll: 0
   damageRange: {x: 5, y: 15}
   speedRange: {x: 8, y: 12}
   sizeRange: {x: 0.5, y: 2}
