@@ -29,6 +29,13 @@ public class SpellContext
     public bool  OrbitalPermanent = true;
     public float OrbitalLifetime  = 5f;
 
+    public ZoneType       ZoneType         = ZoneType.StaticOnPlayer;
+    public ZoneDamageMode ZoneDamageMode   = ZoneDamageMode.Tick;
+    public float          ZoneRadius       = 3f;
+    public float          ZoneGrowDuration = 1f;
+    public float          ZoneDuration     = 0f;  // 0 = permanent
+    public float          ZoneTickInterval = 1f;
+
     public float                Lifetime               = 3f;
     public int                  PierceCount            = 0;
     public bool                 ReduceDamageOnPierce   = false;

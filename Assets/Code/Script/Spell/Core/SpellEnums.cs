@@ -8,3 +8,5 @@ public enum TriggerType   { OnHit, OnKill, OnExpire, OnTick }
 public enum EffectType    { Explosion, Nova, DamageOverTime, Slow, Pull, Push }
 public enum LauncherType  { AutoCast, KeyBind, OnEvent, Passive }
 public enum GameEventType { OnKill, OnDamageTaken }
+public enum ZoneType      { StaticOnPlayer, GrowingOnPlayer, GrowingOnGround }
+public enum ZoneDamageMode { Tick, OnEnter, Both }

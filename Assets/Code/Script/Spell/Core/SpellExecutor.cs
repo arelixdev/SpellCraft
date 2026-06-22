@@ -10,8 +10,9 @@ public static class SpellExecutor
     {
         if (graph == null || graph.nodes.Count == 0) return;
         int startIdx = Mathf.Clamp(startNodeIndex, 0, graph.nodes.Count - 1);
-        TraversePreSpawn(graph, startIdx, ctx);
-        Spawn(graph, ctx);
+        EmitterNodeSO emitterNode = null;
+        TraversePreSpawn(graph, startIdx, ctx, ref emitterNode);
+        Spawn(emitterNode, ctx);
     }
 
     // Re-traverses graph and refreshes OrbitalManager without spawning any other emitter type.
@@ -20,23 +21,25 @@ public static class SpellExecutor
     {
         if (graph == null || graph.nodes.Count == 0) return;
         int startIdx = Mathf.Clamp(startNodeIndex, 0, graph.nodes.Count - 1);
-        TraversePreSpawn(graph, startIdx, ctx);
+        EmitterNodeSO emitterNode = null;
+        TraversePreSpawn(graph, startIdx, ctx, ref emitterNode);
 
         if (ctx.Emitter != EmitterType.Orbital || !ctx.OrbitalPermanent) return;
-        var emitterNode = graph.nodes.OfType<EmitterNodeSO>().FirstOrDefault();
         if (emitterNode != null) SpawnOrbital(emitterNode, ctx);
     }
 
     // Called by SpellProjectile when a trigger fires
     public static void ExecuteFrom(SpellGraphSO graph, List<int> startIndices, SpellContext ctx)
     {
+        EmitterNodeSO emitterNode = null;
         foreach (var idx in startIndices)
-            TraversePreSpawn(graph, idx, ctx);
-        Spawn(graph, ctx);
+            TraversePreSpawn(graph, idx, ctx, ref emitterNode);
+        Spawn(emitterNode, ctx);
     }
 
-    // Walks the graph and builds up ctx. Stops at Trigger nodes (they are deferred to runtime).
-    private static void TraversePreSpawn(SpellGraphSO graph, int idx, SpellContext ctx)
+    // Walks the graph and builds up ctx. Captures the EmitterNodeSO on the traversed path.
+    // Stops at Trigger nodes (they are deferred to runtime).
+    private static void TraversePreSpawn(SpellGraphSO graph, int idx, SpellContext ctx, ref EmitterNodeSO emitterNode)
     {
         if (idx < 0 || idx >= graph.nodes.Count) return;
         var node = graph.nodes[idx];
@@ -54,10 +57,13 @@ public static class SpellExecutor
         else
             node.Execute(ctx);
 
+        if (node is EmitterNodeSO em)
+            emitterNode = em;
+
         node.corruptedEffect?.ApplyTo(ctx);
 
         foreach (var outputIdx in graph.GetOutputIndices(idx))
-            TraversePreSpawn(graph, outputIdx, ctx);
+            TraversePreSpawn(graph, outputIdx, ctx, ref emitterNode);
     }
 
     private static void RegisterTrigger(SpellGraphSO graph, int idx, TriggerNodeSO trigger, SpellContext ctx)
@@ -85,10 +91,8 @@ public static class SpellExecutor
         if (met) ctx.ConditionMultiplier *= condition.bonusMultiplier;
     }
 
-    private static void Spawn(SpellGraphSO graph, SpellContext ctx)
+    private static void Spawn(EmitterNodeSO emitterNode, SpellContext ctx)
     {
-        var emitterNode = graph.nodes.OfType<EmitterNodeSO>().FirstOrDefault();
-
         switch (ctx.Emitter)
         {
             case EmitterType.Projectile:
@@ -101,6 +105,8 @@ public static class SpellExecutor
                 if (emitterNode != null) SpawnOrbital(emitterNode, ctx);
                 break;
             case EmitterType.Zone:
+                if (emitterNode != null) SpawnZone(emitterNode, ctx);
+                break;
             case EmitterType.Cone:
             case EmitterType.Beam:
             case EmitterType.Self:
@@ -110,6 +116,60 @@ public static class SpellExecutor
                 SpawnEffects(ctx);
                 break;
         }
+    }
+
+    private static void SpawnZone(EmitterNodeSO emitter, SpellContext ctx)
+    {
+        if (emitter.projectilePrefab == null)
+        {
+            Debug.LogWarning($"[SpellExecutor] Zone '{emitter.nodeName}' has no prefab assigned.");
+            return;
+        }
+
+        var zoneCtx = new SpellContext
+        {
+            Caster              = ctx.Caster,
+            Origin              = ctx.Origin,
+            Direction           = ctx.Direction,
+            Damage              = ctx.Damage,
+            Size                = ctx.Size,
+            CritChance          = ctx.CritChance,
+            CritMultiplier      = ctx.CritMultiplier,
+            Element             = ctx.Element,
+            Emitter             = ctx.Emitter,
+            OverrideMaterial    = ctx.OverrideMaterial,
+            ZoneType            = ctx.ZoneType,
+            ZoneDamageMode      = ctx.ZoneDamageMode,
+            ZoneRadius          = ctx.ZoneRadius,
+            ZoneGrowDuration    = ctx.ZoneGrowDuration,
+            ZoneDuration        = ctx.ZoneDuration,
+            ZoneTickInterval    = ctx.ZoneTickInterval,
+            Behaviors           = new List<BehaviorType>(ctx.Behaviors),
+            PendingTriggers     = new List<SpellContext.PendingTrigger>(ctx.PendingTriggers),
+            ActiveEffects       = new List<EffectNodeSO>(ctx.ActiveEffects),
+            ConditionMultiplier = ctx.ConditionMultiplier,
+            Generation          = ctx.Generation,
+        };
+
+        if (ctx.ZoneType == ZoneType.StaticOnPlayer)
+        {
+            var manager = ctx.Caster.GetComponent<SpellZoneManager>()
+                       ?? ctx.Caster.AddComponent<SpellZoneManager>();
+            manager.Register(emitter.projectilePrefab, zoneCtx);
+            return;
+        }
+
+        Vector3 spawnPos = ctx.ZoneType == ZoneType.GrowingOnGround
+            ? ctx.Origin
+            : ctx.Caster.transform.position;
+
+        var go = Object.Instantiate(emitter.projectilePrefab, spawnPos, Quaternion.identity);
+
+        if (ctx.OverrideMaterial != null)
+            foreach (var r in go.GetComponentsInChildren<Renderer>())
+                r.material = ctx.OverrideMaterial;
+
+        go.AddComponent<ZoneEffect>().Initialize(zoneCtx);
     }
 
     private const float BurstDelay = 0.15f;

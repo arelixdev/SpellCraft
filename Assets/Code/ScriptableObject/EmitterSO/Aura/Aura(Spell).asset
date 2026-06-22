@@ -13,13 +13,13 @@ MonoBehaviour:
   m_Name: Aura(Spell)
   m_EditorClassIdentifier: Assembly-CSharp::EmitterNodeSO
   icon: {fileID: 0}
-  nodeName: 
+  nodeName: Aura
   nodeType: 0
   complexityCost: 1
   rarity: 0
   corruptedEffect: {fileID: 0}
   emitterType: 2
-  projectilePrefab: {fileID: 0}
+  projectilePrefab: {fileID: 3744017359060265210, guid: 3f8a9ed90e0abfc44ae5f508b9eb7dba, type: 3}
   baseDamage: 10
   baseSpeed: 10
   baseSize: 1
@@ -37,6 +37,12 @@ MonoBehaviour:
   explosionRadius: 3
   explosionDamageMultiplier: 1.5
   explosionPrefab: {fileID: 0}
+  zoneType: 0
+  zoneDamageMode: 0
+  zoneRadius: 4
+  zoneGrowDuration: 1
+  zoneDuration: 0
+  zoneTickInterval: 1
   orbitalCount: 3
   orbitalRadius: 3
   orbitalSpeed: 90
@@ -56,3 +62,7 @@ MonoBehaviour:
   orbitalRadiusRange: {x: 2, y: 5}
   orbitalSpeedRange: {x: 60, y: 180}
   orbitalLifetimeRange: {x: 3, y: 10}
+  zoneRadiusRange: {x: 2, y: 6}
+  zoneGrowDurationRange: {x: 0.5, y: 2}
+  zoneDurationRange: {x: 3, y: 8}
+  zoneTickIntervalRange: {x: 0.5, y: 2}

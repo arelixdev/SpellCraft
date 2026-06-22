@@ -84,6 +84,35 @@ public class EmitterNodeSO : SpellNodeSO
     [ShowIf("@emitterType == EmitterType.Grenade")]
     [LabelWidth(140)] public GameObject explosionPrefab;
 
+    // ── Stats Zone ────────────────────────────────────────────────────────────
+
+    [BoxGroup("Zone")]
+    [ShowIf("@emitterType == EmitterType.Zone")]
+    [EnumToggleButtons, LabelWidth(140)]
+    public ZoneType zoneType = ZoneType.StaticOnPlayer;
+
+    [BoxGroup("Zone")]
+    [ShowIf("@emitterType == EmitterType.Zone")]
+    [EnumToggleButtons, LabelWidth(140)]
+    public ZoneDamageMode zoneDamageMode = ZoneDamageMode.Tick;
+
+    [BoxGroup("Zone")]
+    [ShowIf("@emitterType == EmitterType.Zone && !enableRoll")]
+    [LabelWidth(140), MinValue(0.5f)] public float zoneRadius = 3f;
+
+    [BoxGroup("Zone")]
+    [ShowIf("@emitterType == EmitterType.Zone && zoneType != ZoneType.StaticOnPlayer && !enableRoll")]
+    [LabelWidth(140), MinValue(0.1f)] public float zoneGrowDuration = 1f;
+
+    [BoxGroup("Zone")]
+    [ShowIf("@emitterType == EmitterType.Zone && !enableRoll")]
+    [LabelWidth(140), MinValue(0f), Tooltip("Durée totale en secondes (0 = permanent)")]
+    public float zoneDuration = 0f;
+
+    [BoxGroup("Zone")]
+    [ShowIf("@emitterType == EmitterType.Zone && (zoneDamageMode == ZoneDamageMode.Tick || zoneDamageMode == ZoneDamageMode.Both) && !enableRoll")]
+    [LabelWidth(140), MinValue(0.1f)] public float zoneTickInterval = 1f;
+
     // ── Stats Orbital ─────────────────────────────────────────────────────────
 
     [BoxGroup("Orbital")]
@@ -163,6 +192,22 @@ public class EmitterNodeSO : SpellNodeSO
     [MinMaxSlider(0.5f, 30f, true), LabelWidth(80)]
     public Vector2 orbitalLifetimeRange = new(3f, 10f);
 
+    [ShowIf("@enableRoll && emitterType == EmitterType.Zone"), BoxGroup("Tirage/Ranges")]
+    [MinMaxSlider(0.5f, 20f, true), LabelWidth(80)]
+    public Vector2 zoneRadiusRange = new(2f, 6f);
+
+    [ShowIf("@enableRoll && emitterType == EmitterType.Zone && zoneType != ZoneType.StaticOnPlayer"), BoxGroup("Tirage/Ranges")]
+    [MinMaxSlider(0.1f, 5f, true), LabelWidth(80)]
+    public Vector2 zoneGrowDurationRange = new(0.5f, 2f);
+
+    [ShowIf("@enableRoll && emitterType == EmitterType.Zone"), BoxGroup("Tirage/Ranges")]
+    [MinMaxSlider(0f, 20f, true), LabelWidth(80), Tooltip("0 = permanent")]
+    public Vector2 zoneDurationRange = new(3f, 8f);
+
+    [ShowIf("@enableRoll && emitterType == EmitterType.Zone && (zoneDamageMode == ZoneDamageMode.Tick || zoneDamageMode == ZoneDamageMode.Both)"), BoxGroup("Tirage/Ranges")]
+    [MinMaxSlider(0.1f, 5f, true), LabelWidth(80)]
+    public Vector2 zoneTickIntervalRange = new(0.5f, 2f);
+
     [ShowIf("enableRoll"), BoxGroup("Tirage")]
     [Button("Tirer les valeurs", ButtonSizes.Medium), GUIColor(0.4f, 0.8f, 0.4f)]
     public void RollValues()
@@ -193,6 +238,16 @@ public class EmitterNodeSO : SpellNodeSO
             orbitalSpeed  = Random.Range(orbitalSpeedRange.x,  orbitalSpeedRange.y);
             if (!orbitalPermanent)
                 orbitalLifetime = Random.Range(orbitalLifetimeRange.x, orbitalLifetimeRange.y);
+        }
+
+        if (emitterType == EmitterType.Zone)
+        {
+            zoneRadius   = Random.Range(zoneRadiusRange.x,   zoneRadiusRange.y);
+            zoneDuration = Random.Range(zoneDurationRange.x, zoneDurationRange.y);
+            if (zoneType != ZoneType.StaticOnPlayer)
+                zoneGrowDuration = Random.Range(zoneGrowDurationRange.x, zoneGrowDurationRange.y);
+            if (zoneDamageMode == ZoneDamageMode.Tick || zoneDamageMode == ZoneDamageMode.Both)
+                zoneTickInterval = Random.Range(zoneTickIntervalRange.x, zoneTickIntervalRange.y);
         }
     }
 
@@ -226,6 +281,16 @@ public class EmitterNodeSO : SpellNodeSO
             ctx.OrbitalSpeed     = orbitalSpeed;
             ctx.OrbitalPermanent = orbitalPermanent;
             ctx.OrbitalLifetime  = orbitalLifetime;
+        }
+
+        if (emitterType == EmitterType.Zone)
+        {
+            ctx.ZoneType         = zoneType;
+            ctx.ZoneDamageMode   = zoneDamageMode;
+            ctx.ZoneRadius       = zoneRadius;
+            ctx.ZoneGrowDuration = zoneGrowDuration;
+            ctx.ZoneDuration     = zoneDuration;
+            ctx.ZoneTickInterval = zoneTickInterval;
         }
     }
 }
