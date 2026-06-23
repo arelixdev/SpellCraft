@@ -1,0 +1,41 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c66265eeb3c863649b088c111d2d1f22, type: 3}
+  m_Name: Lighting Common
+  m_EditorClassIdentifier: Assembly-CSharp::ElementNodeSO
+  icon: {fileID: 0}
+  nodeName: Lightning
+  nodeType: 0
+  complexityCost: 1
+  rarity: 0
+  corruptedEffect: {fileID: 0}
+  element: 3
+  damageMultiplier: 1.5
+  statusChance: 0.3
+  statusDuration: 2
+  fireTickInterval: 0.5
+  fireTickDamage: 5
+  iceSlowPercent: 0.5
+  lightningChainCount: 2
+  lightningChainRange: 2
+  lightningChainDamage: 5
+  enableRoll: 0
+  damageMultiplierRange: {x: 0.8, y: 1.5}
+  statusChanceRange: {x: 0.1, y: 0.5}
+  statusDurationRange: {x: 1, y: 4}
+  fireTickIntervalRange: {x: 0.3, y: 1}
+  fireTickDamageRange: {x: 3, y: 10}
+  iceSlowPercentRange: {x: 0.3, y: 0.7}
+  lightningChainCountRange: {x: 1, y: 4}
+  lightningChainRangeRange: {x: 3, y: 8}
+  lightningChainDamageRange: {x: 3, y: 12}
+  overrideMaterial: {fileID: 0}

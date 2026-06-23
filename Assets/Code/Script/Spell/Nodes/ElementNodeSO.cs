@@ -37,6 +37,21 @@ public class ElementNodeSO : SpellNodeSO
     [ShowIf("@element == ElementType.Ice && !enableRoll")]
     [LabelWidth(120), Range(0f, 1f)] public float iceSlowPercent = 0.5f;
 
+    // ── Stats Lightning ────────────────────────────────────────────────────────
+
+    [BoxGroup("Lightning")]
+    [ShowIf("@element == ElementType.Lightning && !enableRoll")]
+    [HorizontalGroup("Lightning/Row")]
+    [LabelWidth(120), MinValue(1)] public int lightningChainCount = 2;
+
+    [HorizontalGroup("Lightning/Row")]
+    [ShowIf("@element == ElementType.Lightning && !enableRoll")]
+    [LabelWidth(100), MinValue(0.5f)] public float lightningChainRange = 5f;
+
+    [BoxGroup("Lightning")]
+    [ShowIf("@element == ElementType.Lightning && !enableRoll")]
+    [LabelWidth(120), MinValue(0f)] public float lightningChainDamage = 5f;
+
     // ── Tirage ─────────────────────────────────────────────────────────────────
 
     [Title("Tirage")]
@@ -66,6 +81,18 @@ public class ElementNodeSO : SpellNodeSO
     [MinMaxSlider(0f, 1f, true), LabelWidth(120)]
     public Vector2 iceSlowPercentRange = new(0.3f, 0.7f);
 
+    [ShowIf("@enableRoll && element == ElementType.Lightning"), BoxGroup("Tirage/Ranges")]
+    [MinMaxSlider(1, 8, true), LabelWidth(120)]
+    public Vector2Int lightningChainCountRange = new(1, 4);
+
+    [ShowIf("@enableRoll && element == ElementType.Lightning"), BoxGroup("Tirage/Ranges")]
+    [MinMaxSlider(1f, 15f, true), LabelWidth(120)]
+    public Vector2 lightningChainRangeRange = new(3f, 8f);
+
+    [ShowIf("@enableRoll && element == ElementType.Lightning"), BoxGroup("Tirage/Ranges")]
+    [MinMaxSlider(0f, 50f, true), LabelWidth(120)]
+    public Vector2 lightningChainDamageRange = new(3f, 12f);
+
     [ShowIf("enableRoll"), BoxGroup("Tirage")]
     [Button("Tirer les valeurs", ButtonSizes.Medium), GUIColor(0.4f, 0.8f, 0.4f)]
     public void RollValues()
@@ -82,6 +109,13 @@ public class ElementNodeSO : SpellNodeSO
 
         if (element == ElementType.Ice)
             iceSlowPercent = Random.Range(iceSlowPercentRange.x, iceSlowPercentRange.y);
+
+        if (element == ElementType.Lightning)
+        {
+            lightningChainCount  = Random.Range(lightningChainCountRange.x, lightningChainCountRange.y + 1);
+            lightningChainRange  = Random.Range(lightningChainRangeRange.x,  lightningChainRangeRange.y);
+            lightningChainDamage = Random.Range(lightningChainDamageRange.x, lightningChainDamageRange.y);
+        }
     }
 
     public override void RuntimeInit()
@@ -107,6 +141,13 @@ public class ElementNodeSO : SpellNodeSO
 
         if (element == ElementType.Ice)
             ctx.IceSlowPercent = iceSlowPercent;
+
+        if (element == ElementType.Lightning)
+        {
+            ctx.LightningChainCount  = lightningChainCount;
+            ctx.LightningChainRange  = lightningChainRange;
+            ctx.LightningChainDamage = lightningChainDamage;
+        }
     }
 
     [Title("Visual")]

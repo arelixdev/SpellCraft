@@ -29,6 +29,10 @@ public class SpellContext
     public float FireTickDamage   = 5f;
 
     public float IceSlowPercent = 0.5f;
+
+    public float LightningChainRange  = 5f;
+    public float LightningChainDamage = 5f;
+    public int   LightningChainCount  = 2;
     public Material    OverrideMaterial;
 
     public float OrbitalRadius    = 3f;
