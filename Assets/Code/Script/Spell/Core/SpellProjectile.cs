@@ -66,6 +66,9 @@ public class SpellProjectile : MonoBehaviour
             if (_ctx.Element == ElementType.Fire && Random.value < _ctx.StatusChance)
                 BurnStatus.Apply(other.gameObject, _ctx.FireTickDamage, _ctx.FireTickInterval, _ctx.StatusDuration);
 
+            if (_ctx.Element == ElementType.Ice && Random.value < _ctx.StatusChance)
+                SlowStatus.Apply(other.gameObject, _ctx.IceSlowPercent, _ctx.StatusDuration);
+
             FireTriggers(TriggerType.OnHit, other.gameObject);
 
             if (_pierceHitsRemaining > 0)

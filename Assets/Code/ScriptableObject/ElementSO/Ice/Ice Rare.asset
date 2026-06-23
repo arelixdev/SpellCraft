@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c66265eeb3c863649b088c111d2d1f22, type: 3}
+  m_Name: Ice Rare
+  m_EditorClassIdentifier: Assembly-CSharp::ElementNodeSO
+  icon: {fileID: 0}
+  nodeName: Ice
+  nodeType: 0
+  complexityCost: 3
+  rarity: 1
+  corruptedEffect: {fileID: 0}
+  element: 2
+  damageMultiplier: 1.5
+  statusChance: 0.3
+  statusDuration: 2
+  fireTickInterval: 0.5
+  fireTickDamage: 5
+  iceSlowPercent: 0.5
+  enableRoll: 1
+  damageMultiplierRange: {x: 1, y: 1}
+  statusChanceRange: {x: 0.2, y: 0.3}
+  statusDurationRange: {x: 2, y: 6}
+  fireTickIntervalRange: {x: 0.3, y: 1}
+  fireTickDamageRange: {x: 3, y: 10}
+  iceSlowPercentRange: {x: 0.35, y: 0.5}
+  overrideMaterial: {fileID: 2100000, guid: 1018659e677a3bd4d86a6c7f10a42c0c, type: 2}

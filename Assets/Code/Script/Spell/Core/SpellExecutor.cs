@@ -242,6 +242,7 @@ public static class SpellExecutor
                 StatusDuration        = ctx.StatusDuration,
                 FireTickInterval      = ctx.FireTickInterval,
                 FireTickDamage        = ctx.FireTickDamage,
+                IceSlowPercent        = ctx.IceSlowPercent,
                 Behaviors             = new List<BehaviorType>(ctx.Behaviors),
                 PendingTriggers       = new List<SpellContext.PendingTrigger>(ctx.PendingTriggers),
                 ActiveEffects         = new List<EffectNodeSO>(ctx.ActiveEffects),

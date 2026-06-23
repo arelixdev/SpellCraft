@@ -31,6 +31,12 @@ public class ElementNodeSO : SpellNodeSO
     [ShowIf("@element == ElementType.Fire && !enableRoll")]
     [LabelWidth(110), MinValue(0f)] public float fireTickDamage = 5f;
 
+    // ── Stats Ice ──────────────────────────────────────────────────────────────
+
+    [BoxGroup("Ice")]
+    [ShowIf("@element == ElementType.Ice && !enableRoll")]
+    [LabelWidth(120), Range(0f, 1f)] public float iceSlowPercent = 0.5f;
+
     // ── Tirage ─────────────────────────────────────────────────────────────────
 
     [Title("Tirage")]
@@ -56,6 +62,10 @@ public class ElementNodeSO : SpellNodeSO
     [MinMaxSlider(0f, 30f, true), LabelWidth(120)]
     public Vector2 fireTickDamageRange = new(3f, 10f);
 
+    [ShowIf("@enableRoll && element == ElementType.Ice"), BoxGroup("Tirage/Ranges")]
+    [MinMaxSlider(0f, 1f, true), LabelWidth(120)]
+    public Vector2 iceSlowPercentRange = new(0.3f, 0.7f);
+
     [ShowIf("enableRoll"), BoxGroup("Tirage")]
     [Button("Tirer les valeurs", ButtonSizes.Medium), GUIColor(0.4f, 0.8f, 0.4f)]
     public void RollValues()
@@ -69,6 +79,9 @@ public class ElementNodeSO : SpellNodeSO
             fireTickInterval = Random.Range(fireTickIntervalRange.x, fireTickIntervalRange.y);
             fireTickDamage   = Random.Range(fireTickDamageRange.x,   fireTickDamageRange.y);
         }
+
+        if (element == ElementType.Ice)
+            iceSlowPercent = Random.Range(iceSlowPercentRange.x, iceSlowPercentRange.y);
     }
 
     public override void RuntimeInit()
@@ -91,6 +104,9 @@ public class ElementNodeSO : SpellNodeSO
             ctx.FireTickInterval = fireTickInterval;
             ctx.FireTickDamage   = fireTickDamage;
         }
+
+        if (element == ElementType.Ice)
+            ctx.IceSlowPercent = iceSlowPercent;
     }
 
     [Title("Visual")]

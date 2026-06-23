@@ -27,6 +27,8 @@ public class SpellContext
     public float StatusDuration = 2f;
     public float FireTickInterval = 0.5f;
     public float FireTickDamage   = 5f;
+
+    public float IceSlowPercent = 0.5f;
     public Material    OverrideMaterial;
 
     public float OrbitalRadius    = 3f;

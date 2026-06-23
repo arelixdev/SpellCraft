@@ -10,14 +10,26 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c66265eeb3c863649b088c111d2d1f22, type: 3}
-  m_Name: Ice
+  m_Name: Ice Common
   m_EditorClassIdentifier: Assembly-CSharp::ElementNodeSO
   icon: {fileID: 0}
   nodeName: Ice
   nodeType: 0
-  complexityCost: 1
+  complexityCost: 2
+  rarity: 0
+  corruptedEffect: {fileID: 0}
   element: 2
   damageMultiplier: 1.5
   statusChance: 0.3
   statusDuration: 2
+  fireTickInterval: 0.5
+  fireTickDamage: 5
+  iceSlowPercent: 0.5
+  enableRoll: 1
+  damageMultiplierRange: {x: 1, y: 1}
+  statusChanceRange: {x: 0.1, y: 0.2}
+  statusDurationRange: {x: 2, y: 4}
+  fireTickIntervalRange: {x: 0.3, y: 1}
+  fireTickDamageRange: {x: 3, y: 10}
+  iceSlowPercentRange: {x: 0.25, y: 0.4}
   overrideMaterial: {fileID: 2100000, guid: 1018659e677a3bd4d86a6c7f10a42c0c, type: 2}
