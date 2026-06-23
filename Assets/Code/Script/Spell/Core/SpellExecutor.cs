@@ -159,9 +159,7 @@ public static class SpellExecutor
             return;
         }
 
-        Vector3 spawnPos = ctx.ZoneType == ZoneType.GrowingOnGround
-            ? ctx.Origin
-            : ctx.Caster.transform.position;
+        Vector3 spawnPos = ctx.Caster.transform.position;
 
         var go = Object.Instantiate(emitter.projectilePrefab, spawnPos, Quaternion.identity);
 

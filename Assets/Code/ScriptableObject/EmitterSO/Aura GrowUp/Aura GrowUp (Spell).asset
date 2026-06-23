@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c07816cde7204304e9395454d8eb804b, type: 3}
-  m_Name: Aura(Spell)
+  m_Name: Aura GrowUp (Spell)
   m_EditorClassIdentifier: Assembly-CSharp::EmitterNodeSO
   icon: {fileID: 0}
   nodeName: Aura
@@ -20,7 +20,7 @@ MonoBehaviour:
   corruptedEffect: {fileID: 0}
   emitterType: 2
   projectilePrefab: {fileID: 3744017359060265210, guid: 3f8a9ed90e0abfc44ae5f508b9eb7dba, type: 3}
-  baseDamage: 4
+  baseDamage: 6
   baseSpeed: 10
   baseSize: 1
   projectileCount: 1
@@ -37,12 +37,12 @@ MonoBehaviour:
   explosionRadius: 3
   explosionDamageMultiplier: 1.5
   explosionPrefab: {fileID: 0}
-  zoneType: 0
-  zoneDamageMode: 0
+  zoneType: 1
+  zoneDamageMode: 1
   zoneRadius: 3
-  zoneGrowDuration: 1
-  zoneDuration: 0
-  zoneTickInterval: 1
+  zoneGrowDuration: 0.75
+  zoneDuration: 0.5
+  zoneTickInterval: 0.1
   orbitalCount: 3
   orbitalRadius: 3
   orbitalSpeed: 90

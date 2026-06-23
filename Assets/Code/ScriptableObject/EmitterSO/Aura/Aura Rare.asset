@@ -10,17 +10,17 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c07816cde7204304e9395454d8eb804b, type: 3}
-  m_Name: Aura(Spell)
+  m_Name: Aura Rare
   m_EditorClassIdentifier: Assembly-CSharp::EmitterNodeSO
   icon: {fileID: 0}
   nodeName: Aura
   nodeType: 0
-  complexityCost: 2
-  rarity: 0
+  complexityCost: 4
+  rarity: 1
   corruptedEffect: {fileID: 0}
   emitterType: 2
   projectilePrefab: {fileID: 3744017359060265210, guid: 3f8a9ed90e0abfc44ae5f508b9eb7dba, type: 3}
-  baseDamage: 4
+  baseDamage: 10
   baseSpeed: 10
   baseSize: 1
   projectileCount: 1
@@ -48,8 +48,8 @@ MonoBehaviour:
   orbitalSpeed: 90
   orbitalPermanent: 1
   orbitalLifetime: 5
-  enableRoll: 0
-  damageRange: {x: 2, y: 5}
+  enableRoll: 1
+  damageRange: {x: 4, y: 7}
   speedRange: {x: 0, y: 0}
   sizeRange: {x: 0, y: 0}
   pierceRange: {x: 0, y: 3}
@@ -62,7 +62,7 @@ MonoBehaviour:
   orbitalRadiusRange: {x: 2, y: 5}
   orbitalSpeedRange: {x: 60, y: 180}
   orbitalLifetimeRange: {x: 3, y: 10}
-  zoneRadiusRange: {x: 2, y: 4}
+  zoneRadiusRange: {x: 3, y: 5}
   zoneGrowDurationRange: {x: 0.5, y: 2}
   zoneDurationRange: {x: 0, y: 0}
-  zoneTickIntervalRange: {x: 0.5, y: 2}
+  zoneTickIntervalRange: {x: 0.5, y: 1.75}
