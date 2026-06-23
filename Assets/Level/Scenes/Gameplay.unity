@@ -4082,7 +4082,7 @@ MonoBehaviour:
   _spellSlots:
   - launcherConfig: {fileID: 11400000, guid: 6ee5e98ff80e925419b2bea4a8ac3d4b, type: 2}
     connectedSpell: {fileID: 11400000, guid: 1b8ba6bf6f9baa7429c30fa29c8d8e62, type: 2}
-  - launcherConfig: {fileID: 11400000, guid: 6ee5e98ff80e925419b2bea4a8ac3d4b, type: 2}
+  - launcherConfig: {fileID: 11400000, guid: 71c5b005c90dbd24ebbf3e8b98dcddac, type: 2}
     connectedSpell: {fileID: 11400000, guid: 2f0c519fbee0e444e9240a9ea0d3a0c8, type: 2}
 --- !u!114 &1366729019
 MonoBehaviour:

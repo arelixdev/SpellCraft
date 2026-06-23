@@ -22,6 +22,11 @@ public class SpellContext
     public float       CritMultiplier  =  1.5f; // +50% dmg on crit, boostable via nodes
     public ElementType Element = ElementType.None;
     public EmitterType Emitter;
+
+    public float StatusChance   = 0.3f;
+    public float StatusDuration = 2f;
+    public float FireTickInterval = 0.5f;
+    public float FireTickDamage   = 5f;
     public Material    OverrideMaterial;
 
     public float OrbitalRadius    = 3f;
