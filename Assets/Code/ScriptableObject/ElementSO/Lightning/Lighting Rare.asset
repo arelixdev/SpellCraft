@@ -38,4 +38,4 @@ MonoBehaviour:
   lightningChainCountRange: {x: 2, y: 4}
   lightningChainRangeRange: {x: 4, y: 8}
   lightningChainDamageRange: {x: 5, y: 10}
-  overrideMaterial: {fileID: 0}
+  overrideMaterial: {fileID: 2100000, guid: 6507e9b4d2099fe48915856381877743, type: 2}

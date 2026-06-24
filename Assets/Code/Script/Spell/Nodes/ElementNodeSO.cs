@@ -52,6 +52,17 @@ public class ElementNodeSO : SpellNodeSO
     [ShowIf("@element == ElementType.Lightning && !enableRoll")]
     [LabelWidth(120), MinValue(0f)] public float lightningChainDamage = 5f;
 
+    // ── Stats Poison ───────────────────────────────────────────────────────────
+
+    [BoxGroup("Poison")]
+    [ShowIf("@element == ElementType.Poison && !enableRoll")]
+    [HorizontalGroup("Poison/Row")]
+    [LabelWidth(120), MinValue(0.1f)] public float poisonTickInterval = 0.5f;
+
+    [HorizontalGroup("Poison/Row")]
+    [ShowIf("@element == ElementType.Poison && !enableRoll")]
+    [LabelWidth(110), MinValue(0f)] public float poisonTickDamage = 2f;
+
     // ── Tirage ─────────────────────────────────────────────────────────────────
 
     [Title("Tirage")]
@@ -93,6 +104,14 @@ public class ElementNodeSO : SpellNodeSO
     [MinMaxSlider(0f, 50f, true), LabelWidth(120)]
     public Vector2 lightningChainDamageRange = new(3f, 12f);
 
+    [ShowIf("@enableRoll && element == ElementType.Poison"), BoxGroup("Tirage/Ranges")]
+    [MinMaxSlider(0.1f, 3f, true), LabelWidth(120)]
+    public Vector2 poisonTickIntervalRange = new(0.3f, 1f);
+
+    [ShowIf("@enableRoll && element == ElementType.Poison"), BoxGroup("Tirage/Ranges")]
+    [MinMaxSlider(0f, 20f, true), LabelWidth(120)]
+    public Vector2 poisonTickDamageRange = new(1f, 5f);
+
     [ShowIf("enableRoll"), BoxGroup("Tirage")]
     [Button("Tirer les valeurs", ButtonSizes.Medium), GUIColor(0.4f, 0.8f, 0.4f)]
     public void RollValues()
@@ -115,6 +134,12 @@ public class ElementNodeSO : SpellNodeSO
             lightningChainCount  = Random.Range(lightningChainCountRange.x, lightningChainCountRange.y + 1);
             lightningChainRange  = Random.Range(lightningChainRangeRange.x,  lightningChainRangeRange.y);
             lightningChainDamage = Random.Range(lightningChainDamageRange.x, lightningChainDamageRange.y);
+        }
+
+        if (element == ElementType.Poison)
+        {
+            poisonTickInterval = Random.Range(poisonTickIntervalRange.x, poisonTickIntervalRange.y);
+            poisonTickDamage   = Random.Range(poisonTickDamageRange.x,   poisonTickDamageRange.y);
         }
     }
 
@@ -147,6 +172,12 @@ public class ElementNodeSO : SpellNodeSO
             ctx.LightningChainCount  = lightningChainCount;
             ctx.LightningChainRange  = lightningChainRange;
             ctx.LightningChainDamage = lightningChainDamage;
+        }
+
+        if (element == ElementType.Poison)
+        {
+            ctx.PoisonTickDamage   = poisonTickDamage;
+            ctx.PoisonTickInterval = poisonTickInterval;
         }
     }
 

@@ -69,6 +69,9 @@ public class SpellProjectile : MonoBehaviour
             if (_ctx.Element == ElementType.Ice && Random.value < _ctx.StatusChance)
                 SlowStatus.Apply(other.gameObject, _ctx.IceSlowPercent, _ctx.StatusDuration);
 
+            if (_ctx.Element == ElementType.Poison && Random.value < _ctx.StatusChance)
+                PoisonStatus.Apply(other.gameObject, _ctx.PoisonTickDamage, _ctx.PoisonTickInterval, _ctx.StatusDuration);
+
             if (_ctx.Element == ElementType.Lightning)
                 LightningChain.Apply(other.gameObject, _ctx.LightningChainDamage, _ctx.LightningChainRange, _ctx.LightningChainCount);
 

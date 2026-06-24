@@ -30,6 +30,9 @@ public class SpellContext
 
     public float IceSlowPercent = 0.5f;
 
+    public float PoisonTickDamage    = 2f;
+    public float PoisonTickInterval  = 0.5f;
+
     public float LightningChainRange  = 5f;
     public float LightningChainDamage = 5f;
     public int   LightningChainCount  = 2;
