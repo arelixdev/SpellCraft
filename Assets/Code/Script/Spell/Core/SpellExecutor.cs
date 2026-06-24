@@ -52,6 +52,9 @@ public static class SpellExecutor
             return; // Stop traversal here — downstream fires at runtime
         }
 
+        if (node is ElementNodeSO arcane && arcane.element == ElementType.Arcane)
+            ctx.ArcaneNodeCount = graph.CountDownstreamNodes(idx);
+
         if (node is ConditionNodeSO condition)
             EvaluateCondition(condition, ctx);
         else

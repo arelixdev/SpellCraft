@@ -86,6 +86,10 @@ public class SpellProjectile : MonoBehaviour
             else
                 Destroy(gameObject);
         }
+        else
+        {
+            Destroy(gameObject);
+        }
     }
 
     private void OnDestroy()

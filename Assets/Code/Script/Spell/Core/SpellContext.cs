@@ -59,6 +59,9 @@ public class SpellContext
     public List<PendingTrigger> PendingTriggers = new();
     public List<EffectNodeSO>   ActiveEffects   = new();
 
+    // Nombre de nodes en aval du node Arcane — calculé par SpellExecutor avant Execute
+    public int ArcaneNodeCount = 0;
+
     // Written by Condition nodes, read by downstream nodes to amplify
     public float ConditionMultiplier = 1f;
 

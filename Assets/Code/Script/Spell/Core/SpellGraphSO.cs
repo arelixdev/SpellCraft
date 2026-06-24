@@ -84,6 +84,20 @@ public class SpellGraphSO : ScriptableObject
             .ToList();
     }
 
+    public int CountDownstreamNodes(int fromIndex)
+    {
+        var visited = new HashSet<int>();
+        CollectDownstream(fromIndex, visited);
+        return visited.Count;
+    }
+
+    private void CollectDownstream(int idx, HashSet<int> visited)
+    {
+        foreach (var output in GetOutputIndices(idx))
+            if (visited.Add(output))
+                CollectDownstream(output, visited);
+    }
+
     [Button("Validate Graph"), GUIColor(0.4f, 0.8f, 0.4f)]
     private void ValidateGraph()
     {

@@ -52,6 +52,12 @@ public class ElementNodeSO : SpellNodeSO
     [ShowIf("@element == ElementType.Lightning && !enableRoll")]
     [LabelWidth(120), MinValue(0f)] public float lightningChainDamage = 5f;
 
+    // ── Stats Arcane ───────────────────────────────────────────────────────────
+
+    [BoxGroup("Arcane")]
+    [ShowIf("@element == ElementType.Arcane && !enableRoll")]
+    [LabelWidth(130), Range(0f, 0.5f)] public float arcanePerNodeBonus = 0.1f;
+
     // ── Stats Poison ───────────────────────────────────────────────────────────
 
     [BoxGroup("Poison")]
@@ -104,6 +110,10 @@ public class ElementNodeSO : SpellNodeSO
     [MinMaxSlider(0f, 50f, true), LabelWidth(120)]
     public Vector2 lightningChainDamageRange = new(3f, 12f);
 
+    [ShowIf("@enableRoll && element == ElementType.Arcane"), BoxGroup("Tirage/Ranges")]
+    [MinMaxSlider(0f, 0.5f, true), LabelWidth(130)]
+    public Vector2 arcanePerNodeBonusRange = new(0.05f, 0.2f);
+
     [ShowIf("@enableRoll && element == ElementType.Poison"), BoxGroup("Tirage/Ranges")]
     [MinMaxSlider(0.1f, 3f, true), LabelWidth(120)]
     public Vector2 poisonTickIntervalRange = new(0.3f, 1f);
@@ -135,6 +145,9 @@ public class ElementNodeSO : SpellNodeSO
             lightningChainRange  = Random.Range(lightningChainRangeRange.x,  lightningChainRangeRange.y);
             lightningChainDamage = Random.Range(lightningChainDamageRange.x, lightningChainDamageRange.y);
         }
+
+        if (element == ElementType.Arcane)
+            arcanePerNodeBonus = Random.Range(arcanePerNodeBonusRange.x, arcanePerNodeBonusRange.y);
 
         if (element == ElementType.Poison)
         {
@@ -172,6 +185,13 @@ public class ElementNodeSO : SpellNodeSO
             ctx.LightningChainCount  = lightningChainCount;
             ctx.LightningChainRange  = lightningChainRange;
             ctx.LightningChainDamage = lightningChainDamage;
+        }
+
+        if (element == ElementType.Arcane)
+        {
+            float boost = 1f + ctx.ArcaneNodeCount * arcanePerNodeBonus;
+            ctx.Damage *= boost;
+            Debug.Log($"[Arcane] ×{boost:F2} ({ctx.ArcaneNodeCount} nodes en aval)");
         }
 
         if (element == ElementType.Poison)
