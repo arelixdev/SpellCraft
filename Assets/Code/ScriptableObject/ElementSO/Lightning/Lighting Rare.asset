@@ -10,13 +10,13 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c66265eeb3c863649b088c111d2d1f22, type: 3}
-  m_Name: Lighting Common
+  m_Name: Lighting Rare
   m_EditorClassIdentifier: Assembly-CSharp::ElementNodeSO
   icon: {fileID: 0}
   nodeName: Lightning
   nodeType: 0
-  complexityCost: 3
-  rarity: 0
+  complexityCost: 4
+  rarity: 1
   corruptedEffect: {fileID: 0}
   element: 3
   damageMultiplier: 1
@@ -30,12 +30,12 @@ MonoBehaviour:
   lightningChainDamage: 6.89676
   enableRoll: 1
   damageMultiplierRange: {x: 1, y: 1}
-  statusChanceRange: {x: 0.1, y: 0.2}
+  statusChanceRange: {x: 0.2, y: 0.3}
   statusDurationRange: {x: 0, y: 0}
   fireTickIntervalRange: {x: 0.3, y: 1}
   fireTickDamageRange: {x: 3, y: 10}
   iceSlowPercentRange: {x: 0.3, y: 0.7}
-  lightningChainCountRange: {x: 1, y: 3}
-  lightningChainRangeRange: {x: 2, y: 5}
-  lightningChainDamageRange: {x: 3, y: 7}
+  lightningChainCountRange: {x: 2, y: 4}
+  lightningChainRangeRange: {x: 4, y: 8}
+  lightningChainDamageRange: {x: 5, y: 10}
   overrideMaterial: {fileID: 0}
