@@ -9,7 +9,7 @@ public class TriggerNodeSO : SpellNodeSO
     public TriggerType triggerType;
 
     [BoxGroup("Parameters")]
-    [ShowIf("triggerType", TriggerType.OnTick)]
+    [ShowIf("@triggerType == TriggerType.OnTick && !enableRoll")]
     [LabelWidth(110), MinValue(0.1f)] public float tickInterval = 0.5f;
 
     [Title("Cast Context")]
@@ -23,6 +23,28 @@ public class TriggerNodeSO : SpellNodeSO
     [ShowIf("spawnSource", TriggerSpawnSource.Target)]
     [LabelWidth(110), MinValue(0f)]
     public float spawnOffset = 1f;
+
+    // ── Tirage ────────────────────────────────────────────────────────────────
+
+    [Title("Tirage")]
+    [ShowIf("triggerType", TriggerType.OnTick)]
+    [ToggleLeft] public bool enableRoll = false;
+
+    [ShowIf("@enableRoll && triggerType == TriggerType.OnTick"), BoxGroup("Tirage/Ranges")]
+    [MinMaxSlider(0.1f, 10f, true), LabelWidth(110)]
+    public Vector2 tickIntervalRange = new(0.3f, 1.5f);
+
+    [ShowIf("@enableRoll && triggerType == TriggerType.OnTick"), BoxGroup("Tirage")]
+    [Button("Tirer les valeurs", ButtonSizes.Medium), GUIColor(0.4f, 0.8f, 0.4f)]
+    public void RollValues()
+    {
+        tickInterval = Random.Range(tickIntervalRange.x, tickIntervalRange.y);
+    }
+
+    public override void RuntimeInit()
+    {
+        if (enableRoll) RollValues();
+    }
 
     public override void Execute(SpellContext ctx) { }
 }

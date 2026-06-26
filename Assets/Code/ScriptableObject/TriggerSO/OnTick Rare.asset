@@ -10,16 +10,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c5d3435ee62b41a43a7f6ba75dc3db3e, type: 3}
-  m_Name: OnExpire
+  m_Name: OnTick Rare
   m_EditorClassIdentifier: Assembly-CSharp::TriggerNodeSO
   icon: {fileID: 0}
   nodeName: On Kill
   nodeType: 0
-  complexityCost: 2
-  rarity: 0
+  complexityCost: 3
+  rarity: 1
   corruptedEffect: {fileID: 0}
-  triggerType: 2
-  tickInterval: 0.5
-  spawnSource: 0
+  triggerType: 3
+  tickInterval: 1.5
+  spawnSource: 1
   directionMode: 3
   spawnOffset: 1
+  enableRoll: 1
+  tickIntervalRange: {x: 1.5, y: 3}
