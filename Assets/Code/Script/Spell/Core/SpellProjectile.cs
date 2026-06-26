@@ -85,29 +85,19 @@ public class SpellProjectile : MonoBehaviour
             var enemyHealth = other.GetComponent<EnemyHealth>();
             enemyHealth?.TakeDamage(finalDamage, _ctx.Element, isCrit);
 
+            FireStatusTriggers(other.gameObject);
+
             if (_ctx.Element == ElementType.Fire && Random.value < _ctx.StatusChance)
-            {
                 BurnStatus.Apply(other.gameObject, _ctx.FireTickDamage, _ctx.FireTickInterval, _ctx.StatusDuration);
-                FireStatusTrigger(ElementType.Fire, other.gameObject);
-            }
 
             if (_ctx.Element == ElementType.Ice && Random.value < _ctx.StatusChance)
-            {
-                SlowStatus.Apply(other.gameObject, _ctx.IceSlowPercent, _ctx.StatusDuration);
-                FireStatusTrigger(ElementType.Ice, other.gameObject);
-            }
+                IceStatus.Apply(other.gameObject, _ctx.IceSlowPercent, _ctx.StatusDuration);
 
             if (_ctx.Element == ElementType.Poison && Random.value < _ctx.StatusChance)
-            {
                 PoisonStatus.Apply(other.gameObject, _ctx.PoisonTickDamage, _ctx.PoisonTickInterval, _ctx.StatusDuration);
-                FireStatusTrigger(ElementType.Poison, other.gameObject);
-            }
 
             if (_ctx.Element == ElementType.Lightning)
-            {
                 LightningChain.Apply(other.gameObject, _ctx.LightningChainDamage, _ctx.LightningChainRange, _ctx.LightningChainCount);
-                FireStatusTrigger(ElementType.Lightning, other.gameObject);
-            }
 
             FireTriggers(TriggerType.OnHit, other.gameObject);
             if (isCrit) FireTriggers(TriggerType.OnCrit, other.gameObject);
@@ -147,12 +137,19 @@ public class SpellProjectile : MonoBehaviour
         }
     }
 
-    private void FireStatusTrigger(ElementType element, GameObject target)
+    private void FireStatusTriggers(GameObject target)
     {
         foreach (var trigger in _ctx.PendingTriggers)
         {
-            if (trigger.Type == TriggerType.OnStatus && trigger.StatusFilter == element)
-                FireTrigger(trigger, target);
+            if (trigger.Type != TriggerType.OnStatus) continue;
+            bool hasStatus = trigger.StatusFilter switch
+            {
+                ElementType.Fire   => target.TryGetComponent<BurnStatus>(out _),
+                ElementType.Ice    => target.TryGetComponent<IceStatus>(out _),
+                ElementType.Poison => target.TryGetComponent<PoisonStatus>(out _),
+                _                  => false,
+            };
+            if (hasStatus) FireTrigger(trigger, target);
         }
     }
 

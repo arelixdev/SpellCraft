@@ -13,11 +13,14 @@ MonoBehaviour:
   m_Name: Iceball
   m_EditorClassIdentifier: Assembly-CSharp::SpellGraphSO
   complexityBudget: 10
-  launcherConnected: 0
+  slotEntries: []
   editorLayout: []
   nodes:
   - {fileID: 11400000, guid: a8eb528ebc02322468008ac21b80115d, type: 2}
   - {fileID: 11400000, guid: 07d903bd20e68f84dbb40f331ea21bea, type: 2}
+  - {fileID: 11400000, guid: 7677756d445274c47ab3754c74fd4472, type: 2}
   connections:
   - fromIndex: 0
     toIndex: 1
+  - fromIndex: 1
+    toIndex: 2
