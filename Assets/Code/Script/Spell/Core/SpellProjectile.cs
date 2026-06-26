@@ -15,6 +15,11 @@ public class SpellProjectile : MonoBehaviour
     private List<SpellContext.PendingTrigger> _tickTriggers = new();
     private List<float>                       _tickTimers   = new();
 
+    // OnCombo tracking
+    private List<SpellContext.PendingTrigger> _comboTriggers = new();
+    private List<int>                         _comboCounters = new();
+    private GameObject                        _lastHitEnemy;
+
     private void Awake() => enabled = false;
 
     public void Initialize(SpellContext ctx)
@@ -28,9 +33,16 @@ public class SpellProjectile : MonoBehaviour
 
         foreach (var trigger in ctx.PendingTriggers)
         {
-            if (trigger.Type != TriggerType.OnTick) continue;
-            _tickTriggers.Add(trigger);
-            _tickTimers.Add(trigger.TickInterval);
+            if (trigger.Type == TriggerType.OnTick)
+            {
+                _tickTriggers.Add(trigger);
+                _tickTimers.Add(trigger.TickInterval);
+            }
+            else if (trigger.Type == TriggerType.OnCombo)
+            {
+                _comboTriggers.Add(trigger);
+                _comboCounters.Add(0);
+            }
         }
     }
 
@@ -74,18 +86,33 @@ public class SpellProjectile : MonoBehaviour
             enemyHealth?.TakeDamage(finalDamage, _ctx.Element, isCrit);
 
             if (_ctx.Element == ElementType.Fire && Random.value < _ctx.StatusChance)
+            {
                 BurnStatus.Apply(other.gameObject, _ctx.FireTickDamage, _ctx.FireTickInterval, _ctx.StatusDuration);
+                FireStatusTrigger(ElementType.Fire, other.gameObject);
+            }
 
             if (_ctx.Element == ElementType.Ice && Random.value < _ctx.StatusChance)
+            {
                 SlowStatus.Apply(other.gameObject, _ctx.IceSlowPercent, _ctx.StatusDuration);
+                FireStatusTrigger(ElementType.Ice, other.gameObject);
+            }
 
             if (_ctx.Element == ElementType.Poison && Random.value < _ctx.StatusChance)
+            {
                 PoisonStatus.Apply(other.gameObject, _ctx.PoisonTickDamage, _ctx.PoisonTickInterval, _ctx.StatusDuration);
+                FireStatusTrigger(ElementType.Poison, other.gameObject);
+            }
 
             if (_ctx.Element == ElementType.Lightning)
+            {
                 LightningChain.Apply(other.gameObject, _ctx.LightningChainDamage, _ctx.LightningChainRange, _ctx.LightningChainCount);
+                FireStatusTrigger(ElementType.Lightning, other.gameObject);
+            }
 
             FireTriggers(TriggerType.OnHit, other.gameObject);
+            if (isCrit) FireTriggers(TriggerType.OnCrit, other.gameObject);
+
+            UpdateCombo(other.gameObject);
 
             if (enemyHealth != null && enemyHealth.IsDead)
                 FireTriggers(TriggerType.OnKill, other.gameObject);
@@ -117,6 +144,29 @@ public class SpellProjectile : MonoBehaviour
         {
             if (trigger.Type == type)
                 FireTrigger(trigger, target);
+        }
+    }
+
+    private void FireStatusTrigger(ElementType element, GameObject target)
+    {
+        foreach (var trigger in _ctx.PendingTriggers)
+        {
+            if (trigger.Type == TriggerType.OnStatus && trigger.StatusFilter == element)
+                FireTrigger(trigger, target);
+        }
+    }
+
+    private void UpdateCombo(GameObject enemy)
+    {
+        bool sameEnemy = enemy == _lastHitEnemy;
+        _lastHitEnemy = enemy;
+
+        for (int i = 0; i < _comboTriggers.Count; i++)
+        {
+            _comboCounters[i] = sameEnemy ? _comboCounters[i] + 1 : 1;
+            if (_comboCounters[i] < _comboTriggers[i].ComboThreshold) continue;
+            _comboCounters[i] = 0;
+            FireTrigger(_comboTriggers[i], enemy);
         }
     }
 

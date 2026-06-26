@@ -73,13 +73,15 @@ public static class SpellExecutor
     {
         ctx.PendingTriggers.Add(new SpellContext.PendingTrigger
         {
-            Type          = trigger.triggerType,
-            Graph         = graph,
-            OutputIndices = graph.GetOutputIndices(idx),
-            TickInterval  = trigger.tickInterval,
-            SpawnSource   = trigger.spawnSource,
-            DirectionMode = trigger.directionMode,
-            SpawnOffset   = trigger.spawnOffset,
+            Type           = trigger.triggerType,
+            Graph          = graph,
+            OutputIndices  = graph.GetOutputIndices(idx),
+            TickInterval   = trigger.tickInterval,
+            SpawnSource    = trigger.spawnSource,
+            DirectionMode  = trigger.directionMode,
+            SpawnOffset    = trigger.spawnOffset,
+            StatusFilter   = trigger.statusFilter,
+            ComboThreshold = trigger.comboThreshold,
         });
     }
 

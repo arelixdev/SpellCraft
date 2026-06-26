@@ -4,7 +4,7 @@ public enum ElementType   { None, Fire, Ice, Lightning, Arcane, Poison }
 public enum EmitterType   { None, Projectile, Zone, Cone, Beam, Self, Grenade, Orbital }
 public enum BehaviorType  { Pierce, Bounce, Split, Homing, Orbit }
 public enum ConditionType { TargetHasStatus, SelfAtFullHP, ComboCount, EnemiesNearby }
-public enum TriggerType        { OnHit, OnKill, OnExpire, OnTick }
+public enum TriggerType        { OnHit, OnKill, OnExpire, OnTick, OnCrit, OnStatus, OnCombo }
 public enum TriggerSpawnSource { Projectile, Target, Caster }
 public enum TriggerDirectionMode { Inherit, AwayFromCaster, TowardCaster, Random }
 public enum EffectType    { Explosion, Nova, DamageOverTime, Slow, Pull, Push }

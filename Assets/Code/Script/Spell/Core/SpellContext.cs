@@ -12,6 +12,8 @@ public class SpellContext
         public TriggerSpawnSource   SpawnSource;
         public TriggerDirectionMode DirectionMode;
         public float                SpawnOffset;
+        public ElementType          StatusFilter;   // OnStatus : quel élément déclenche
+        public int                  ComboThreshold; // OnCombo  : tous les X hits sur le même ennemi
     }
 
     public GameObject Caster;
