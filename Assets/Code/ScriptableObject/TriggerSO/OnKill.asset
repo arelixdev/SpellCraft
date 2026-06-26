@@ -13,12 +13,12 @@ MonoBehaviour:
   m_Name: OnKill
   m_EditorClassIdentifier: Assembly-CSharp::TriggerNodeSO
   icon: {fileID: 0}
-  nodeName: On Hit
+  nodeName: On Kill
   nodeType: 0
-  complexityCost: 5
-  rarity: 2
+  complexityCost: 3
+  rarity: 1
   corruptedEffect: {fileID: 0}
-  triggerType: 0
+  triggerType: 1
   tickInterval: 0.5
   spawnSource: 1
   directionMode: 3

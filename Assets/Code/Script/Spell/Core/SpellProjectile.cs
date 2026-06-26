@@ -64,7 +64,8 @@ public class SpellProjectile : MonoBehaviour
             float finalDamage = isCrit ? _ctx.Damage * _ctx.CritMultiplier : _ctx.Damage;
             string critLabel  = isCrit ? " [CRIT]" : "";
             Debug.Log($"[SpellProjectile] Hit '{other.name}' → {finalDamage} dmg ({_ctx.Element}){critLabel}");
-            other.GetComponent<EnemyHealth>()?.TakeDamage(finalDamage, _ctx.Element, isCrit);
+            var enemyHealth = other.GetComponent<EnemyHealth>();
+            enemyHealth?.TakeDamage(finalDamage, _ctx.Element, isCrit);
 
             if (_ctx.Element == ElementType.Fire && Random.value < _ctx.StatusChance)
                 BurnStatus.Apply(other.gameObject, _ctx.FireTickDamage, _ctx.FireTickInterval, _ctx.StatusDuration);
@@ -79,6 +80,9 @@ public class SpellProjectile : MonoBehaviour
                 LightningChain.Apply(other.gameObject, _ctx.LightningChainDamage, _ctx.LightningChainRange, _ctx.LightningChainCount);
 
             FireTriggers(TriggerType.OnHit, other.gameObject);
+
+            if (enemyHealth != null && enemyHealth.IsDead)
+                FireTriggers(TriggerType.OnKill, other.gameObject);
 
             if (_pierceHitsRemaining > 0)
             {
