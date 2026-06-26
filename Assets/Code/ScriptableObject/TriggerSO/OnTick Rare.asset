@@ -13,15 +13,18 @@ MonoBehaviour:
   m_Name: OnTick Rare
   m_EditorClassIdentifier: Assembly-CSharp::TriggerNodeSO
   icon: {fileID: 0}
-  nodeName: On Kill
+  nodeName: On Tick
   nodeType: 0
   complexityCost: 3
   rarity: 1
   corruptedEffect: {fileID: 0}
   triggerType: 3
   tickInterval: 1.5
+  statusFilter: 1
+  comboThreshold: 3
   spawnSource: 1
   directionMode: 3
   spawnOffset: 1
   enableRoll: 1
   tickIntervalRange: {x: 1.5, y: 3}
+  comboThresholdRange: {x: 2, y: 5}
