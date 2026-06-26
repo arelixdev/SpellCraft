@@ -5,10 +5,13 @@ public class SpellContext
 {
     public struct PendingTrigger
     {
-        public TriggerType  Type;
-        public SpellGraphSO Graph;
-        public List<int>    OutputIndices;
-        public float        TickInterval;
+        public TriggerType       Type;
+        public SpellGraphSO      Graph;
+        public List<int>         OutputIndices;
+        public float             TickInterval;
+        public TriggerSpawnSource   SpawnSource;
+        public TriggerDirectionMode DirectionMode;
+        public float                SpawnOffset;
     }
 
     public GameObject Caster;
@@ -49,6 +52,9 @@ public class SpellContext
     public float          ZoneGrowDuration = 1f;
     public float          ZoneDuration     = 0f;  // 0 = permanent
     public float          ZoneTickInterval = 1f;
+
+    // Collider to ignore on spawn — prevents sub-projectiles from immediately hitting their source
+    public Collider IgnoreOnSpawn;
 
     public float                Lifetime               = 3f;
     public int                  PierceCount            = 0;

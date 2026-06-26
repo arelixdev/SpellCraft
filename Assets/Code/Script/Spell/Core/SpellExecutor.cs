@@ -77,6 +77,9 @@ public static class SpellExecutor
             Graph         = graph,
             OutputIndices = graph.GetOutputIndices(idx),
             TickInterval  = trigger.tickInterval,
+            SpawnSource   = trigger.spawnSource,
+            DirectionMode = trigger.directionMode,
+            SpawnOffset   = trigger.spawnOffset,
         });
     }
 
@@ -162,9 +165,7 @@ public static class SpellExecutor
             return;
         }
 
-        Vector3 spawnPos = ctx.Caster.transform.position;
-
-        var go = Object.Instantiate(emitter.projectilePrefab, spawnPos, Quaternion.identity);
+        var go = Object.Instantiate(emitter.projectilePrefab, ctx.Origin, Quaternion.identity);
 
         if (ctx.OverrideMaterial != null)
             foreach (var r in go.GetComponentsInChildren<Renderer>())

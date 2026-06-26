@@ -7,6 +7,7 @@ public class SpellProjectile : MonoBehaviour
     private SpellContext _ctx;
     private int          _pierceHitsRemaining;
     private float        _lifetimeRemaining;
+    private Collider     _spawnIgnoreCollider;
 
     // Parallel lists to track OnTick timers without a struct-key dictionary
     private List<SpellContext.PendingTrigger> _tickTriggers = new();
@@ -16,11 +17,12 @@ public class SpellProjectile : MonoBehaviour
 
     public void Initialize(SpellContext ctx)
     {
-        _ctx                 = ctx;
-        _pierceHitsRemaining = ctx.PierceCount;
-        _lifetimeRemaining   = ctx.Lifetime;
-        enabled              = true;
-        transform.localScale = Vector3.one * ctx.Size;
+        _ctx                  = ctx;
+        _pierceHitsRemaining  = ctx.PierceCount;
+        _lifetimeRemaining    = ctx.Lifetime;
+        _spawnIgnoreCollider  = ctx.IgnoreOnSpawn;
+        enabled               = true;
+        transform.localScale  = Vector3.one * ctx.Size;
 
         foreach (var trigger in ctx.PendingTriggers)
         {
@@ -54,6 +56,7 @@ public class SpellProjectile : MonoBehaviour
     private void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("Pickup")) return;
+        if (other == _spawnIgnoreCollider) return;
 
         if (other.CompareTag("Enemy"))
         {
@@ -111,17 +114,37 @@ public class SpellProjectile : MonoBehaviour
     {
         if (_ctx.Generation >= SpellContext.MaxGeneration) return;
 
+        Vector3 origin = trigger.SpawnSource switch
+        {
+            TriggerSpawnSource.Target => target != null ? target.transform.position : transform.position,
+            TriggerSpawnSource.Caster => _ctx.Caster != null ? _ctx.Caster.transform.position : transform.position,
+            _                         => transform.position,
+        };
+
+        Vector3 toTarget = origin - (_ctx.Caster != null ? _ctx.Caster.transform.position : origin);
+        Vector3 direction = trigger.DirectionMode switch
+        {
+            TriggerDirectionMode.AwayFromCaster => toTarget.sqrMagnitude > 0.001f ? toTarget.normalized : _ctx.Direction,
+            TriggerDirectionMode.TowardCaster   => toTarget.sqrMagnitude > 0.001f ? -toTarget.normalized : _ctx.Direction,
+            TriggerDirectionMode.Random         => new Vector3(UnityEngine.Random.Range(-1f, 1f), 0f, UnityEngine.Random.Range(-1f, 1f)).normalized,
+            _                                   => _ctx.Direction,
+        };
+
+        if (trigger.SpawnSource == TriggerSpawnSource.Target && trigger.SpawnOffset > 0f)
+            origin += direction * trigger.SpawnOffset;
+
         var newCtx = new SpellContext
         {
             Caster           = _ctx.Caster,
-            Origin           = transform.position,
-            Direction        = _ctx.Direction,
+            Origin           = origin,
+            Direction        = direction,
             Generation       = _ctx.Generation + 1,
             Damage           = _ctx.Damage,
             Size             = _ctx.Size,
             Speed            = _ctx.Speed,
             Element          = _ctx.Element,
             OverrideMaterial = _ctx.OverrideMaterial,
+            IgnoreOnSpawn    = target?.GetComponent<Collider>(),
         };
 
         SpellExecutor.ExecuteFrom(trigger.Graph, trigger.OutputIndices, newCtx);
