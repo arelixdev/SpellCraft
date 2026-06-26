@@ -9,6 +9,8 @@ public class SpellProjectile : MonoBehaviour
     private float        _lifetimeRemaining;
     private Collider     _spawnIgnoreCollider;
 
+    private bool _lifetimeExpired;
+
     // Parallel lists to track OnTick timers without a struct-key dictionary
     private List<SpellContext.PendingTrigger> _tickTriggers = new();
     private List<float>                       _tickTimers   = new();
@@ -39,7 +41,10 @@ public class SpellProjectile : MonoBehaviour
 
         _lifetimeRemaining -= Time.deltaTime;
         if (_lifetimeRemaining <= 0f)
+        {
+            _lifetimeExpired = true;
             Destroy(gameObject);
+        }
     }
 
     private void TickTriggers()
@@ -57,6 +62,7 @@ public class SpellProjectile : MonoBehaviour
     {
         if (other.CompareTag("Pickup")) return;
         if (other == _spawnIgnoreCollider) return;
+        if (other.TryGetComponent<SpellProjectile>(out _)) return;
 
         if (other.CompareTag("Enemy"))
         {
@@ -101,7 +107,7 @@ public class SpellProjectile : MonoBehaviour
 
     private void OnDestroy()
     {
-        if (_ctx == null) return;
+        if (_ctx == null || !_lifetimeExpired) return;
         FireTriggers(TriggerType.OnExpire, null);
     }
 
