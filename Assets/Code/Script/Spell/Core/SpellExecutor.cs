@@ -155,6 +155,7 @@ public static class SpellExecutor
             Behaviors           = new List<BehaviorType>(ctx.Behaviors),
             PendingTriggers     = new List<SpellContext.PendingTrigger>(ctx.PendingTriggers),
             ActiveEffects       = new List<EffectNodeSO>(ctx.ActiveEffects),
+            EmitterModifiers    = new List<EmitterModifierNodeSO>(ctx.EmitterModifiers),
             ConditionMultiplier = ctx.ConditionMultiplier,
             Generation          = ctx.Generation,
         };
@@ -255,6 +256,7 @@ public static class SpellExecutor
                 Behaviors             = new List<BehaviorType>(ctx.Behaviors),
                 PendingTriggers       = new List<SpellContext.PendingTrigger>(ctx.PendingTriggers),
                 ActiveEffects         = new List<EffectNodeSO>(ctx.ActiveEffects),
+                EmitterModifiers      = new List<EmitterModifierNodeSO>(ctx.EmitterModifiers),
                 ConditionMultiplier   = ctx.ConditionMultiplier,
                 Generation            = ctx.Generation,
             };
@@ -343,6 +345,7 @@ public static class SpellExecutor
             Behaviors           = new List<BehaviorType>(ctx.Behaviors),
             PendingTriggers     = new List<SpellContext.PendingTrigger>(ctx.PendingTriggers),
             ActiveEffects       = new List<EffectNodeSO>(ctx.ActiveEffects),
+            EmitterModifiers    = new List<EmitterModifierNodeSO>(ctx.EmitterModifiers),
             ConditionMultiplier = ctx.ConditionMultiplier,
             Generation          = ctx.Generation,
         };

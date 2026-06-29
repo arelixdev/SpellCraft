@@ -18,9 +18,12 @@ MonoBehaviour:
   nodes:
   - {fileID: 11400000, guid: a8eb528ebc02322468008ac21b80115d, type: 2}
   - {fileID: 11400000, guid: 9024edfe89b5add4eaf97856a8b8167c, type: 2}
-  - {fileID: 11400000, guid: 309aaa08052f18842980307c32c29684, type: 2}
+  - {fileID: 11400000, guid: e11124173b3c7a54f9c4093c962cb4de, type: 2}
+  - {fileID: 11400000, guid: ae63477a7b04ece4d90ed8004359dea1, type: 2}
   connections:
   - fromIndex: 0
     toIndex: 1
   - fromIndex: 1
     toIndex: 2
+  - fromIndex: 2
+    toIndex: 3

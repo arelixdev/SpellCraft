@@ -10,21 +10,21 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c5d3435ee62b41a43a7f6ba75dc3db3e, type: 3}
-  m_Name: OnHit
+  m_Name: OnComboRare
   m_EditorClassIdentifier: Assembly-CSharp::TriggerNodeSO
   icon: {fileID: 0}
-  nodeName: On Hit
+  nodeName: On Burn
   nodeType: 0
-  complexityCost: 7
-  rarity: 2
+  complexityCost: 4
+  rarity: 0
   corruptedEffect: {fileID: 0}
-  triggerType: 0
+  triggerType: 6
   tickInterval: 0.5
   statusFilter: 1
-  comboThreshold: 3
+  comboThreshold: 7
   spawnSource: 1
   directionMode: 3
   spawnOffset: 1
-  enableRoll: 0
+  enableRoll: 1
   tickIntervalRange: {x: 0.3, y: 1.5}
-  comboThresholdRange: {x: 2, y: 5}
+  comboThresholdRange: {x: 3, y: 8}

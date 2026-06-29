@@ -6,6 +6,7 @@ public class ZoneEffect : MonoBehaviour
     private SpellContext _ctx;
     private float        _elapsed;
     private float        _tickTimer;
+    private float        _currentTickInterval;
     private float        _currentRadius;
     private float        _meshExtent = 0.5f;
 
@@ -37,13 +38,15 @@ public class ZoneEffect : MonoBehaviour
         float startRadius = ctx.ZoneType == ZoneType.StaticOnPlayer ? ctx.ZoneRadius : 0f;
         SetRadius(startRadius);
 
-        _tickTimer = ctx.ZoneTickInterval;
-        enabled    = true;
+        _currentTickInterval = ctx.ZoneTickInterval;
+        _tickTimer           = ctx.ZoneTickInterval;
+        enabled              = true;
     }
 
     private void Update()
     {
         _elapsed += Time.deltaTime;
+        UpdateAcceleration();
 
         if (_ctx.ZoneType != ZoneType.GrowingOnGround && _ctx.Caster != null)
         {
@@ -68,7 +71,7 @@ public class ZoneEffect : MonoBehaviour
             _tickTimer -= Time.deltaTime;
             if (_tickTimer <= 0f)
             {
-                _tickTimer = _ctx.ZoneTickInterval;
+                _tickTimer = _currentTickInterval;
                 ApplyTickDamage();
             }
         }
@@ -84,6 +87,19 @@ public class ZoneEffect : MonoBehaviour
         if (ctx.OverrideMaterial != null)
             foreach (var r in GetComponentsInChildren<Renderer>())
                 r.material = ctx.OverrideMaterial;
+    }
+
+    private void UpdateAcceleration()
+    {
+        foreach (var mod in _ctx.EmitterModifiers)
+        {
+            if (mod.modifierType != EmitterModifierType.Acceleration) continue;
+            float minInterval = _ctx.ZoneTickInterval / mod.maxSpeedMultiplier;
+            _currentTickInterval = Mathf.Max(
+                _ctx.ZoneTickInterval / (1f + mod.accelerationRate * _elapsed),
+                minInterval);
+            return;
+        }
     }
 
     private void CheckOnEnter()

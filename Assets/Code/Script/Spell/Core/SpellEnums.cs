@@ -1,4 +1,5 @@
-public enum NodeType      { Emitter, Element, Behavior, Condition, Trigger, Effect }
+public enum NodeType      { Emitter, Element, Behavior, Condition, Trigger, Effect, EmitterModifier }
+public enum EmitterModifierType { Homecoming, Bounce, Scale, Back, Acceleration }
 public enum NodeRarity    { Commun, Rare, Epique, Boss, Corrompu }
 public enum ElementType   { None, Fire, Ice, Lightning, Arcane, Poison }
 public enum EmitterType   { None, Projectile, Zone, Cone, Beam, Self, Grenade, Orbital }
@@ -12,3 +13,16 @@ public enum LauncherType  { AutoCast, KeyBind, OnEvent, Passive }
 public enum GameEventType { OnKill, OnDamageTaken }
 public enum ZoneType      { StaticOnPlayer, GrowingOnPlayer, GrowingOnGround }
 public enum ZoneDamageMode { Tick, OnEnter, Both }
+
+[System.Flags]
+public enum EmitterTypeFlags
+{
+    None      = 0,
+    Projectile = 1 << 0,
+    Zone       = 1 << 1,
+    Cone       = 1 << 2,
+    Beam       = 1 << 3,
+    Self       = 1 << 4,
+    Grenade    = 1 << 5,
+    Orbital    = 1 << 6,
+}

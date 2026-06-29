@@ -63,9 +63,10 @@ public class SpellContext
     public bool                 ReduceDamageOnPierce   = false;
     public float                DamageReductionPerHit  = 0f;
     public int                  BurstCount             = 1;
-    public List<BehaviorType>   Behaviors       = new();
-    public List<PendingTrigger> PendingTriggers = new();
-    public List<EffectNodeSO>   ActiveEffects   = new();
+    public List<BehaviorType>          Behaviors        = new();
+    public List<PendingTrigger>        PendingTriggers  = new();
+    public List<EffectNodeSO>          ActiveEffects    = new();
+    public List<EmitterModifierNodeSO> EmitterModifiers = new();
 
     // Nombre de nodes en aval du node Arcane — calculé par SpellExecutor avant Execute
     public int ArcaneNodeCount = 0;
