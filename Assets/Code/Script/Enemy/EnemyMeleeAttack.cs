@@ -9,6 +9,7 @@ public class EnemyMeleeAttack : MonoBehaviour
     private float         _attackCooldown;
     private Transform     _player;
     private PlayerHealth  _playerHealth;
+    private EnemyLOD      _lod;
 
     private void Start()
     {
@@ -17,17 +18,22 @@ public class EnemyMeleeAttack : MonoBehaviour
 
         _player       = playerGO.transform;
         _playerHealth = playerGO.GetComponent<PlayerHealth>();
+        _lod          = GetComponent<EnemyLOD>();
     }
 
     private void Update()
     {
         if (_player == null || _playerHealth == null) return;
 
+        // Le cooldown décrémente toujours (précision indépendante du LOD)
         if (_attackCooldown > 0f)
         {
             _attackCooldown -= Time.deltaTime;
             return;
         }
+
+        // Vérification de distance/attaque uniquement quand le LOD l'autorise
+        if (_lod != null && !_lod.ShouldUpdateAttack()) return;
 
         float dist = Vector3.Distance(transform.position, _player.position);
         if (dist <= _attackRange)

@@ -10,10 +10,12 @@ public class EnemyAI : MonoBehaviour
 
     private NavMeshAgent _agent;
     private Transform    _player;
+    private EnemyLOD     _lod;
 
     private void Awake()
     {
         _agent = GetComponent<NavMeshAgent>();
+        _lod   = GetComponent<EnemyLOD>();
     }
 
     private void Start()
@@ -27,9 +29,12 @@ public class EnemyAI : MonoBehaviour
     {
         if (_player == null) return;
 
-        if (!CanMove)
+        // Sommeil ou hors slot de stagger : on ne recalcule pas le chemin ce frame
+        if (_lod != null && !_lod.ShouldUpdatePath()) return;
+
+        if (!CanMove || (_lod != null && !_agent.enabled))
         {
-            _agent.ResetPath();
+            if (_agent.enabled) _agent.ResetPath();
             return;
         }
 

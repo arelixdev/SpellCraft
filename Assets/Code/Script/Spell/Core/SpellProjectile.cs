@@ -139,6 +139,7 @@ public class SpellProjectile : MonoBehaviour
         if (other.CompareTag("Pickup")) return;
         if (other == _spawnIgnoreCollider) return;
         if (other.TryGetComponent<SpellProjectile>(out _)) return;
+        if (other.GetComponentInParent<ActivityBase>() != null) return;
 
         if (other.CompareTag("Enemy"))
         {

@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class EnemyHealth : MonoBehaviour
 {
-    [SerializeField] private float _maxHealth = 100f;
+    [SerializeField] private float _maxHealth = 25f;
     [SerializeField] public  bool  IsInvincible = false;
 
     [Header("UI")]
@@ -14,6 +14,7 @@ public class EnemyHealth : MonoBehaviour
 
     private float _nextPopupTime = 0f;
 
+    private float _baseMaxHealth; // valeur inspector, jamais modifiée
     private float _currentHealth;
 
     public float CurrentHealth => _currentHealth;
@@ -24,7 +25,16 @@ public class EnemyHealth : MonoBehaviour
 
     private void Awake()
     {
+        _baseMaxHealth = _maxHealth;
         _currentHealth = _maxHealth;
+    }
+
+    private void OnEnable()
+    {
+        // Réinitialise l'ennemi quand le pool le réactive
+        _maxHealth     = _baseMaxHealth;
+        _currentHealth = _maxHealth;
+        OnDied         = null; // purge les abonnements de la vie précédente
     }
 
     public void ApplyMultiplier(float multiplier)
@@ -72,6 +82,10 @@ public class EnemyHealth : MonoBehaviour
     {
         OnDied?.Invoke();
         Debug.Log($"[EnemyHealth] {name} died.");
-        Destroy(gameObject);
+
+        if (EnemyPool.Instance != null)
+            EnemyPool.Instance.Return(gameObject);
+        else
+            Destroy(gameObject);
     }
 }

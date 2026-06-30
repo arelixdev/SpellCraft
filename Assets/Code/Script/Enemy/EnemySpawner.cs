@@ -14,15 +14,9 @@ public class EnemySpawner : MonoBehaviour
     [EnumToggleButtons, HideLabel]
     public SpawnMode Mode = SpawnMode.Limité;
 
-    // ── Prefab & paramètres communs ────────────────────────────────────────────
+    // ── Prefab & paramètres fixes ──────────────────────────────────────────────
     [BoxGroup("Spawn"), Required, LabelText("Prefab ennemi")]
     public GameObject EnemyPrefab;
-
-    [BoxGroup("Spawn"), MinValue(1), LabelText("Ennemis par vague")]
-    public int EnemiesPerWave = 1;
-
-    [BoxGroup("Spawn"), MinValue(0.1f), LabelText("Intervalle (secondes)")]
-    public float SpawnInterval = 3f;
 
     [BoxGroup("Spawn"), MinValue(1f), LabelText("Rayon de spawn")]
     public float SpawnRadius = 15f;
@@ -30,45 +24,53 @@ public class EnemySpawner : MonoBehaviour
     [BoxGroup("Spawn"), MinValue(0.1f), LabelText("Tolérance NavMesh")]
     public float NavMeshSampleDistance = 2f;
 
-    // ── Paramètres mode Limité ─────────────────────────────────────────────────
-    [BoxGroup("Mode Limité"), ShowIf("@Mode == SpawnMode.Limité")]
-    [MinValue(1), LabelText("Max ennemis vivants")]
-    public int MaxAliveEnemies = 20;
-
-    // ── Debug (lecture seule) ──────────────────────────────────────────────────
-    [FoldoutGroup("Debug"), ShowInInspector, ReadOnly, LabelText("Ennemis vivants")]
-    private int DebugAliveCount => _spawnedEnemies.Count(e => e != null);
-
-    [FoldoutGroup("Debug"), ShowInInspector, ReadOnly, LabelText("Spawn actif")]
-    private bool DebugIsRunning => _spawnCoroutine != null;
-
     [BoxGroup("Spawn"), LabelText("Démarrage automatique")]
     [Tooltip("Cocher uniquement si ce spawner est indépendant (pas contrôlé par un RunController)")]
     public bool AutoStart = false;
 
-    // ── Danger Scaling ─────────────────────────────────────────────────────────
-    [Title("Danger Scaling")]
-    [LabelText("Activer le scaling dynamique")]
-    [Tooltip("Si activé, RunController pilote l'intervalle et le nombre d'ennemis via SetDangerLevel")]
-    public bool UseDangerScaling = false;
+    // ── Paramètres mode Limité ─────────────────────────────────────────────────
+    [BoxGroup("Mode Limité"), ShowIf("@Mode == SpawnMode.Limité")]
+    [MinValue(1), LabelText("Max ennemis vivants")]
+    public int MaxAliveEnemies = 80;
 
-    [ShowIf("UseDangerScaling")]
-    [LabelText("Intervalle vs Danger (x=secondes, y=intervalle spawn)")]
-    [Tooltip("Plus la courbe descend, plus les ennemis spawnent vite")]
+    // ── Courbes de progression ─────────────────────────────────────────────────
+    [Title("Courbes de progression")]
+    [InfoBox("X = secondes écoulées depuis le début du run. Les valeurs sont évaluées en temps réel par RunController.", InfoMessageType.Info)]
+
+    [LabelText("Intervalle entre vagues (x=s, y=secondes)")]
+    [Tooltip("Plus la courbe descend, plus les vagues arrivent vite")]
     public AnimationCurve SpawnIntervalCurve = new AnimationCurve(
-        new Keyframe(0f, 3f), new Keyframe(120f, 1.5f), new Keyframe(300f, 0.5f));
+        new Keyframe(0f,   0.8f),
+        new Keyframe(60f,  0.4f),
+        new Keyframe(180f, 0.15f));
 
-    [ShowIf("UseDangerScaling")]
-    [LabelText("Ennemis/vague vs Danger (x=secondes, y=nombre)")]
+    [LabelText("Ennemis par vague (x=s, y=nombre)")]
+    [Tooltip("Nombre d'ennemis spawné à chaque vague")]
     public AnimationCurve EnemiesPerWaveCurve = new AnimationCurve(
-        new Keyframe(0f, 1f), new Keyframe(120f, 2f), new Keyframe(300f, 5f));
+        new Keyframe(0f,   3f),
+        new Keyframe(60f,  5f),
+        new Keyframe(180f, 10f));
+
+    // ── Valeurs courantes (lecture seule, pilotées par les courbes) ────────────
+    [Title("Valeurs courantes")]
+    [ShowInInspector, ReadOnly, LabelText("Intervalle actuel (s)")]
+    public float SpawnInterval  { get; private set; } = 0.8f;
+
+    [ShowInInspector, ReadOnly, LabelText("Ennemis/vague actuel")]
+    public int   EnemiesPerWave { get; private set; } = 3;
 
     public void SetDangerLevel(float dangerSeconds)
     {
-        if (!UseDangerScaling) return;
         SpawnInterval  = Mathf.Max(0.1f, SpawnIntervalCurve.Evaluate(dangerSeconds));
         EnemiesPerWave = Mathf.Max(1, Mathf.RoundToInt(EnemiesPerWaveCurve.Evaluate(dangerSeconds)));
     }
+
+    // ── Debug ──────────────────────────────────────────────────────────────────
+    [FoldoutGroup("Debug"), ShowInInspector, ReadOnly, LabelText("Ennemis vivants")]
+    private int DebugAliveCount => _spawnedEnemies.Count(e => e != null && e.activeInHierarchy);
+
+    [FoldoutGroup("Debug"), ShowInInspector, ReadOnly, LabelText("Spawn actif")]
+    private bool DebugIsRunning => _spawnCoroutine != null;
 
     // ── Privé ──────────────────────────────────────────────────────────────────
     private Transform _player;
@@ -85,6 +87,9 @@ public class EnemySpawner : MonoBehaviour
         _camera = Camera.main;
 
         _spawnParent = new GameObject("[SpawnedEnemies]").transform;
+
+        // Initialise les valeurs depuis les courbes à t=0
+        SetDangerLevel(0f);
 
         if (AutoStart)
             StartSpawning();
@@ -123,7 +128,8 @@ public class EnemySpawner : MonoBehaviour
 
             if (Mode == SpawnMode.Limité)
             {
-                _spawnedEnemies.RemoveAll(e => e == null);
+                // activeInHierarchy gère le cas pool (GO inactif ≠ null)
+                _spawnedEnemies.RemoveAll(e => e == null || !e.activeInHierarchy);
                 int slots = MaxAliveEnemies - _spawnedEnemies.Count;
                 if (slots <= 0) continue;
                 SpawnBatch(Mathf.Min(EnemiesPerWave, slots));
@@ -141,7 +147,9 @@ public class EnemySpawner : MonoBehaviour
         {
             if (!TryGetSpawnPosition(out Vector3 pos)) continue;
 
-            var enemy = Instantiate(EnemyPrefab, pos, Quaternion.identity, _spawnParent);
+            var enemy = EnemyPool.Instance != null
+                ? EnemyPool.Instance.Get(EnemyPrefab, pos, Quaternion.identity, _spawnParent)
+                : Instantiate(EnemyPrefab, pos, Quaternion.identity, _spawnParent);
 
             if (Mode == SpawnMode.Limité)
                 _spawnedEnemies.Add(enemy);

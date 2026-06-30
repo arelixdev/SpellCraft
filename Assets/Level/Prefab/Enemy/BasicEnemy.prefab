@@ -16,6 +16,7 @@ GameObject:
   - component: {fileID: 3684305299192553555}
   - component: {fileID: 6321169521803999933}
   - component: {fileID: 5711467810769504138}
+  - component: {fileID: 846796966286857760}
   m_Layer: 0
   m_Name: BasicEnemy
   m_TagString: Enemy
@@ -134,6 +135,7 @@ MonoBehaviour:
   IsInvincible: 0
   _damagePopupPrefab: {fileID: 6458477583499661680, guid: ec4aaf77c20772340bc21c7940f2c61d, type: 3}
   _popupOffset: {x: 0, y: 1.25, z: 0}
+  _popupStagger: 0.12
 --- !u!195 &3684305299192553555
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -186,3 +188,19 @@ MonoBehaviour:
   _damage: 7
   _attackRange: 1.8
   _attackRate: 1
+--- !u!114 &846796966286857760
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1800700278847618402}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b452cce362e3bf84ca7fa22892d205de, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyLOD
+  CloseRange: 12
+  MediumRange: 30
+  SleepRange: 50
+  WakeRange: 40
