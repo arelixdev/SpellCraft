@@ -27,6 +27,12 @@ public class EnemyHealth : MonoBehaviour
         _currentHealth = _maxHealth;
     }
 
+    public void ApplyMultiplier(float multiplier)
+    {
+        _maxHealth     *= multiplier;
+        _currentHealth  = _maxHealth;
+    }
+
     public void TakeDamage(float damage, ElementType element, bool isCrit)
     {
         SpawnPopup(damage, element, isCrit);

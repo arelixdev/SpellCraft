@@ -43,8 +43,32 @@ public class EnemySpawner : MonoBehaviour
     private bool DebugIsRunning => _spawnCoroutine != null;
 
     [BoxGroup("Spawn"), LabelText("Démarrage automatique")]
-    [Tooltip("Cocher uniquement si ce spawner est indépendant (pas contrôlé par un ZoneManager)")]
+    [Tooltip("Cocher uniquement si ce spawner est indépendant (pas contrôlé par un RunController)")]
     public bool AutoStart = false;
+
+    // ── Danger Scaling ─────────────────────────────────────────────────────────
+    [Title("Danger Scaling")]
+    [LabelText("Activer le scaling dynamique")]
+    [Tooltip("Si activé, RunController pilote l'intervalle et le nombre d'ennemis via SetDangerLevel")]
+    public bool UseDangerScaling = false;
+
+    [ShowIf("UseDangerScaling")]
+    [LabelText("Intervalle vs Danger (x=secondes, y=intervalle spawn)")]
+    [Tooltip("Plus la courbe descend, plus les ennemis spawnent vite")]
+    public AnimationCurve SpawnIntervalCurve = new AnimationCurve(
+        new Keyframe(0f, 3f), new Keyframe(120f, 1.5f), new Keyframe(300f, 0.5f));
+
+    [ShowIf("UseDangerScaling")]
+    [LabelText("Ennemis/vague vs Danger (x=secondes, y=nombre)")]
+    public AnimationCurve EnemiesPerWaveCurve = new AnimationCurve(
+        new Keyframe(0f, 1f), new Keyframe(120f, 2f), new Keyframe(300f, 5f));
+
+    public void SetDangerLevel(float dangerSeconds)
+    {
+        if (!UseDangerScaling) return;
+        SpawnInterval  = Mathf.Max(0.1f, SpawnIntervalCurve.Evaluate(dangerSeconds));
+        EnemiesPerWave = Mathf.Max(1, Mathf.RoundToInt(EnemiesPerWaveCurve.Evaluate(dangerSeconds)));
+    }
 
     // ── Privé ──────────────────────────────────────────────────────────────────
     private Transform _player;

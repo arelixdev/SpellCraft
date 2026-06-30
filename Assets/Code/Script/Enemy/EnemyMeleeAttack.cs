@@ -34,6 +34,8 @@ public class EnemyMeleeAttack : MonoBehaviour
             Attack();
     }
 
+    public void ApplyMultiplier(float multiplier) => _damage *= multiplier;
+
     private void Attack()
     {
         _playerHealth.TakeDamage(_damage);
