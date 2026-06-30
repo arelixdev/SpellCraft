@@ -19,4 +19,9 @@ public class ActivitySO : ScriptableObject
     [Required]
     [AssetsOnly]
     public GameObject Prefab;
+
+    [LabelText("Rayon d'exclusion (m)")]
+    [Tooltip("Aucune autre activité ne peut spawner dans ce rayon autour de celle-ci")]
+    [MinValue(0f)]
+    public float ExclusionRadius = 10f;
 }

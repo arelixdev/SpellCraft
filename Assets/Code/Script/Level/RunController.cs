@@ -12,7 +12,10 @@ public class RunController : MonoBehaviour
     public static RunController Instance { get; private set; }
 
     // ── Références ──────────────────────────────────────────────────────────────
-    [BoxGroup("Références"), Required, LabelText("Spawner d'ennemis")]
+    [BoxGroup("Références"), LabelText("Activer les ennemis")]
+    public bool SpawnEnemies = true;
+
+    [BoxGroup("Références"), ShowIf("SpawnEnemies"), LabelText("Spawner d'ennemis")]
     public EnemySpawner EnemySpawner;
 
     [BoxGroup("Références"), LabelText("Boss Portal")]
@@ -46,7 +49,7 @@ public class RunController : MonoBehaviour
 
         TimeElapsed += Time.deltaTime;
 
-        EnemySpawner?.SetDangerLevel(TimeElapsed);
+        if (SpawnEnemies) EnemySpawner?.SetDangerLevel(TimeElapsed);
         BossPortal?.SetDangerLevel(TimeElapsed);
 
         // Fire event once per second (pas besoin chaque frame pour l'UI)
@@ -65,7 +68,7 @@ public class RunController : MonoBehaviour
         if (IsRunning) return;
         IsRunning   = true;
         TimeElapsed = 0f;
-        EnemySpawner?.StartSpawning();
+        if (SpawnEnemies) EnemySpawner?.StartSpawning();
         Debug.Log("[RunController] Run démarré.");
     }
 
@@ -74,7 +77,7 @@ public class RunController : MonoBehaviour
     {
         if (!IsRunning) return;
         IsRunning = false;
-        EnemySpawner?.StopSpawning();
+        if (SpawnEnemies) EnemySpawner?.StopSpawning();
         Debug.Log("[RunController] Run arrêté.");
     }
 }
