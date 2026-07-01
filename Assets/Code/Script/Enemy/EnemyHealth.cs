@@ -37,10 +37,18 @@ public class EnemyHealth : MonoBehaviour
         OnDied         = null; // purge les abonnements de la vie précédente
     }
 
+    // Utilisé par EnemySpawner : valeur absolue en float, croît en continu.
+    public void SetMaxHealth(float value)
+    {
+        _maxHealth     = value;
+        _currentHealth = _maxHealth;
+    }
+
+    // Utilisé par BossPortal : multiplie depuis la base inspector.
     public void ApplyMultiplier(float multiplier)
     {
-        _maxHealth     *= multiplier;
-        _currentHealth  = _maxHealth;
+        _maxHealth     = Mathf.Round(_baseMaxHealth * multiplier);
+        _currentHealth = _maxHealth;
     }
 
     public void TakeDamage(float damage, ElementType element, bool isCrit)
@@ -51,7 +59,7 @@ public class EnemyHealth : MonoBehaviour
 
         _currentHealth = Mathf.Max(0f, _currentHealth - damage);
 
-        Debug.Log($"[EnemyHealth] {name} → -{damage} ({element}){(isCrit ? " [CRIT]" : "")} | HP: {_currentHealth}/{_maxHealth}");
+        Debug.Log($"[EnemyHealth] {name} → -{damage:F0} ({element}){(isCrit ? " [CRIT]" : "")} | HP: {_currentHealth:F0}/{_maxHealth:F0}");
 
         if (IsDead)
             Die();

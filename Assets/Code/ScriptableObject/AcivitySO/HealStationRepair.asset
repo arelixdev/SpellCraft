@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e621024832fb26c4d95f434befb3e3e5, type: 3}
-  m_Name: Chest
+  m_Name: HealStationRepair
   m_EditorClassIdentifier: Assembly-CSharp::ActivitySO
-  DisplayName: Chest Commun
+  DisplayName: Health station repair
   Icon: {fileID: 0}
-  Prefab: {fileID: 1887391880035193912, guid: 9467febb699bafd4d94a9665a8324cb4, type: 3}
-  ExclusionRadius: 7
+  Prefab: {fileID: 3998430666588251159, guid: dac8e9b3c5e68884583019a57eaa45d2, type: 3}
+  ExclusionRadius: 15

@@ -6,6 +6,7 @@ public class EnemyMeleeAttack : MonoBehaviour
     [SerializeField] private float _attackRange = 1.8f;
     [SerializeField] private float _attackRate  = 1f; // attacks per second
 
+    private float         _baseDamage;
     private float         _attackCooldown;
     private Transform     _player;
     private PlayerHealth  _playerHealth;
@@ -40,7 +41,11 @@ public class EnemyMeleeAttack : MonoBehaviour
             Attack();
     }
 
-    public void ApplyMultiplier(float multiplier) => _damage *= multiplier;
+    private void Awake() => _baseDamage = _damage;
+
+    private void OnEnable() => _damage = _baseDamage;
+
+    public void ApplyMultiplier(float multiplier) => _damage = _baseDamage * multiplier;
 
     private void Attack()
     {

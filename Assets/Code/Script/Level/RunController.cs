@@ -41,7 +41,14 @@ public class RunController : MonoBehaviour
         Instance = this;
     }
 
-    private void Start() => StartRun();
+    private void Start()
+    {
+        var playerHealth = GameObject.FindWithTag("Player")?.GetComponent<PlayerHealth>();
+        if (playerHealth != null)
+            playerHealth.OnDied += StopRun;
+
+        StartRun();
+    }
 
     private void Update()
     {

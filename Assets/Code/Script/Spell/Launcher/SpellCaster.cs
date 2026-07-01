@@ -159,13 +159,7 @@ public class SpellCaster : MonoBehaviour
         // Panel closed — make sure base spell nodes are already in craftingGraph before appending
         EnsureCraftingGraphInitialized();
 
-        int newIdx = craftingGraph.nodes.Count;
         craftingGraph.nodes.Add(node);
-        craftingGraph.editorLayout.Add(new SpellGraphSO.NodePlacement
-        {
-            nodeIndex      = newIdx,
-            canvasPosition = GraphCanvasController.Instance.RandomPositionInGraphArea()
-        });
 
         Debug.Log($"[SpellCaster] Collected '{node.nodeName}' — stored, will appear when panel opens");
     }

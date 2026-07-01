@@ -28,6 +28,10 @@ public class EnemySpawner : MonoBehaviour
     [Tooltip("Cocher uniquement si ce spawner est indépendant (pas contrôlé par un RunController)")]
     public bool AutoStart = false;
 
+    [BoxGroup("Spawn"), MinValue(0f), LabelText("Délai initial (s)")]
+    [Tooltip("Attente avant le premier spawn après StartSpawning()")]
+    public float InitialDelay = 5f;
+
     // ── Paramètres mode Limité ─────────────────────────────────────────────────
     [BoxGroup("Mode Limité"), ShowIf("@Mode == SpawnMode.Limité")]
     [MinValue(1), LabelText("Max ennemis vivants")]
@@ -51,18 +55,71 @@ public class EnemySpawner : MonoBehaviour
         new Keyframe(60f,  5f),
         new Keyframe(180f, 10f));
 
+    [LabelText("Taille (x=s, y=scale)")]
+    [Tooltip("Multiplicateur de taille appliqué à chaque ennemi spawné")]
+    public AnimationCurve ScaleCurve = new AnimationCurve(
+        new Keyframe(0f,   1f),
+        new Keyframe(60f,  1.3f),
+        new Keyframe(180f, 2f));
+
+    [LabelText("Dégâts (x=s, y=multiplicateur)")]
+    [Tooltip("Multiplicateur de dégâts appliqué à chaque ennemi spawné")]
+    public AnimationCurve DamageCurve = new AnimationCurve(
+        new Keyframe(0f,   1f),
+        new Keyframe(60f,  1.5f),
+        new Keyframe(180f, 3f));
+
+    [LabelText("PV max (x=s, y=PV)")]
+    [Tooltip("Valeur absolue des PV max au moment du spawn. X=0 = premier spawn (après délai initial).")]
+    public AnimationCurve HealthCurve = new AnimationCurve(
+        new Keyframe(0f,   50f),
+        new Keyframe(60f,  80f),
+        new Keyframe(180f, 200f));
+
     // ── Valeurs courantes (lecture seule, pilotées par les courbes) ────────────
     [Title("Valeurs courantes")]
     [ShowInInspector, ReadOnly, LabelText("Intervalle actuel (s)")]
     public float SpawnInterval  { get; private set; } = 0.8f;
 
-    [ShowInInspector, ReadOnly, LabelText("Ennemis/vague actuel")]
+    [ShowInInspector, ReadOnly, LabelText("Ennemis/vague")]
     public int   EnemiesPerWave { get; private set; } = 3;
+
+    [ShowInInspector, ReadOnly, LabelText("Scale")]
+    public float CurrentScale   { get; private set; } = 1f;
+
+    [ShowInInspector, ReadOnly, LabelText("Multiplicateur dégâts")]
+    public float CurrentDamage  { get; private set; } = 1f;
+
+    [ShowInInspector, ReadOnly, LabelText("PV max")]
+    public float CurrentHealth  { get; private set; } = 25f;
 
     public void SetDangerLevel(float dangerSeconds)
     {
-        SpawnInterval  = Mathf.Max(0.1f, SpawnIntervalCurve.Evaluate(dangerSeconds));
-        EnemiesPerWave = Mathf.Max(1, Mathf.RoundToInt(EnemiesPerWaveCurve.Evaluate(dangerSeconds)));
+        // Courbes de spawn : utilisent le temps global (la pression monte dès le début)
+        SpawnInterval  = Mathf.Max(0.1f, EvaluateInfinite(SpawnIntervalCurve,  dangerSeconds));
+        EnemiesPerWave = Mathf.Max(1,    Mathf.RoundToInt(EvaluateInfinite(EnemiesPerWaveCurve, dangerSeconds)));
+
+        // Courbes de stats : offset par InitialDelay pour que t=0 corresponde au premier spawn
+        float statTime = Mathf.Max(0f, dangerSeconds - InitialDelay);
+        CurrentScale   = Mathf.Max(0.1f, EvaluateInfinite(ScaleCurve,   statTime));
+        CurrentDamage  = Mathf.Max(0f,   EvaluateInfinite(DamageCurve,  statTime));
+        CurrentHealth  = Mathf.Max(1f,   EvaluateInfinite(HealthCurve,  statTime));
+    }
+
+    // Prolonge la courbe à l'infini en extrapolant linéairement avec la pente de fin.
+    // Evite le clamp Unity qui bloque à la dernière keyframe.
+    private static float EvaluateInfinite(AnimationCurve curve, float t)
+    {
+        if (curve.length == 0) return 0f;
+
+        Keyframe last = curve[curve.length - 1];
+        if (t <= last.time) return curve.Evaluate(t);
+
+        // Pente approchée sur la dernière seconde de la courbe
+        float sampleBack = Mathf.Max(0f, last.time - 1f);
+        float slope      = (last.value - curve.Evaluate(sampleBack)) / (last.time - sampleBack);
+
+        return last.value + slope * (t - last.time);
     }
 
     // ── Debug ──────────────────────────────────────────────────────────────────
@@ -120,6 +177,9 @@ public class EnemySpawner : MonoBehaviour
     // ── Logique de spawn ───────────────────────────────────────────────────────
     private IEnumerator SpawnRoutine()
     {
+        if (InitialDelay > 0f)
+            yield return new WaitForSeconds(InitialDelay);
+
         while (true)
         {
             yield return new WaitForSeconds(SpawnInterval);
@@ -150,6 +210,10 @@ public class EnemySpawner : MonoBehaviour
             var enemy = EnemyPool.Instance != null
                 ? EnemyPool.Instance.Get(EnemyPrefab, pos, Quaternion.identity, _spawnParent)
                 : Instantiate(EnemyPrefab, pos, Quaternion.identity, _spawnParent);
+
+            enemy.transform.localScale = Vector3.one * CurrentScale;
+            enemy.GetComponent<EnemyMeleeAttack>()?.ApplyMultiplier(CurrentDamage);
+            enemy.GetComponent<EnemyHealth>()?.SetMaxHealth(CurrentHealth);
 
             if (Mode == SpawnMode.Limité)
                 _spawnedEnemies.Add(enemy);

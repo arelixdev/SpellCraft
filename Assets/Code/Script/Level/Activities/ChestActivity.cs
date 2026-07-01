@@ -3,10 +3,9 @@ using Sirenix.OdinInspector;
 using UnityEngine;
 
 /// <summary>
-/// Activité coffre : le joueur entre dans le trigger, une node aléatoire lui est donnée.
-/// Hérite de ActivityBase — appeler Complete() clôture l'activité.
+/// Activité coffre : le joueur entre dans le trigger, appuie sur Espace,
+/// et une node aléatoire lui est donnée.
 /// </summary>
-[RequireComponent(typeof(Collider))]
 public class ChestActivity : ActivityBase
 {
     // ── Loot ────────────────────────────────────────────────────────────────────
@@ -23,32 +22,10 @@ public class ChestActivity : ActivityBase
     [Tooltip("Doit avoir un trigger 'Open' pour l'animation d'ouverture")]
     public Animator ChestAnimator;
 
-    // ── État ─────────────────────────────────────────────────────────────────────
-    private bool _opened;
-
-    // ── Trigger ──────────────────────────────────────────────────────────────────
-    private void Awake()
+    // ── Interaction ───────────────────────────────────────────────────────────────
+    protected override void OnInteract(SpellCaster caster)
     {
-        var col = GetComponent<Collider>();
-        col.isTrigger = true;
-    }
-
-    private void OnTriggerEnter(Collider other)
-    {
-        if (_opened) return;
-
-        var caster = other.GetComponent<SpellCaster>()
-                  ?? other.GetComponentInParent<SpellCaster>();
-        if (caster == null) return;
-
-        Open(caster);
-    }
-
-    // ── Ouverture ─────────────────────────────────────────────────────────────────
-    private void Open(SpellCaster caster)
-    {
-        _opened = true;
-        ChestAnimator?.SetTrigger("Open");
+        if (ChestAnimator != null) ChestAnimator.SetTrigger("Open");
 
         SpellNodeSO node = PickNode();
         if (node != null)

@@ -52,13 +52,7 @@ public class GraphCanvasController : MonoBehaviour
             }
             else
             {
-                // Fallback: count nodes without a layout entry before this one,
-                // place them in a dedicated "overflow" row well below the slot rows
-                int overflowIdx = 0;
-                for (int k = 0; k < i; k++)
-                    if (!graph.editorLayout.Exists(p => p.nodeIndex == k)) overflowIdx++;
-                view.SetLocalPosition(new Vector2(ROW_START_X + overflowIdx * NODE_SPACING,
-                                                  ROW_START_Y - 4 * ROW_HEIGHT));
+                view.SetLocalPosition(RandomPositionInGraphArea());
             }
         }
 
