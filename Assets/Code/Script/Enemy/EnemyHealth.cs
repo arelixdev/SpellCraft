@@ -37,14 +37,7 @@ public class EnemyHealth : MonoBehaviour
         OnDied         = null; // purge les abonnements de la vie précédente
     }
 
-    // Utilisé par EnemySpawner : valeur absolue en float, croît en continu.
-    public void SetMaxHealth(float value)
-    {
-        _maxHealth     = value;
-        _currentHealth = _maxHealth;
-    }
-
-    // Utilisé par BossPortal : multiplie depuis la base inspector.
+    // Utilisé par EnemySpawner et BossPortal : multiplie depuis la base inspector.
     public void ApplyMultiplier(float multiplier)
     {
         _maxHealth     = Mathf.Round(_baseMaxHealth * multiplier);

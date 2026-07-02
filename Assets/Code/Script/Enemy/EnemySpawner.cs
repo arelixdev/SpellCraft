@@ -69,12 +69,12 @@ public class EnemySpawner : MonoBehaviour
         new Keyframe(60f,  1.5f),
         new Keyframe(180f, 3f));
 
-    [LabelText("PV max (x=s, y=PV)")]
-    [Tooltip("Valeur absolue des PV max au moment du spawn. X=0 = premier spawn (après délai initial).")]
+    [LabelText("PV max (x=s, y=multiplicateur)")]
+    [Tooltip("Multiplicateur appliqué aux PV de base du prefab (Inspector d'EnemyHealth). X=0 = premier spawn (après délai initial).")]
     public AnimationCurve HealthCurve = new AnimationCurve(
-        new Keyframe(0f,   50f),
-        new Keyframe(60f,  80f),
-        new Keyframe(180f, 200f));
+        new Keyframe(0f,   1f),
+        new Keyframe(60f,  1.6f),
+        new Keyframe(180f, 4f));
 
     // ── Valeurs courantes (lecture seule, pilotées par les courbes) ────────────
     [Title("Valeurs courantes")]
@@ -90,8 +90,8 @@ public class EnemySpawner : MonoBehaviour
     [ShowInInspector, ReadOnly, LabelText("Multiplicateur dégâts")]
     public float CurrentDamage  { get; private set; } = 1f;
 
-    [ShowInInspector, ReadOnly, LabelText("PV max")]
-    public float CurrentHealth  { get; private set; } = 25f;
+    [ShowInInspector, ReadOnly, LabelText("Multiplicateur PV")]
+    public float CurrentHealthMultiplier { get; private set; } = 1f;
 
     public void SetDangerLevel(float dangerSeconds)
     {
@@ -103,7 +103,7 @@ public class EnemySpawner : MonoBehaviour
         float statTime = Mathf.Max(0f, dangerSeconds - InitialDelay);
         CurrentScale   = Mathf.Max(0.1f, EvaluateInfinite(ScaleCurve,   statTime));
         CurrentDamage  = Mathf.Max(0f,   EvaluateInfinite(DamageCurve,  statTime));
-        CurrentHealth  = Mathf.Max(1f,   EvaluateInfinite(HealthCurve,  statTime));
+        CurrentHealthMultiplier = Mathf.Max(0.01f, EvaluateInfinite(HealthCurve, statTime));
     }
 
     // Prolonge la courbe à l'infini en extrapolant linéairement avec la pente de fin.
@@ -213,7 +213,7 @@ public class EnemySpawner : MonoBehaviour
 
             enemy.transform.localScale = Vector3.one * CurrentScale;
             enemy.GetComponent<EnemyMeleeAttack>()?.ApplyMultiplier(CurrentDamage);
-            enemy.GetComponent<EnemyHealth>()?.SetMaxHealth(CurrentHealth);
+            enemy.GetComponent<EnemyHealth>()?.ApplyMultiplier(CurrentHealthMultiplier);
 
             if (Mode == SpawnMode.Limité)
                 _spawnedEnemies.Add(enemy);
