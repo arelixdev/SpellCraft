@@ -1,7 +1,8 @@
 {
   "permissions": {
     "allow": [
-      "mcp__ai-game-developer__assets-modify"
+      "mcp__ai-game-developer__assets-modify",
+      "mcp__ai-game-developer__gameobject-component-destroy"
     ]
   }
 }

@@ -44,6 +44,14 @@ public class EnemyHealth : MonoBehaviour
         _currentHealth = _maxHealth;
     }
 
+    // Utilisé par EnemyGenericController : remplace la base (issue d'un EnemyDefinitionSO) avant tout ApplyMultiplier.
+    public void SetBase(float baseHealth)
+    {
+        _baseMaxHealth = baseHealth;
+        _maxHealth     = baseHealth;
+        _currentHealth = baseHealth;
+    }
+
     public void TakeDamage(float damage, ElementType element, bool isCrit)
     {
         SpawnPopup(damage, element, isCrit);

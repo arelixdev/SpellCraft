@@ -1,17 +1,18 @@
 using UnityEngine;
 
-public class EnemyMeleeAttack : MonoBehaviour
+public class EnemyRangedAttack : MonoBehaviour
 {
-    [SerializeField] private float _damage      = 10f;
-    [SerializeField] private float _attackRange = 1.8f;
-    [SerializeField] private float _attackRate  = 1f; // attacks per second
+    [SerializeField] private float      _damage          = 10f;
+    [SerializeField] private float      _attackRange     = 10f;
+    [SerializeField] private float      _attackRate      = 1f; // attacks per second
+    [SerializeField] private float      _projectileSpeed = 12f;
+    [SerializeField] private GameObject _projectilePrefab;
 
     private float         _baseDamage;
     private float         _baseAttackRange;
     private float         _baseAttackRate;
     private float         _attackCooldown;
     private Transform     _player;
-    private PlayerHealth  _playerHealth;
     private EnemyLOD      _lod;
 
     private void Start()
@@ -19,23 +20,20 @@ public class EnemyMeleeAttack : MonoBehaviour
         var playerGO = GameObject.FindWithTag("Player");
         if (playerGO == null) return;
 
-        _player       = playerGO.transform;
-        _playerHealth = playerGO.GetComponent<PlayerHealth>();
-        _lod          = GetComponent<EnemyLOD>();
+        _player = playerGO.transform;
+        _lod    = GetComponent<EnemyLOD>();
     }
 
     private void Update()
     {
-        if (_player == null || _playerHealth == null) return;
+        if (_player == null) return;
 
-        // Le cooldown décrémente toujours (précision indépendante du LOD)
         if (_attackCooldown > 0f)
         {
             _attackCooldown -= Time.deltaTime;
             return;
         }
 
-        // Vérification de distance/attaque uniquement quand le LOD l'autorise
         if (_lod != null && !_lod.ShouldUpdateAttack()) return;
 
         float dist = Vector3.Distance(transform.position, _player.position);
@@ -67,20 +65,27 @@ public class EnemyMeleeAttack : MonoBehaviour
     }
 
     // Utilisé par EnemyBehaviorRouter : remplace la base (issue d'un EnemyDefinitionSO).
-    public void Configure(float attackRange, float attackRate)
+    public void Configure(float attackRange, float attackRate, float projectileSpeed, GameObject projectilePrefab)
     {
-        _baseAttackRange = attackRange;
-        _baseAttackRate  = attackRate;
-        _attackRange     = attackRange;
-        _attackRate      = attackRate;
+        _baseAttackRange   = attackRange;
+        _baseAttackRate    = attackRate;
+        _attackRange       = attackRange;
+        _attackRate        = attackRate;
+        _projectileSpeed   = projectileSpeed;
+        _projectilePrefab  = projectilePrefab;
     }
 
     private void Attack()
     {
-        _playerHealth.TakeDamage(_damage);
         _attackCooldown = 1f / _attackRate;
 
-        Debug.Log($"[EnemyMeleeAttack] {name} hit player for {_damage} dmg.");
+        if (_projectilePrefab == null) return;
+
+        Vector3 direction = (_player.position - transform.position).normalized;
+        var go = Instantiate(_projectilePrefab, transform.position, Quaternion.LookRotation(direction));
+        go.GetComponent<EnemyProjectile>()?.Initialize(direction, _projectileSpeed, _damage);
+
+        Debug.Log($"[EnemyRangedAttack] {name} fired projectile for {_damage} dmg.");
     }
 
     private void OnDrawGizmosSelected()

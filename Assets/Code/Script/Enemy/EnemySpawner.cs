@@ -14,9 +14,9 @@ public class EnemySpawner : MonoBehaviour
     [EnumToggleButtons, HideLabel]
     public SpawnMode Mode = SpawnMode.Limité;
 
-    // ── Prefab & paramètres fixes ──────────────────────────────────────────────
-    [BoxGroup("Spawn"), Required, LabelText("Prefab ennemi")]
-    public GameObject EnemyPrefab;
+    // ── Pool de définitions & paramètres fixes ────────────────────────────────
+    [BoxGroup("Spawn"), LabelText("Définitions d'ennemis")]
+    public List<EnemyDefinitionSO> EnemyDefinitions = new();
 
     [BoxGroup("Spawn"), MinValue(1f), LabelText("Rayon de spawn")]
     public float SpawnRadius = 15f;
@@ -184,7 +184,7 @@ public class EnemySpawner : MonoBehaviour
         {
             yield return new WaitForSeconds(SpawnInterval);
 
-            if (_player == null || EnemyPrefab == null) continue;
+            if (_player == null || EnemyDefinitions.Count == 0) continue;
 
             if (Mode == SpawnMode.Limité)
             {
@@ -205,14 +205,21 @@ public class EnemySpawner : MonoBehaviour
     {
         for (int i = 0; i < count; i++)
         {
+            var def = EnemyDefinitions[Random.Range(0, EnemyDefinitions.Count)];
+            if (def?.Prefab == null) continue;
+
             if (!TryGetSpawnPosition(out Vector3 pos)) continue;
 
             var enemy = EnemyPool.Instance != null
-                ? EnemyPool.Instance.Get(EnemyPrefab, pos, Quaternion.identity, _spawnParent)
-                : Instantiate(EnemyPrefab, pos, Quaternion.identity, _spawnParent);
+                ? EnemyPool.Instance.Get(def.Prefab, pos, Quaternion.identity, _spawnParent)
+                : Instantiate(def.Prefab, pos, Quaternion.identity, _spawnParent);
+
+            int level = RunController.Instance != null ? RunController.Instance.LevelNumber : 1;
+            enemy.GetComponent<EnemyGenericController>()?.Initialize(def, level);
 
             enemy.transform.localScale = Vector3.one * CurrentScale;
             enemy.GetComponent<EnemyMeleeAttack>()?.ApplyMultiplier(CurrentDamage);
+            enemy.GetComponent<EnemyRangedAttack>()?.ApplyMultiplier(CurrentDamage);
             enemy.GetComponent<EnemyHealth>()?.ApplyMultiplier(CurrentHealthMultiplier);
 
             if (Mode == SpawnMode.Limité)

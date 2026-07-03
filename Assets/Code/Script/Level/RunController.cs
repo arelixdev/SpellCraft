@@ -21,6 +21,10 @@ public class RunController : MonoBehaviour
     [BoxGroup("Références"), LabelText("Boss Portal")]
     public BossPortal BossPortal;
 
+    [BoxGroup("Références"), MinValue(1), LabelText("Numéro de niveau (scène)")]
+    [Tooltip("Utilisé par EnemySpawner pour scaler les stats de base des EnemyDefinitionSO (healthScalePerLevel / damageScalePerLevel)")]
+    public int LevelNumber = 1;
+
     // ── Events ──────────────────────────────────────────────────────────────────
     [FoldoutGroup("Events"), LabelText("Danger mis à jour (secondes écoulées)")]
     public UnityEvent<float> OnDangerChanged;

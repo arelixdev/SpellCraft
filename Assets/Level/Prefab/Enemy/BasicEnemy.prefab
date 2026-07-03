@@ -17,6 +17,10 @@ GameObject:
   - component: {fileID: 6321169521803999933}
   - component: {fileID: 5711467810769504138}
   - component: {fileID: 846796966286857760}
+  - component: {fileID: 5620029424269241254}
+  - component: {fileID: 4962839194071389245}
+  - component: {fileID: 2771905773296042578}
+  - component: {fileID: 3285530610499510864}
   m_Layer: 0
   m_Name: BasicEnemy
   m_TagString: Enemy
@@ -204,3 +208,59 @@ MonoBehaviour:
   MediumRange: 30
   SleepRange: 50
   WakeRange: 40
+--- !u!114 &5620029424269241254
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1800700278847618402}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 90119afb6d67f6c40b47e0db3c981166, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyBehaviorRouter
+--- !u!114 &4962839194071389245
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1800700278847618402}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2b927b8cbbe148f418a830e0607c2b4a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyGenericController
+--- !u!114 &2771905773296042578
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1800700278847618402}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2c81a05cb4861ee4595f594d73840b1d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyRangedAI
+  _detectionRange: 15
+  _preferredRange: 8
+  CanMove: 1
+--- !u!114 &3285530610499510864
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1800700278847618402}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7aa36e0bac2e7694e97a502c0a848b8e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyRangedAttack
+  _damage: 10
+  _attackRange: 10
+  _attackRate: 1
+  _projectileSpeed: 12
+  _projectilePrefab: {fileID: 5868027945577231407, guid: 9bd733ce4186cab4d9c24312d8e29f13, type: 3}

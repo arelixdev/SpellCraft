@@ -2,14 +2,14 @@ using UnityEngine;
 using UnityEngine.AI;
 
 [RequireComponent(typeof(NavMeshAgent))]
-public class EnemyAI : MonoBehaviour
+public class EnemyRangedAI : MonoBehaviour
 {
     [SerializeField] private float _detectionRange = 15f;
-    [SerializeField] private float _stopDistance   = 1.5f;
+    [SerializeField] private float _preferredRange  = 8f;
     public bool CanMove = true;
 
     private float _baseDetectionRange;
-    private float _baseStopDistance;
+    private float _basePreferredRange;
 
     private NavMeshAgent _agent;
     private Transform    _player;
@@ -21,14 +21,14 @@ public class EnemyAI : MonoBehaviour
         _lod   = GetComponent<EnemyLOD>();
 
         _baseDetectionRange = _detectionRange;
-        _baseStopDistance   = _stopDistance;
+        _basePreferredRange = _preferredRange;
     }
 
     private void OnEnable()
     {
         // Réinitialise l'ennemi quand le pool le réactive
         _detectionRange = _baseDetectionRange;
-        _stopDistance   = _baseStopDistance;
+        _preferredRange = _basePreferredRange;
     }
 
     private void Start()
@@ -38,20 +38,10 @@ public class EnemyAI : MonoBehaviour
             _player = playerGO.transform;
     }
 
-    // Utilisé par EnemyBehaviorRouter : remplace la base (issue d'un EnemyDefinitionSO).
-    public void Configure(float detectionRange, float stopDistance)
-    {
-        _baseDetectionRange = detectionRange;
-        _baseStopDistance   = stopDistance;
-        _detectionRange     = detectionRange;
-        _stopDistance       = stopDistance;
-    }
-
     private void Update()
     {
         if (_player == null) return;
 
-        // Sommeil ou hors slot de stagger : on ne recalcule pas le chemin ce frame
         if (_lod != null && !_lod.ShouldUpdatePath()) return;
 
         if (!CanMove || (_lod != null && !_agent.enabled))
@@ -61,18 +51,44 @@ public class EnemyAI : MonoBehaviour
         }
 
         float dist = Vector3.Distance(transform.position, _player.position);
-
-        if (dist <= _detectionRange && dist > _stopDistance)
-            _agent.SetDestination(_player.position);
-        else
+        if (dist > _detectionRange)
+        {
             _agent.ResetPath();
+            return;
+        }
+
+        if (dist > _preferredRange)
+        {
+            // Trop loin : se rapproche
+            _agent.SetDestination(_player.position);
+        }
+        else if (dist < _preferredRange * 0.6f)
+        {
+            // Trop proche : recule
+            Vector3 away = (transform.position - _player.position).normalized;
+            _agent.SetDestination(transform.position + away * _preferredRange);
+        }
+        else
+        {
+            // Bonne distance : tient position, laisse EnemyRangedAttack tirer
+            _agent.ResetPath();
+        }
     }
 
     private void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.yellow;
         Gizmos.DrawWireSphere(transform.position, _detectionRange);
-        Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(transform.position, _stopDistance);
+        Gizmos.color = Color.cyan;
+        Gizmos.DrawWireSphere(transform.position, _preferredRange);
+    }
+
+    // Utilisé par EnemyBehaviorRouter : remplace la base (issue d'un EnemyDefinitionSO).
+    public void Configure(float detectionRange, float preferredRange)
+    {
+        _baseDetectionRange = detectionRange;
+        _basePreferredRange = preferredRange;
+        _detectionRange     = detectionRange;
+        _preferredRange     = preferredRange;
     }
 }
