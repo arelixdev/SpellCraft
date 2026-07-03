@@ -10,16 +10,25 @@ using UnityEngine.AI;
 /// aléatoirement sur le NavMesh en respectant le rayon d'exclusion de chaque activité.
 /// Positionner ce GameObject au centre de la zone.
 /// </summary>
+[Serializable]
+public class ActivityPoolEntry
+{
+    [LabelText("Activité"), HorizontalGroup("Row")]
+    public ActivitySO Activity;
+
+    [LabelText("Min"), MinValue(0), HorizontalGroup("Row"), Tooltip("Nombre minimum de cette activité à placer dans le niveau")]
+    public int MinCount = 1;
+
+    [LabelText("Max"), MinValue(0), HorizontalGroup("Row"), Tooltip("Nombre maximum de cette activité à placer dans le niveau")]
+    public int MaxCount = 1;
+}
+
 public class ActivityManager : MonoBehaviour
 {
     // ── Configuration ────────────────────────────────────────────────────────────
     [Title("Pool d'activités")]
     [LabelText("Activités disponibles")]
-    public List<ActivitySO> ActivityPool = new();
-
-    [LabelText("Nombre d'activités à placer")]
-    [MinValue(1)]
-    public int ActivityCount = 5;
+    public List<ActivityPoolEntry> ActivityPool = new();
 
     [Title("Placement NavMesh")]
     [LabelText("Rayon de recherche (m)")]
@@ -57,10 +66,21 @@ public class ActivityManager : MonoBehaviour
             return;
         }
 
-        // Tirage AVEC remise : le même type peut apparaître plusieurs fois
+        // Pour chaque entrée, tire un nombre d'exemplaires entre Min et Max (inclus).
         var selected = new List<ActivitySO>();
-        for (int i = 0; i < ActivityCount; i++)
-            selected.Add(ActivityPool[UnityEngine.Random.Range(0, ActivityPool.Count)]);
+        foreach (var entry in ActivityPool)
+        {
+            if (entry?.Activity == null) continue;
+
+            int min = Mathf.Min(entry.MinCount, entry.MaxCount);
+            int max = Mathf.Max(entry.MinCount, entry.MaxCount);
+            int count = UnityEngine.Random.Range(min, max + 1);
+
+            for (int i = 0; i < count; i++)
+                selected.Add(entry.Activity);
+        }
+
+        int requestedCount = selected.Count;
 
         foreach (var def in selected)
         {
@@ -88,7 +108,7 @@ public class ActivityManager : MonoBehaviour
             PlacedCount++;
         }
 
-        Debug.Log($"[ActivityManager] {PlacedCount}/{ActivityCount} activités placées.");
+        Debug.Log($"[ActivityManager] {PlacedCount}/{requestedCount} activités placées.");
     }
 
     private bool TryFindPosition(ActivitySO def, out Vector3 result)
