@@ -125,6 +125,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0b8182fd8e319a94caed3e789aaba2d5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::NodePickup
-  Catalog: {fileID: 11400000, guid: 813ce4cc00682d94985529b8d56f8183, type: 2}
+  LootPool: {fileID: 11400000, guid: 3de149ce2b7d0004f84e0f9df42550f8, type: 2}
   NodeLabel: {fileID: 0}
   NodeColorRenderer: {fileID: 2218861875988529974}

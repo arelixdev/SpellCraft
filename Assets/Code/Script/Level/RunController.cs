@@ -36,6 +36,9 @@ public class RunController : MonoBehaviour
     [FoldoutGroup("État"), ShowInInspector, ReadOnly, LabelText("Run actif")]
     public bool IsRunning { get; private set; }
 
+    [FoldoutGroup("État"), ShowInInspector, ReadOnly, LabelText("Coffres ouverts")]
+    public int ChestsOpened { get; private set; }
+
     private float _lastEventSecond = -1f;
 
     // ── Unity ───────────────────────────────────────────────────────────────────
@@ -77,11 +80,14 @@ public class RunController : MonoBehaviour
     public void StartRun()
     {
         if (IsRunning) return;
-        IsRunning   = true;
-        TimeElapsed = 0f;
+        IsRunning    = true;
+        TimeElapsed  = 0f;
+        ChestsOpened = 0;
         if (SpawnEnemies) EnemySpawner?.StartSpawning();
         Debug.Log("[RunController] Run démarré.");
     }
+
+    public void RegisterChestOpened() => ChestsOpened++;
 
     [Button("■ Arrêter le run")]
     public void StopRun()

@@ -19,6 +19,10 @@ public abstract class ActivityBase : MonoBehaviour
 
     public event Action OnCompleted;
 
+    // Générique à toute activité : permet à une sous-classe d'afficher un prompt (prix, etc.) sans dupliquer la détection de trigger.
+    public event Action<SpellCaster> OnPlayerNearby;
+    public event Action              OnPlayerLeft;
+
     private SpellCaster _nearbyPlayer;
 
     protected virtual void Awake()
@@ -33,13 +37,16 @@ public abstract class ActivityBase : MonoBehaviour
                   ?? other.GetComponentInParent<SpellCaster>();
         if (caster == null) return;
         _nearbyPlayer = caster;
+        OnPlayerNearby?.Invoke(caster);
     }
 
     private void OnTriggerExit(Collider other)
     {
         var caster = other.GetComponent<SpellCaster>()
                   ?? other.GetComponentInParent<SpellCaster>();
-        if (caster == _nearbyPlayer) _nearbyPlayer = null;
+        if (caster != _nearbyPlayer) return;
+        _nearbyPlayer = null;
+        OnPlayerLeft?.Invoke();
     }
 
     private void Update()
@@ -56,6 +63,7 @@ public abstract class ActivityBase : MonoBehaviour
         if (IsCompleted) return;
         IsCompleted = true;
         _nearbyPlayer = null;
+        OnPlayerLeft?.Invoke();
         OnCompleted?.Invoke();
         Debug.Log($"[Activity] '{Definition?.DisplayName ?? name}' terminée.");
     }

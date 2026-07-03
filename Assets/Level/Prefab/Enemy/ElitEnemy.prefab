@@ -133,6 +133,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EnemyHealth
   _maxHealth: 100
   IsInvincible: 0
+  _goldReward: 15
   _damagePopupPrefab: {fileID: 6458477583499661680, guid: ec4aaf77c20772340bc21c7940f2c61d, type: 3}
   _popupOffset: {x: 0, y: 1.25, z: 0}
   _popupStagger: 0.12

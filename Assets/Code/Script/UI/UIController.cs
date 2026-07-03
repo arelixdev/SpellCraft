@@ -12,7 +12,11 @@ public class UIController : MonoBehaviour
     [SerializeField] private Image   _healthBarFill;
     [SerializeField] private TMP_Text _healthLabel;
 
+    [Header("Gold HUD")]
+    [SerializeField] private TMP_Text _goldLabel;
+
     private PlayerHealth _playerHealth;
+    private PlayerWallet _playerWallet;
 
     private void Awake()
     {
@@ -32,6 +36,9 @@ public class UIController : MonoBehaviour
             _playerHealth.OnDied          -= ShowGameOver;
             _playerHealth.OnHealthChanged -= UpdateHealthHUD;
         }
+
+        if (_playerWallet != null)
+            _playerWallet.OnGoldChanged -= UpdateGoldHUD;
     }
 
     private IEnumerator WaitForPlayer()
@@ -40,7 +47,10 @@ public class UIController : MonoBehaviour
         {
             var playerGO = GameObject.FindWithTag("Player");
             if (playerGO != null)
+            {
                 _playerHealth = playerGO.GetComponent<PlayerHealth>();
+                _playerWallet = playerGO.GetComponent<PlayerWallet>();
+            }
 
             yield return null;
         }
@@ -49,6 +59,18 @@ public class UIController : MonoBehaviour
         _playerHealth.OnHealthChanged += UpdateHealthHUD;
 
         UpdateHealthHUD(_playerHealth.CurrentHealth, _playerHealth.MaxHealth);
+
+        if (_playerWallet != null)
+        {
+            _playerWallet.OnGoldChanged += UpdateGoldHUD;
+            UpdateGoldHUD(_playerWallet.Gold);
+        }
+    }
+
+    private void UpdateGoldHUD(int gold)
+    {
+        if (_goldLabel != null)
+            _goldLabel.text = $"{gold}";
     }
 
     private enum HealthLabelMode { Hidden, CurrentMax, Percent }

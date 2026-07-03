@@ -7,6 +7,9 @@ public class EnemyHealth : MonoBehaviour
     [SerializeField] private float _maxHealth = 25f;
     [SerializeField] public  bool  IsInvincible = false;
 
+    [Header("Récompense")]
+    [SerializeField] private int _goldReward = 5;
+
     [Header("UI")]
     [SerializeField] private DamagePopup _damagePopupPrefab;
     [SerializeField] private Vector3     _popupOffset = new Vector3(0f, 2f, 0f);
@@ -15,6 +18,7 @@ public class EnemyHealth : MonoBehaviour
     private float _nextPopupTime = 0f;
 
     private float _baseMaxHealth; // valeur inspector, jamais modifiée
+    private int   _baseGoldReward;
     private float _currentHealth;
 
     public float CurrentHealth => _currentHealth;
@@ -25,8 +29,9 @@ public class EnemyHealth : MonoBehaviour
 
     private void Awake()
     {
-        _baseMaxHealth = _maxHealth;
-        _currentHealth = _maxHealth;
+        _baseMaxHealth   = _maxHealth;
+        _currentHealth   = _maxHealth;
+        _baseGoldReward  = _goldReward;
     }
 
     private void OnEnable()
@@ -34,6 +39,7 @@ public class EnemyHealth : MonoBehaviour
         // Réinitialise l'ennemi quand le pool le réactive
         _maxHealth     = _baseMaxHealth;
         _currentHealth = _maxHealth;
+        _goldReward    = _baseGoldReward;
         OnDied         = null; // purge les abonnements de la vie précédente
     }
 
@@ -50,6 +56,13 @@ public class EnemyHealth : MonoBehaviour
         _baseMaxHealth = baseHealth;
         _maxHealth     = baseHealth;
         _currentHealth = baseHealth;
+    }
+
+    // Utilisé par EnemyGenericController : remplace la récompense en or (issue d'un EnemyDefinitionSO).
+    public void SetGoldReward(int baseGold)
+    {
+        _baseGoldReward = baseGold;
+        _goldReward     = baseGold;
     }
 
     public void TakeDamage(float damage, ElementType element, bool isCrit)
@@ -89,6 +102,9 @@ public class EnemyHealth : MonoBehaviour
 
     private void Die()
     {
+        if (_goldReward > 0)
+            GameObject.FindWithTag("Player")?.GetComponent<PlayerWallet>()?.AddGold(_goldReward);
+
         OnDied?.Invoke();
         Debug.Log($"[EnemyHealth] {name} died.");
 

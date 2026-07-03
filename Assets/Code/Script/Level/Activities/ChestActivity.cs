@@ -1,5 +1,5 @@
-using System.Collections.Generic;
 using Sirenix.OdinInspector;
+using TMPro;
 using UnityEngine;
 
 /// <summary>
@@ -9,25 +9,65 @@ using UnityEngine;
 public class ChestActivity : ActivityBase
 {
     // ── Loot ────────────────────────────────────────────────────────────────────
-    [BoxGroup("Loot"), LabelText("Catalogue global")]
-    [Tooltip("Utilisé si Pool de nodes est vide")]
-    public SpellNodeCatalogSO Catalog;
+    [BoxGroup("Loot"), LabelText("Loot Pool")]
+    public LootPoolSO LootPool;
 
-    [BoxGroup("Loot"), LabelText("Pool de nodes spécifiques")]
-    [Tooltip("Si rempli, le coffre tire uniquement parmi ces nodes (ignore le catalogue)")]
-    public List<SpellNodeSO> NodePool = new();
+    // ── Prix ─────────────────────────────────────────────────────────────────────
+    [BoxGroup("Prix"), LabelText("Prix de base (or)")]
+    public int BaseGoldPrice = 20;
+
+    [BoxGroup("Prix"), LabelText("Croissance du prix par coffre")]
+    [Tooltip("Prix = BaseGoldPrice * croissance^(coffres déjà ouverts dans le run)")]
+    public float PriceGrowthPerChest = 1.3f;
+
+    [FoldoutGroup("État"), ShowInInspector, ReadOnly, LabelText("Prix actuel")]
+    public int CurrentPrice => Mathf.RoundToInt(BaseGoldPrice *
+        Mathf.Pow(PriceGrowthPerChest, RunController.Instance != null ? RunController.Instance.ChestsOpened : 0));
 
     // ── Visuals ──────────────────────────────────────────────────────────────────
     [BoxGroup("Visuals"), LabelText("Animator (optionnel)")]
     [Tooltip("Doit avoir un trigger 'Open' pour l'animation d'ouverture")]
     public Animator ChestAnimator;
 
+    [BoxGroup("Visuals"), LabelText("Label prix (optionnel)")]
+    [Tooltip("Texte affiché au-dessus du coffre quand le joueur entre à portée, indiquant le prix à payer")]
+    public TMP_Text PriceLabel;
+
+    protected override void Awake()
+    {
+        base.Awake();
+        OnPlayerNearby += ShowPriceLabel;
+        OnPlayerLeft   += HidePriceLabel;
+        HidePriceLabel();
+    }
+
+    private void ShowPriceLabel(SpellCaster caster)
+    {
+        if (PriceLabel == null) return;
+        PriceLabel.text = $"{CurrentPrice} or";
+        PriceLabel.gameObject.SetActive(true);
+    }
+
+    private void HidePriceLabel()
+    {
+        if (PriceLabel == null) return;
+        PriceLabel.gameObject.SetActive(false);
+    }
+
     // ── Interaction ───────────────────────────────────────────────────────────────
     protected override void OnInteract(SpellCaster caster)
     {
+        int price = CurrentPrice;
+        var wallet = caster.GetComponent<PlayerWallet>();
+        if (wallet == null || !wallet.TrySpend(price))
+        {
+            Debug.Log($"[ChestActivity] Or insuffisant pour ouvrir ce coffre ({price} requis).");
+            return; // pas de Complete() : le joueur peut retenter une fois qu'il a assez d'or
+        }
+
         if (ChestAnimator != null) ChestAnimator.SetTrigger("Open");
 
-        SpellNodeSO node = PickNode();
+        SpellNodeSO node = LootPool?.DrawOneWithBias(caster.craftingGraph);
         if (node != null)
         {
             caster.CollectNode(node);
@@ -35,17 +75,11 @@ public class ChestActivity : ActivityBase
         }
         else
         {
-            Debug.LogWarning("[ChestActivity] Aucune node disponible dans le pool ni le catalogue.");
+            Debug.LogWarning("[ChestActivity] Aucune node disponible (LootPool vide ou non assignée).");
         }
 
+        RunController.Instance?.RegisterChestOpened();
         Complete();
-    }
-
-    private SpellNodeSO PickNode()
-    {
-        var pool = NodePool.Count > 0 ? NodePool : Catalog?.allNodes;
-        if (pool == null || pool.Count == 0) return null;
-        return pool[Random.Range(0, pool.Count)];
     }
 
     // ── Gizmos ───────────────────────────────────────────────────────────────────

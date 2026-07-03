@@ -13,11 +13,12 @@ MonoBehaviour:
   m_Name: Poison Common
   m_EditorClassIdentifier: Assembly-CSharp::ElementNodeSO
   icon: {fileID: 0}
-  nodeName: 
+  nodeName: Poison
   nodeType: 0
   complexityCost: 3
   rarity: 0
   corruptedEffect: {fileID: 0}
+  synergies: []
   element: 5
   damageMultiplier: 1
   statusChance: 0.78073627
@@ -28,6 +29,7 @@ MonoBehaviour:
   lightningChainCount: 2
   lightningChainRange: 5
   lightningChainDamage: 5
+  arcanePerNodeBonus: 0.1
   poisonTickInterval: 1.1289752
   poisonTickDamage: 1.7105825
   enableRoll: 1
@@ -40,6 +42,7 @@ MonoBehaviour:
   lightningChainCountRange: {x: 1, y: 4}
   lightningChainRangeRange: {x: 3, y: 8}
   lightningChainDamageRange: {x: 3, y: 12}
+  arcanePerNodeBonusRange: {x: 0.05, y: 0.2}
   poisonTickIntervalRange: {x: 1, y: 2}
   poisonTickDamageRange: {x: 1, y: 3}
   overrideMaterial: {fileID: 2100000, guid: 3c9656047d8680e4b99784336c8f2156, type: 2}

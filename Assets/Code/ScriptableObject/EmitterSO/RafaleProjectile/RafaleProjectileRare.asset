@@ -13,11 +13,12 @@ MonoBehaviour:
   m_Name: RafaleProjectileRare
   m_EditorClassIdentifier: Assembly-CSharp::EmitterNodeSO
   icon: {fileID: 0}
-  nodeName: 
+  nodeName: Rafale projectile
   nodeType: 0
   complexityCost: 4
   rarity: 1
   corruptedEffect: {fileID: 0}
+  synergies: []
   emitterType: 1
   projectilePrefab: {fileID: 7326707846551993688, guid: 5bd8f0eae267a5f4c8b98a633db1e76f, type: 3}
   baseDamage: 3
@@ -37,6 +38,12 @@ MonoBehaviour:
   explosionRadius: 3
   explosionDamageMultiplier: 1.5
   explosionPrefab: {fileID: 0}
+  zoneType: 0
+  zoneDamageMode: 0
+  zoneRadius: 3
+  zoneGrowDuration: 1
+  zoneDuration: 0
+  zoneTickInterval: 1
   orbitalCount: 3
   orbitalRadius: 3
   orbitalSpeed: 90
@@ -56,3 +63,7 @@ MonoBehaviour:
   orbitalRadiusRange: {x: 2, y: 5}
   orbitalSpeedRange: {x: 60, y: 180}
   orbitalLifetimeRange: {x: 3, y: 10}
+  zoneRadiusRange: {x: 2, y: 6}
+  zoneGrowDurationRange: {x: 0.5, y: 2}
+  zoneDurationRange: {x: 3, y: 8}
+  zoneTickIntervalRange: {x: 0.5, y: 2}

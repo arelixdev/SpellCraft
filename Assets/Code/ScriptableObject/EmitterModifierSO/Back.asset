@@ -13,11 +13,12 @@ MonoBehaviour:
   m_Name: Back
   m_EditorClassIdentifier: Assembly-CSharp::EmitterModifierNodeSO
   icon: {fileID: 0}
-  nodeName: 
+  nodeName: Comeback
   nodeType: 6
   complexityCost: 1
   rarity: 0
   corruptedEffect: {fileID: 0}
+  synergies: []
   modifierType: 3
   compatibleEmitters: 1
   homingRadius: 8

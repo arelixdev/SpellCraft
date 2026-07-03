@@ -24,8 +24,10 @@ public class EnemyGenericController : MonoBehaviour
         int   lvl        = Mathf.Max(1, level);
         float healthMult = Mathf.Pow(def.HealthScalePerLevel, lvl - 1);
         float damageMult = Mathf.Pow(def.DamageScalePerLevel, lvl - 1);
+        float goldMult   = Mathf.Pow(def.GoldScalePerLevel, lvl - 1);
 
         _health?.SetBase(def.BaseHealth * healthMult);
+        _health?.SetGoldReward(Mathf.RoundToInt(def.BaseGoldReward * goldMult));
         if (_agent != null) _agent.speed = def.BaseMoveSpeed;
         _router?.Configure(def, damageMult);
     }

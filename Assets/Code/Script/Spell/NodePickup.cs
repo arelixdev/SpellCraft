@@ -6,7 +6,7 @@ using TMPro;
 public class NodePickup : MonoBehaviour
 {
     [Header("Config")]
-    public SpellNodeCatalogSO Catalog;
+    public LootPoolSO LootPool;
 
     [Header("Visual (optional)")]
     public TMP_Text NodeLabel;
@@ -14,15 +14,27 @@ public class NodePickup : MonoBehaviour
 
     private SpellNodeSO _pickedNode;
 
-    private void Awake()
+    private void Awake() => Configure(LootPool);
+
+    // Permet à un spawner externe (ex: BossPortal) d'imposer une pool différente de celle sérialisée sur le prefab.
+    public void Initialize(LootPoolSO pool) => Configure(pool);
+
+    private void Configure(LootPoolSO pool)
     {
-        if (Catalog == null || Catalog.allNodes.Count == 0)
+        if (pool == null)
         {
-            Debug.LogWarning($"[NodePickup] '{name}' has no catalog or catalog is empty.");
+            Debug.LogWarning($"[NodePickup] '{name}' has no LootPool assigned.");
             return;
         }
 
-        _pickedNode = Catalog.allNodes[Random.Range(0, Catalog.allNodes.Count)];
+        var playerGraph = GameObject.FindWithTag("Player")?.GetComponent<SpellCaster>()?.craftingGraph;
+        _pickedNode = pool.DrawOneWithBias(playerGraph);
+
+        if (_pickedNode == null)
+        {
+            Debug.LogWarning($"[NodePickup] '{name}' : LootPool '{pool.name}' n'a retourné aucune node.");
+            return;
+        }
 
         if (NodeLabel != null)
             NodeLabel.text = _pickedNode.nodeName;

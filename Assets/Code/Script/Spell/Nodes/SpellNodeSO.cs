@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using Sirenix.OdinInspector;
 
@@ -21,6 +22,10 @@ public abstract class SpellNodeSO : ScriptableObject
 
     [FoldoutGroup("Corruption"), InlineEditor(InlineEditorObjectFieldModes.Boxed)]
     public CorruptedEffectSO corruptedEffect;
+
+    [FoldoutGroup("Synergie"), LabelText("Nodes synergiques")]
+    [Tooltip("Proposées en priorité par LootPoolSO quand cet élément domine le graphe du joueur")]
+    public List<SpellNodeSO> synergies = new();
 
     public virtual  void RuntimeInit()          { }
     public abstract void Execute(SpellContext ctx);

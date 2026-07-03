@@ -13,11 +13,12 @@ MonoBehaviour:
   m_Name: Bounce
   m_EditorClassIdentifier: Assembly-CSharp::EmitterModifierNodeSO
   icon: {fileID: 0}
-  nodeName: 
+  nodeName: Bounce
   nodeType: 6
   complexityCost: 1
   rarity: 0
   corruptedEffect: {fileID: 0}
+  synergies: []
   modifierType: 1
   compatibleEmitters: 1
   homingRadius: 8

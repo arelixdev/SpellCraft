@@ -19,6 +19,13 @@ public class BossPortal : MonoBehaviour
     [Tooltip("Si vide, le boss spawne devant le portail")]
     public Transform BossSpawnPoint;
 
+    [BoxGroup("Boss"), LabelText("Prefab Node Pickup")]
+    [Tooltip("Instancié à la mort du boss")]
+    public GameObject NodePickupPrefab;
+
+    [BoxGroup("Boss"), LabelText("Loot Pool")]
+    public LootPoolSO LootPool;
+
     // ── Placement NavMesh ────────────────────────────────────────────────────────
     [BoxGroup("Placement"), LabelText("Rayon de recherche (m)")]
     [Tooltip("Distance max autour du centre de la zone pour chercher une position")]
@@ -146,6 +153,18 @@ public class BossPortal : MonoBehaviour
         boss.GetComponent<EnemyHealth>()?.ApplyMultiplier(hpMult);
         boss.GetComponent<EnemyMeleeAttack>()?.ApplyMultiplier(dmgMult);
 
+        var bossHealth = boss.GetComponent<EnemyHealth>();
+        if (bossHealth != null)
+            bossHealth.OnDied += () => SpawnBossLoot(boss.transform.position);
+
         Debug.Log($"[BossPortal] Boss spawné après {_currentDanger:F0}s — HP×{hpMult:F2} DPS×{dmgMult:F2}");
+    }
+
+    private void SpawnBossLoot(Vector3 position)
+    {
+        if (NodePickupPrefab == null) return;
+
+        var pickup = Instantiate(NodePickupPrefab, position, Quaternion.identity);
+        pickup.GetComponent<NodePickup>()?.Initialize(LootPool);
     }
 }
