@@ -5,7 +5,20 @@
       "mcp__ai-game-developer__gameobject-component-destroy",
       "mcp__ai-game-developer__object-get-data",
       "mcp__ai-game-developer__object-modify",
-      "mcp__ai-game-developer__gameobject-modify"
+      "mcp__ai-game-developer__gameobject-modify",
+      "Bash(awk '/^--- !u!1 &1072855289$/{p=1} p{print NR\": \"$0} p && /m_IsActive/{exit}' \"Assets/Level/Scenes/Gameplay.unity\")",
+      "Bash(awk 'NR==424230713,NR==424230740' \"Assets/Level/Scenes/Gameplay.unity\")",
+      "Bash(grep -n \"^--- !u!114 &424230714$\" -A 5 \"Assets/Level/Scenes/Gameplay.unity\")",
+      "Bash(grep -n \"^--- !u!114 &354961704$\" -A 5 \"Assets/Level/Scenes/Gameplay.unity\")",
+      "Bash(awk 'NR>=3067 && NR<=3067+40' \"Assets/Level/Scenes/Gameplay.unity\")",
+      "Bash(awk 'NR>=2404 && NR<=2404+40' \"Assets/Level/Scenes/Gameplay.unity\")",
+      "Bash(grep -n \"^--- !u!114 &1008698611$\" -A 25 \"Assets/Level/Scenes/Gameplay.unity\")",
+      "Bash(grep -n \"^--- !u!1 &868000942$\\\\|^--- !u!224 &868000941\\\\|^--- !u!224 &868000943\" -A 8 \"Assets/Level/Scenes/Gameplay.unity\")",
+      "Bash(awk '/m_GameObject: \\\\{fileID: [0-9]+\\\\}/{go=$0} /^--- !u!224 &868000942$/{print \"found rect id 868000942 header\"; f=1} f{print; c++; if\\(c>5\\) exit}' \"Assets/Level/Scenes/Gameplay.unity\")",
+      "Bash(awk '/^--- !u!224 &868000942$/{f=1} f{print; c++; if\\(c>10\\) exit}' \"Assets/Level/Scenes/Gameplay.unity\")",
+      "Bash(grep -n \"^--- !u!1 &868000940$\" -A 15 \"Assets/Level/Scenes/Gameplay.unity\")",
+      "Bash(grep -n \"^--- !u!1 &868000938$\" -A 15 \"Assets/Level/Scenes/Gameplay.unity\")",
+      "Bash(awk -F: '$1>=4100 && $1<=8600')"
     ]
   }
 }

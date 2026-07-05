@@ -25,6 +25,16 @@ public class NodeView : MonoBehaviour, IPointerDownHandler, IBeginDragHandler, I
         _                  => Color.gray,
     };
 
+    public static Color ColorForRarity(NodeRarity r) => r switch
+    {
+        NodeRarity.Commun   => new Color(0.75f, 0.75f, 0.75f),
+        NodeRarity.Rare     => new Color(0.30f, 0.55f, 0.95f),
+        NodeRarity.Epique   => new Color(0.65f, 0.30f, 0.95f),
+        NodeRarity.Boss     => new Color(0.95f, 0.30f, 0.20f),
+        NodeRarity.Corrompu => new Color(0.55f, 0.15f, 0.55f),
+        _                   => Color.gray,
+    };
+
     public void Init(SpellNodeSO data, GraphCanvasController canvas)
     {
         Data    = data;

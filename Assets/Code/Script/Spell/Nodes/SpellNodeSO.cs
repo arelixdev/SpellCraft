@@ -27,6 +27,9 @@ public abstract class SpellNodeSO : ScriptableObject
     [Tooltip("Proposées en priorité par LootPoolSO quand cet élément domine le graphe du joueur")]
     public List<SpellNodeSO> synergies = new();
 
+    [FoldoutGroup("Description"), TextArea(2, 4), HideLabel]
+    public string description = "";
+
     public virtual  void RuntimeInit()          { }
     public abstract void Execute(SpellContext ctx);
 }
