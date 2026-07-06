@@ -2,14 +2,15 @@ using System.Collections;
 using Sirenix.OdinInspector;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.SceneManagement;
 
 /// <summary>
-/// Portail boss : toujours accessible dans la zone.
+/// Portail boss : le joueur entre dans le trigger, appuie sur Espace → le boss spawne.
 /// Plus le joueur attend, plus le boss est puissant.
 /// SetDangerLevel est appelé chaque seconde par RunController.
+/// Une fois le boss vaincu, passage au niveau suivant (rechargement de la scène avec un niveau incrémenté).
 /// </summary>
-[RequireComponent(typeof(Collider))]
-public class BossPortal : MonoBehaviour
+public class BossPortal : ActivityBase
 {
     // ── Boss ─────────────────────────────────────────────────────────────────────
     [BoxGroup("Boss"), Required, LabelText("Prefab Boss")]
@@ -25,6 +26,10 @@ public class BossPortal : MonoBehaviour
 
     [BoxGroup("Boss"), LabelText("Loot Pool")]
     public LootPoolSO LootPool;
+
+    [BoxGroup("Boss"), LabelText("Délai avant niveau suivant (s)")]
+    [Tooltip("Temps laissé au joueur pour voir le loot avant de recharger la scène au niveau suivant")]
+    public float DelayBeforeNextLevel = 3f;
 
     // ── Placement NavMesh ────────────────────────────────────────────────────────
     [BoxGroup("Placement"), LabelText("Rayon de recherche (m)")]
@@ -59,9 +64,6 @@ public class BossPortal : MonoBehaviour
     [FoldoutGroup("État"), ShowInInspector, ReadOnly, LabelText("Danger actuel (s)")]
     private float _currentDanger;
 
-    [FoldoutGroup("État"), ShowInInspector, ReadOnly, LabelText("Boss spawné")]
-    private bool _bossSpawned;
-
     [FoldoutGroup("État"), ShowInInspector, ReadOnly, LabelText("HP actuels du boss (×)")]
     private float CurrentHpMult => BossHpCurve.Evaluate(_currentDanger);
 
@@ -72,12 +74,6 @@ public class BossPortal : MonoBehaviour
     public void SetDangerLevel(float dangerSeconds) => _currentDanger = dangerSeconds;
 
     // ── Unity ────────────────────────────────────────────────────────────────────
-    private void Awake()
-    {
-        var col = GetComponent<Collider>();
-        col.isTrigger = true;
-    }
-
     private void Start()
     {
         // Attend un frame que ActivityManager.Start() ait placé les activités
@@ -106,6 +102,7 @@ public class BossPortal : MonoBehaviour
             bool tooClose = false;
             foreach (var activity in activities)
             {
+                if (activity == this) continue;
                 if (Vector3.Distance(hit.position, activity.transform.position) < MinDistanceFromActivity)
                 {
                     tooClose = true;
@@ -124,10 +121,10 @@ public class BossPortal : MonoBehaviour
         Debug.LogWarning("[BossPortal] Position valide introuvable — le portail reste à sa position initiale.");
     }
 
-    private void OnTriggerEnter(Collider other)
+    protected override void OnInteract(SpellCaster caster)
     {
-        if (!other.CompareTag("Player") || _bossSpawned) return;
         SpawnBoss();
+        Complete();
     }
 
     // ── Spawn ────────────────────────────────────────────────────────────────────
@@ -138,8 +135,6 @@ public class BossPortal : MonoBehaviour
             Debug.LogWarning("[BossPortal] Aucun prefab boss assigné.");
             return;
         }
-
-        _bossSpawned = true;
 
         Vector3 spawnPos = BossSpawnPoint != null
             ? BossSpawnPoint.position
@@ -155,9 +150,15 @@ public class BossPortal : MonoBehaviour
 
         var bossHealth = boss.GetComponent<EnemyHealth>();
         if (bossHealth != null)
-            bossHealth.OnDied += () => SpawnBossLoot(boss.transform.position);
+            bossHealth.OnDied += () => OnBossDefeated(boss.transform.position);
 
         Debug.Log($"[BossPortal] Boss spawné après {_currentDanger:F0}s — HP×{hpMult:F2} DPS×{dmgMult:F2}");
+    }
+
+    private void OnBossDefeated(Vector3 position)
+    {
+        SpawnBossLoot(position);
+        StartCoroutine(AdvanceToNextLevelAfterDelay());
     }
 
     private void SpawnBossLoot(Vector3 position)
@@ -166,5 +167,13 @@ public class BossPortal : MonoBehaviour
 
         var pickup = Instantiate(NodePickupPrefab, position, Quaternion.identity);
         pickup.GetComponent<NodePickup>()?.Initialize(LootPool);
+    }
+
+    private IEnumerator AdvanceToNextLevelAfterDelay()
+    {
+        yield return new WaitForSeconds(DelayBeforeNextLevel);
+        RunProgress.Level++;
+        Debug.Log($"[BossPortal] Passage au niveau {RunProgress.Level}.");
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 }

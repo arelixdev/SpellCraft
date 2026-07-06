@@ -46,6 +46,7 @@ public class RunController : MonoBehaviour
     {
         if (Instance != null && Instance != this) { Destroy(gameObject); return; }
         Instance = this;
+        LevelNumber = RunProgress.Level;
     }
 
     private void Start()
