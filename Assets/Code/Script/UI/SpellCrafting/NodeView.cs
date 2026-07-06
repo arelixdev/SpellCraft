@@ -25,15 +25,37 @@ public class NodeView : MonoBehaviour, IPointerDownHandler, IBeginDragHandler, I
         _                  => Color.gray,
     };
 
-    public static Color ColorForRarity(NodeRarity r) => r switch
+    private static NodeRarityPaletteSO _rarityPalette;
+    private static bool                _rarityPaletteLoaded;
+
+    private static NodeRarityPaletteSO RarityPalette
     {
-        NodeRarity.Commun   => new Color(0.75f, 0.75f, 0.75f),
-        NodeRarity.Rare     => new Color(0.30f, 0.55f, 0.95f),
-        NodeRarity.Epique   => new Color(0.65f, 0.30f, 0.95f),
-        NodeRarity.Boss     => new Color(0.95f, 0.30f, 0.20f),
-        NodeRarity.Corrompu => new Color(0.55f, 0.15f, 0.55f),
-        _                   => Color.gray,
-    };
+        get
+        {
+            if (!_rarityPaletteLoaded)
+            {
+                _rarityPalette       = Resources.Load<NodeRarityPaletteSO>("NodeRarityPalette");
+                _rarityPaletteLoaded = true;
+            }
+            return _rarityPalette;
+        }
+    }
+
+    public static Color ColorForRarity(NodeRarity r)
+    {
+        if (RarityPalette != null && RarityPalette.TryGetColor(r, out var color))
+            return color;
+
+        return r switch
+        {
+            NodeRarity.Commun   => new Color(0.75f, 0.75f, 0.75f),
+            NodeRarity.Rare     => new Color(0.30f, 0.55f, 0.95f),
+            NodeRarity.Epique   => new Color(0.65f, 0.30f, 0.95f),
+            NodeRarity.Boss     => new Color(0.95f, 0.30f, 0.20f),
+            NodeRarity.Corrompu => new Color(0.55f, 0.15f, 0.55f),
+            _                   => Color.gray,
+        };
+    }
 
     public void Init(SpellNodeSO data, GraphCanvasController canvas)
     {
@@ -43,6 +65,10 @@ public class NodeView : MonoBehaviour, IPointerDownHandler, IBeginDragHandler, I
 
         var bg = GetComponent<Image>();
         if (bg) bg.color = ColorForType(data.nodeType);
+
+        var rarityT = transform.Find("Rarety");
+        var rarityImg = rarityT != null ? rarityT.GetComponent<Image>() : null;
+        if (rarityImg) rarityImg.color = ColorForRarity(data.rarity);
 
         // TMP en priorité, fallback sur legacy Text
         var tmpLabels = GetComponentsInChildren<TMP_Text>();

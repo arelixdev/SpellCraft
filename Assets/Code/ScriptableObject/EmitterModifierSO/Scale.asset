@@ -16,8 +16,10 @@ MonoBehaviour:
   nodeName: Scale
   nodeType: 6
   complexityCost: 1
-  rarity: 0
+  rarity: 2
   corruptedEffect: {fileID: 0}
+  synergies: []
+  description: 
   modifierType: 2
   compatibleEmitters: 1
   homingRadius: 8

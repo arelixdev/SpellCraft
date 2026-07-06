@@ -16,8 +16,10 @@ MonoBehaviour:
   nodeName: Homing
   nodeType: 6
   complexityCost: 1
-  rarity: 0
+  rarity: 1
   corruptedEffect: {fileID: 0}
+  synergies: []
+  description: 
   modifierType: 0
   compatibleEmitters: 1
   homingRadius: 8
