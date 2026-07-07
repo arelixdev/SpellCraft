@@ -10079,10 +10079,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 37f0eb9be3309734aab1fce5e018b51f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BossPortal
-  BossPrefab: {fileID: 1739998098433789292, guid: 54e35bee631f861478dcb74dbfdde1e2, type: 3}
+  Definition: {fileID: 0}
+  BossPrefab: {fileID: 1800700278847618402, guid: 38da556a064260e4784de0631e030ae3, type: 3}
   BossSpawnPoint: {fileID: 0}
   NodePickupPrefab: {fileID: 0}
   LootPool: {fileID: 11400000, guid: 60ea425edccdb144095f5f0ef355a8e6, type: 2}
+  DelayBeforeNextLevel: 3
   SearchRadius: 60
   MinDistanceFromActivity: 12
   NavMeshSampleDistance: 3

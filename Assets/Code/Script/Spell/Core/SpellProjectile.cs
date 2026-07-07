@@ -160,7 +160,7 @@ public class SpellProjectile : MonoBehaviour
                 IceStatus.Apply(other.gameObject, _ctx.IceSlowPercent, _ctx.StatusDuration);
 
             if (_ctx.Element == ElementType.Poison && Random.value < _ctx.StatusChance)
-                PoisonStatus.Apply(other.gameObject, _ctx.PoisonTickDamage, _ctx.PoisonTickInterval, _ctx.StatusDuration);
+                PoisonStatus.Apply(other.gameObject, _ctx.PoisonTickDamage, _ctx.PoisonTickInterval, _ctx.StatusDuration, _ctx.PoisonStacksPerHit);
 
             if (_ctx.Element == ElementType.Lightning)
                 LightningChain.Apply(other.gameObject, _ctx.LightningChainDamage, _ctx.LightningChainRange, _ctx.LightningChainCount);
@@ -283,6 +283,12 @@ public class SpellProjectile : MonoBehaviour
     {
         if (_ctx.Generation >= SpellContext.MaxGeneration) return;
 
+        if (trigger.SelfDamagePercent > 0f && _ctx.Caster != null)
+        {
+            var health = _ctx.Caster.GetComponent<PlayerHealth>();
+            if (health != null) health.TakeDamage(health.MaxHealth * trigger.SelfDamagePercent);
+        }
+
         Vector3 origin = trigger.SpawnSource switch
         {
             TriggerSpawnSource.Target => target != null ? target.transform.position : transform.position,
@@ -302,20 +308,24 @@ public class SpellProjectile : MonoBehaviour
         if (trigger.SpawnSource == TriggerSpawnSource.Target && trigger.SpawnOffset > 0f)
             origin += direction * trigger.SpawnOffset;
 
-        var newCtx = new SpellContext
+        int repeats = Mathf.Max(1, trigger.RepeatCount);
+        for (int i = 0; i < repeats; i++)
         {
-            Caster           = _ctx.Caster,
-            Origin           = origin,
-            Direction        = direction,
-            Generation       = _ctx.Generation + 1,
-            Damage           = _ctx.Damage,
-            Size             = _ctx.Size,
-            Speed            = _ctx.Speed,
-            Element          = _ctx.Element,
-            OverrideMaterial = _ctx.OverrideMaterial,
-            IgnoreOnSpawn    = target?.GetComponent<Collider>(),
-        };
+            var newCtx = new SpellContext
+            {
+                Caster           = _ctx.Caster,
+                Origin           = origin,
+                Direction        = direction,
+                Generation       = _ctx.Generation + 1,
+                Damage           = _ctx.Damage,
+                Size             = _ctx.Size,
+                Speed            = _ctx.Speed,
+                Element          = _ctx.Element,
+                OverrideMaterial = _ctx.OverrideMaterial,
+                IgnoreOnSpawn    = target?.GetComponent<Collider>(),
+            };
 
-        SpellExecutor.ExecuteFrom(trigger.Graph, trigger.OutputIndices, newCtx);
+            SpellExecutor.ExecuteFrom(trigger.Graph, trigger.OutputIndices, newCtx);
+        }
     }
 }

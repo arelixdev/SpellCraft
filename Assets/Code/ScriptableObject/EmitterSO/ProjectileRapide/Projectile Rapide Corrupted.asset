@@ -1,0 +1,70 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c07816cde7204304e9395454d8eb804b, type: 3}
+  m_Name: Projectile Rapide Corrupted
+  m_EditorClassIdentifier: Assembly-CSharp::EmitterNodeSO
+  icon: {fileID: 0}
+  nodeName: Projectile Rapide
+  nodeType: 0
+  complexityCost: 2
+  rarity: 4
+  corruptedEffect: {fileID: 11400000, guid: 2338a167a3fcd094491db87031f4bd9d, type: 2}
+  synergies: []
+  description: 
+  emitterType: 1
+  projectilePrefab: {fileID: 7326707846551993688, guid: 5bd8f0eae267a5f4c8b98a633db1e76f, type: 3}
+  baseDamage: 10.746752
+  baseSpeed: 16.330896
+  baseSize: 0.5
+  projectileCount: 1
+  spreadAngle: 30
+  baseLifetime: 1.4104217
+  pierceCount: 1
+  reduceDamageOnPierce: 0
+  damageReductionPerHit: 25
+  burstCount: 3
+  bounceCount: 3
+  launchAngle: 45
+  baseLifetimeGrenade: 10
+  gravityMultiplier: 3
+  explosionRadius: 3
+  explosionDamageMultiplier: 1.5
+  explosionPrefab: {fileID: 0}
+  zoneType: 0
+  zoneDamageMode: 0
+  zoneRadius: 3
+  zoneGrowDuration: 1
+  zoneDuration: 0
+  zoneTickInterval: 1
+  orbitalCount: 3
+  orbitalRadius: 3
+  orbitalSpeed: 90
+  orbitalPermanent: 1
+  orbitalLifetime: 5
+  enableRoll: 1
+  damageRange: {x: 5, y: 11}
+  speedRange: {x: 15, y: 25}
+  sizeRange: {x: 0.5, y: 0.5}
+  pierceRange: {x: 0, y: 1}
+  projectileCountRange: {x: 1, y: 1}
+  lifetimeRange: {x: 1, y: 1.5}
+  burstCountRange: {x: 1, y: 3}
+  bounceCountRange: {x: 2, y: 5}
+  launchAngleRange: {x: 30, y: 60}
+  orbitalCountRange: {x: 2, y: 4}
+  orbitalRadiusRange: {x: 2, y: 5}
+  orbitalSpeedRange: {x: 60, y: 180}
+  orbitalLifetimeRange: {x: 3, y: 10}
+  zoneRadiusRange: {x: 2, y: 6}
+  zoneGrowDurationRange: {x: 0.5, y: 2}
+  zoneDurationRange: {x: 3, y: 8}
+  zoneTickIntervalRange: {x: 0.5, y: 2}

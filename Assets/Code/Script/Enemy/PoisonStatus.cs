@@ -12,13 +12,13 @@ public class PoisonStatus : MonoBehaviour
     private float       _tickTimer;
     private float       _durationTimer;
 
-    public static void Apply(GameObject enemy, float tickDamage, float tickInterval, float stackDuration)
+    public static void Apply(GameObject enemy, float tickDamage, float tickInterval, float stackDuration, int stackCount = 1)
     {
         var poison = enemy.GetComponent<PoisonStatus>() ?? enemy.AddComponent<PoisonStatus>();
-        poison.AddStack(tickDamage, tickInterval, stackDuration);
+        poison.AddStack(tickDamage, tickInterval, stackDuration, stackCount);
     }
 
-    private void AddStack(float tickDamage, float tickInterval, float stackDuration)
+    private void AddStack(float tickDamage, float tickInterval, float stackDuration, int stackCount)
     {
         _health        = GetComponent<EnemyHealth>();
         _tickDamage    = tickDamage;
@@ -26,7 +26,7 @@ public class PoisonStatus : MonoBehaviour
         _stackDuration = stackDuration;
 
         bool isFirst = _stacks == 0;
-        _stacks        = Mathf.Min(_stacks + 1, MaxStacks);
+        _stacks        = Mathf.Min(_stacks + Mathf.Max(1, stackCount), MaxStacks);
         _durationTimer = stackDuration;
 
         if (isFirst)

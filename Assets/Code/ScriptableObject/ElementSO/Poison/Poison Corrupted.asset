@@ -10,40 +10,40 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c66265eeb3c863649b088c111d2d1f22, type: 3}
-  m_Name: Ice Corrupted
+  m_Name: Poison Corrupted
   m_EditorClassIdentifier: Assembly-CSharp::ElementNodeSO
   icon: {fileID: 0}
-  nodeName: Ice
+  nodeName: Poison
   nodeType: 0
   complexityCost: 5
-  rarity: 4
-  corruptedEffect: {fileID: 11400000, guid: 34108b7a17e05fc4b856d83b7d15fd34, type: 2}
+  rarity: 0
+  corruptedEffect: {fileID: 11400000, guid: d9c634805cbdfa143bdc44a3b392e7e4, type: 2}
   synergies: []
   description: 
-  element: 2
+  element: 5
   damageMultiplier: 1
-  statusChance: 0.37133884
-  statusDuration: 5.3007517
+  statusChance: 1
+  statusDuration: 2.6862695
   fireTickInterval: 0.5
   fireTickDamage: 5
-  iceSlowPercent: 0.45788926
+  iceSlowPercent: 0.5
   lightningChainCount: 2
   lightningChainRange: 5
   lightningChainDamage: 5
   arcanePerNodeBonus: 0.1
-  poisonTickInterval: 0.5
-  poisonTickDamage: 2
+  poisonTickInterval: 1.0488379
+  poisonTickDamage: 2.938521
   enableRoll: 1
   damageMultiplierRange: {x: 1, y: 1}
-  statusChanceRange: {x: 0.3, y: 0.4}
-  statusDurationRange: {x: 4, y: 8}
+  statusChanceRange: {x: 1, y: 1}
+  statusDurationRange: {x: 1.5, y: 3}
   fireTickIntervalRange: {x: 0.3, y: 1}
   fireTickDamageRange: {x: 3, y: 10}
-  iceSlowPercentRange: {x: 0.45, y: 0.6}
+  iceSlowPercentRange: {x: 0.3, y: 0.7}
   lightningChainCountRange: {x: 1, y: 4}
   lightningChainRangeRange: {x: 3, y: 8}
   lightningChainDamageRange: {x: 3, y: 12}
   arcanePerNodeBonusRange: {x: 0.05, y: 0.2}
-  poisonTickIntervalRange: {x: 0.3, y: 1}
-  poisonTickDamageRange: {x: 1, y: 5}
-  overrideMaterial: {fileID: 2100000, guid: 1018659e677a3bd4d86a6c7f10a42c0c, type: 2}
+  poisonTickIntervalRange: {x: 1, y: 2}
+  poisonTickDamageRange: {x: 1, y: 3}
+  overrideMaterial: {fileID: 2100000, guid: 3c9656047d8680e4b99784336c8f2156, type: 2}

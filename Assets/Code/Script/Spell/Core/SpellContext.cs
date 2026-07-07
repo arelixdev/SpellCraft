@@ -14,6 +14,8 @@ public class SpellContext
         public float                SpawnOffset;
         public ElementType          StatusFilter;   // OnStatus : quel élément déclenche
         public int                  ComboThreshold; // OnCombo  : tous les X hits sur le même ennemi
+        public int                  RepeatCount;       // Nombre de déclenchements (corruption bonus)
+        public float                SelfDamagePercent; // % du MaxHP du caster infligé à chaque déclenchement (corruption malus)
     }
 
     public GameObject Caster;
@@ -37,6 +39,7 @@ public class SpellContext
 
     public float PoisonTickDamage    = 2f;
     public float PoisonTickInterval  = 0.5f;
+    public int   PoisonStacksPerHit  = 1;
 
     public float LightningChainRange  = 5f;
     public float LightningChainDamage = 5f;
@@ -73,6 +76,16 @@ public class SpellContext
 
     // Written by Condition nodes, read by downstream nodes to amplify
     public float ConditionMultiplier = 1f;
+
+    // Written by a Trigger node's own corruption (TriggerRepeatModifier /
+    // SelfDamagePercentOnTriggerModifier), consumed immediately by
+    // SpellExecutor.RegisterTrigger and reset so they never leak into a sibling trigger.
+    public int   PendingTriggerExtraFires    = 0;
+    public float PendingTriggerSelfDamagePct = 0f;
+
+    // Applied by SpellCaster.CastSlot to the slot's cooldown after Execute runs —
+    // lets a corrupted node tax the recast time (e.g. via the generic StatModifier).
+    public float CooldownMultiplier = 1f;
 
     // Prevents infinite trigger chains: triggers stop firing past MaxGeneration
     public int       Generation    = 0;

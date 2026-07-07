@@ -47,6 +47,7 @@ public static class SpellExecutor
 
         if (node is TriggerNodeSO trigger)
         {
+            node.corruptedEffect?.ApplyTo(ctx);
             if (ctx.Generation < SpellContext.MaxGeneration)
                 RegisterTrigger(graph, idx, trigger, ctx);
             return; // Stop traversal here — downstream fires at runtime
@@ -73,16 +74,22 @@ public static class SpellExecutor
     {
         ctx.PendingTriggers.Add(new SpellContext.PendingTrigger
         {
-            Type           = trigger.triggerType,
-            Graph          = graph,
-            OutputIndices  = graph.GetOutputIndices(idx),
-            TickInterval   = trigger.tickInterval,
-            SpawnSource    = trigger.spawnSource,
-            DirectionMode  = trigger.directionMode,
-            SpawnOffset    = trigger.spawnOffset,
-            StatusFilter   = trigger.statusFilter,
-            ComboThreshold = trigger.comboThreshold,
+            Type              = trigger.triggerType,
+            Graph             = graph,
+            OutputIndices     = graph.GetOutputIndices(idx),
+            TickInterval      = trigger.tickInterval,
+            SpawnSource       = trigger.spawnSource,
+            DirectionMode     = trigger.directionMode,
+            SpawnOffset       = trigger.spawnOffset,
+            StatusFilter      = trigger.statusFilter,
+            ComboThreshold    = trigger.comboThreshold,
+            RepeatCount       = 1 + ctx.PendingTriggerExtraFires,
+            SelfDamagePercent = ctx.PendingTriggerSelfDamagePct,
         });
+
+        // Consumed — don't let them leak into a sibling trigger further down this traversal
+        ctx.PendingTriggerExtraFires    = 0;
+        ctx.PendingTriggerSelfDamagePct = 0f;
     }
 
     private static void EvaluateCondition(ConditionNodeSO condition, SpellContext ctx)

@@ -27,4 +27,18 @@ public class CorruptedEffectSO : ScriptableObject
         foreach (var bonus in bonuses) bonus?.Apply(ctx);
         foreach (var malus in maluses) malus?.Apply(ctx);
     }
+
+    // Permanent versions — kept active for as long as the owning node is wired
+    // into an equipped slot. See SpellCaster.RefreshPassiveCorruption.
+    public void ApplyPermanentTo(GameObject player)
+    {
+        foreach (var bonus in bonuses) bonus?.ApplyPermanent(player);
+        foreach (var malus in maluses) malus?.ApplyPermanent(player);
+    }
+
+    public void RemovePermanentFrom(GameObject player)
+    {
+        foreach (var bonus in bonuses) bonus?.RemovePermanent(player);
+        foreach (var malus in maluses) malus?.RemovePermanent(player);
+    }
 }

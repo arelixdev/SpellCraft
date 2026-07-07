@@ -10,12 +10,24 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e6fa98dd3b134ae4ea82f71cab52b847, type: 3}
-  m_Name: Test
+  m_Name: PoisonCo
   m_EditorClassIdentifier: Assembly-CSharp::CorruptedEffectSO
   effectName: Effet corrompu
   description: 
-  bonuses: []
-  maluses: []
+  bonuses:
+  - rid: 7037911420357050571
+  maluses:
+  - rid: 7037911420357050572
   references:
     version: 2
-    RefIds: []
+    RefIds:
+    - rid: 7037911420357050571
+      type: {class: PoisonStackModifier, ns: , asm: Assembly-CSharp}
+      data:
+        stacksPerHit: 3
+    - rid: 7037911420357050572
+      type: {class: StatModifier, ns: , asm: Assembly-CSharp}
+      data:
+        statName: CooldownMultiplier
+        operation: 2
+        value: 2

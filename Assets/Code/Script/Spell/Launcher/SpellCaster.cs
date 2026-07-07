@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
@@ -24,6 +25,11 @@ public class SpellCaster : MonoBehaviour
     private float[] _cooldownTimers;
     private bool    _castingEnabled = true;
 
+    // Corrupted effects currently applied as permanent player debuffs/buffs —
+    // tracked by CorruptedEffectSO so a shared asset referenced by several nodes
+    // stays active as long as at least one of them is wired into a slot.
+    private readonly HashSet<CorruptedEffectSO> _activePassiveEffects = new();
+
     private void Awake()
     {
         _spellSlots     ??= System.Array.Empty<SpellSlot>();
@@ -33,10 +39,11 @@ public class SpellCaster : MonoBehaviour
 
     private void Start()
     {
-        EnsureCraftingGraphInitialized();
+        RebuildCraftingGraphFromSlots();
         if (craftingGraph == null) return;
         foreach (var node in craftingGraph.nodes)
             node?.RuntimeInit();
+        RefreshPassiveCorruption();
     }
 
     private void OnDestroy()
@@ -99,7 +106,6 @@ public class SpellCaster : MonoBehaviour
     private void CastSlot(int i)
     {
         var slot = _spellSlots[i];
-        _cooldownTimers[i] = slot.launcherConfig.cooldown;
 
         var ctx = new SpellContext
         {
@@ -123,6 +129,9 @@ public class SpellCaster : MonoBehaviour
                 Debug.Log($"[SpellCaster] AutoCast slot {i} (legacy) → {BuildChainString(slot.connectedSpell, 0)}");
             SpellExecutor.Execute(slot.connectedSpell, 0, ctx);
         }
+
+        // Set after Execute so a corrupted node's CooldownMultiplier (accumulated on ctx) applies
+        _cooldownTimers[i] = slot.launcherConfig.cooldown * ctx.CooldownMultiplier;
     }
 
     private bool IsSlotReady(int i)
@@ -164,8 +173,25 @@ public class SpellCaster : MonoBehaviour
         Debug.Log($"[SpellCaster] Collected '{node.nodeName}' — stored, will appear when panel opens");
     }
 
+    // Rebuilds craftingGraph from scratch from the equipped slots every time a new
+    // play session starts, so edits to base spell assets (Fireball, Iceball, ...)
+    // are always reflected instead of being stuck behind a stale cached merge.
+    private void RebuildCraftingGraphFromSlots()
+    {
+        if (craftingGraph == null)
+            craftingGraph = ScriptableObject.CreateInstance<SpellGraphSO>();
+
+        craftingGraph.nodes.Clear();
+        craftingGraph.connections.Clear();
+        craftingGraph.editorLayout.Clear();
+        craftingGraph.slotEntries.Clear();
+
+        MergeSlotsInto(craftingGraph);
+    }
+
     // Merges legacy per-slot spells into craftingGraph (only if not already done).
-    // Mirrors SpellCraftingPanel.PopulateFromSlots but runs without the panel being open.
+    // Used when a node pickup is collected while the crafting panel is closed —
+    // guarded so it doesn't wipe nodes already added during the current session.
     private void EnsureCraftingGraphInitialized()
     {
         if (craftingGraph != null && craftingGraph.nodes.Count > 0) return;
@@ -173,18 +199,23 @@ public class SpellCaster : MonoBehaviour
         if (craftingGraph == null)
             craftingGraph = ScriptableObject.CreateInstance<SpellGraphSO>();
 
+        MergeSlotsInto(craftingGraph);
+    }
+
+    private void MergeSlotsInto(SpellGraphSO graph)
+    {
         int nodeOffset = 0;
         for (int i = 0; i < _spellSlots.Length; i++)
         {
             var source = _spellSlots[i]?.connectedSpell;
             if (source == null || source.nodes.Count == 0) continue;
 
-            craftingGraph.SetSlotEntry(i, nodeOffset);
+            graph.SetSlotEntry(i, nodeOffset);
 
             for (int j = 0; j < source.nodes.Count; j++)
             {
-                craftingGraph.nodes.Add(source.nodes[j]);
-                craftingGraph.editorLayout.Add(new SpellGraphSO.NodePlacement
+                graph.nodes.Add(source.nodes[j]);
+                graph.editorLayout.Add(new SpellGraphSO.NodePlacement
                 {
                     nodeIndex      = nodeOffset + j,
                     canvasPosition = new Vector2(-200f + j * 180f, 80f - i * 150f)
@@ -192,11 +223,24 @@ public class SpellCaster : MonoBehaviour
             }
 
             foreach (var conn in source.connections)
-                craftingGraph.connections.Add(new SpellGraphSO.Connection
+            {
+                // Guard against a stray connection in the source asset referencing an
+                // index past its own node list — left uncaught, the offset below would
+                // silently bridge it into whichever slot gets merged next.
+                if (conn.fromIndex < 0 || conn.fromIndex >= source.nodes.Count ||
+                    conn.toIndex   < 0 || conn.toIndex   >= source.nodes.Count)
+                {
+                    Debug.LogWarning($"[SpellCaster] '{source.name}' has an out-of-range connection " +
+                                      $"{conn.fromIndex}->{conn.toIndex} (only {source.nodes.Count} nodes) — skipped.");
+                    continue;
+                }
+
+                graph.connections.Add(new SpellGraphSO.Connection
                 {
                     fromIndex = conn.fromIndex + nodeOffset,
                     toIndex   = conn.toIndex   + nodeOffset
                 });
+            }
 
             nodeOffset += source.nodes.Count;
         }
@@ -224,6 +268,46 @@ public class SpellCaster : MonoBehaviour
 
             SpellExecutor.RefreshPermanentOrbitals(craftingGraph, startNode, ctx);
         }
+    }
+
+    // Re-evaluates which corrupted nodes are currently reachable from an equipped
+    // slot's entry point and (de)activates their permanent effects accordingly.
+    // Call whenever the graph's wiring changes (slot connect/disconnect, node
+    // add/remove) — SpellCraftingPanel.AutoApply does this alongside orbitals.
+    public void RefreshPassiveCorruption()
+    {
+        if (craftingGraph == null) return;
+
+        var connectedNodes = new HashSet<int>();
+        for (int i = 0; i < _spellSlots.Length; i++)
+            if (craftingGraph.TryGetSlotEntry(i, out int entryIdx))
+                CollectReachableNodes(entryIdx, connectedNodes);
+
+        var stillActive = new HashSet<CorruptedEffectSO>();
+        foreach (var idx in connectedNodes)
+        {
+            var effect = craftingGraph.nodes[idx]?.corruptedEffect;
+            if (effect == null) continue;
+
+            stillActive.Add(effect);
+            if (_activePassiveEffects.Add(effect))
+                effect.ApplyPermanentTo(gameObject);
+        }
+
+        _activePassiveEffects.RemoveWhere(effect =>
+        {
+            if (stillActive.Contains(effect)) return false;
+            effect.RemovePermanentFrom(gameObject);
+            return true;
+        });
+    }
+
+    private void CollectReachableNodes(int idx, HashSet<int> visited)
+    {
+        if (idx < 0 || craftingGraph == null || idx >= craftingGraph.nodes.Count) return;
+        if (!visited.Add(idx)) return;
+        foreach (var outIdx in craftingGraph.GetOutputIndices(idx))
+            CollectReachableNodes(outIdx, visited);
     }
 
     public SpellSlot   GetSlot(int i)  => (i >= 0 && i < _spellSlots.Length) ? _spellSlots[i] : null;

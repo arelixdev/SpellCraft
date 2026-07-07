@@ -67,6 +67,7 @@ public class SpellCraftingPanel : MonoBehaviour
 
         if (SlotSidebar != null) SlotSidebar.RefreshAllSlotLabels();
         TargetCaster.RefreshPermanentOrbitals();
+        TargetCaster.RefreshPassiveCorruption();
     }
 
     // Called by sidebar / bottom-bar to track active slot (canvas no longer uses it)
