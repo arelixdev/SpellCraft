@@ -62,15 +62,9 @@ public class EnemyRangedAI : MonoBehaviour
             // Trop loin : se rapproche
             _agent.SetDestination(_player.position);
         }
-        else if (dist < _preferredRange * 0.6f)
-        {
-            // Trop proche : recule
-            Vector3 away = (transform.position - _player.position).normalized;
-            _agent.SetDestination(transform.position + away * _preferredRange);
-        }
         else
         {
-            // Bonne distance : tient position, laisse EnemyRangedAttack tirer
+            // A portée (même si le joueur est très proche) : tient position, laisse EnemyRangedAttack tirer
             _agent.ResetPath();
         }
     }
