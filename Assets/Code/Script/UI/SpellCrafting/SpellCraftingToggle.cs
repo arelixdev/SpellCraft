@@ -12,6 +12,9 @@ public class SpellCraftingToggle : MonoBehaviour
     [SerializeField] private Camera             _gameCamera;
     [SerializeField] private float              _slideDuration = 0.2f;
 
+    [Tooltip("Root RectTransform for HUD elements (health, energy, gold, Game Over) that must stay centered within the visible game viewport rather than the full screen. Its anchorMax.x is kept in sync with the game camera's viewport width.")]
+    [SerializeField] private RectTransform      _hudRoot;
+
     public bool IsOpen { get; private set; }
 
     private float     _panelWidth;
@@ -54,16 +57,21 @@ public class SpellCraftingToggle : MonoBehaviour
             elapsed += Time.unscaledDeltaTime;
             float t = Mathf.SmoothStep(0f, 1f, Mathf.Clamp01(elapsed / _slideDuration));
             _panelRT.anchoredPosition = new Vector2(Mathf.Lerp(startX, targetX, t), 0f);
+
+            float viewportW = Mathf.Lerp(startViewport.width, targetViewportW, t);
             if (_gameCamera != null)
-                _gameCamera.rect = new Rect(startViewport.x, startViewport.y,
-                                            Mathf.Lerp(startViewport.width, targetViewportW, t),
-                                            startViewport.height);
+                _gameCamera.rect = new Rect(startViewport.x, startViewport.y, viewportW, startViewport.height);
+            if (_hudRoot != null)
+                _hudRoot.anchorMax = new Vector2(viewportW, 1f);
+
             yield return null;
         }
 
         _panelRT.anchoredPosition = new Vector2(targetX, 0f);
         if (_gameCamera != null)
             _gameCamera.rect = new Rect(startViewport.x, startViewport.y, targetViewportW, startViewport.height);
+        if (_hudRoot != null)
+            _hudRoot.anchorMax = new Vector2(targetViewportW, 1f);
 
         if (!IsOpen) _panel?.OnClose();
     }

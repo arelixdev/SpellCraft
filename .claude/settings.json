@@ -20,7 +20,8 @@
       "Bash(grep -n \"^--- !u!1 &868000938$\" -A 15 \"Assets/Level/Scenes/Gameplay.unity\")",
       "Bash(awk -F: '$1>=4100 && $1<=8600')",
       "Bash(unity-mcp-cli run-tool *)",
-      "Bash(npx --yes unity-mcp-cli run-tool assets-refresh --input '{\"options\": \"ForceSynchronousImport\"}')"
+      "Bash(npx --yes unity-mcp-cli run-tool assets-refresh --input '{\"options\": \"ForceSynchronousImport\"}')",
+      "mcp__ai-game-developer__gameobject-set-parent"
     ]
   }
 }
