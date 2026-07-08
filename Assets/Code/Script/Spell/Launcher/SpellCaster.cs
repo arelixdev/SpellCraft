@@ -331,6 +331,15 @@ public class SpellCaster : MonoBehaviour
             CollectReachableNodes(outIdx, visited);
     }
 
+    // Normalized remaining cooldown for slot i: 1 right after cast, 0 once ready again.
+    public float GetCooldownRatio(int i)
+    {
+        if (i < 0 || i >= _spellSlots.Length) return 0f;
+        var config = _spellSlots[i]?.launcherConfig;
+        if (config == null || config.cooldown <= 0f) return 0f;
+        return Mathf.Clamp01(_cooldownTimers[i] / config.cooldown);
+    }
+
     public SpellSlot   GetSlot(int i)  => (i >= 0 && i < _spellSlots.Length) ? _spellSlots[i] : null;
     public SpellSlot[] GetSlots()      => _spellSlots;
     public void SetSlotGraph(int i, SpellGraphSO graph)

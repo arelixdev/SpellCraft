@@ -22,7 +22,22 @@
       "Bash(unity-mcp-cli run-tool *)",
       "Bash(npx --yes unity-mcp-cli run-tool assets-refresh --input '{\"options\": \"ForceSynchronousImport\"}')",
       "mcp__ai-game-developer__gameobject-set-parent",
-      "mcp__ai-game-developer__unity-tool-list"
+      "mcp__ai-game-developer__unity-tool-list",
+      "Bash(npx --yes unity-mcp-cli run-tool assets-refresh --input '{}')",
+      "Bash(npx --yes unity-mcp-cli run-tool assets-prefab-save --input '{}')",
+      "Bash(npx --yes unity-mcp-cli run-tool screenshot-scene-view --input '{\"width\": 640, \"height\": 480}')",
+      "Bash(python3 -c ' *)",
+      "Bash(node -e ' *)",
+      "Bash(npx --yes unity-mcp-cli run-tool screenshot-scene-view --input '{\"width\": 700, \"height\": 500}')",
+      "Bash(npx --yes unity-mcp-cli run-tool assets-prefab-close --input '{}')",
+      "Bash(npx --yes unity-mcp-cli run-tool scene-list-opened --input '{}')",
+      "Bash(npx --yes unity-mcp-cli run-tool editor-application-get-state --input '{}')",
+      "Bash(npx --yes unity-mcp-cli run-tool editor-application-set-state --input '{\"isPlaying\": true}')",
+      "Bash(npx --yes unity-mcp-cli run-tool console-get-logs --input '{\"count\": 30}')",
+      "Bash(npx --yes unity-mcp-cli run-tool screenshot-game-view --input '{}')",
+      "Bash(npx --yes unity-mcp-cli run-tool screenshot-game-view --input '{\"width\": 1920, \"height\": 1080}')",
+      "Bash(npx --yes unity-mcp-cli run-tool console-get-logs --input '{\"count\": 5}')",
+      "Bash(npx --yes unity-mcp-cli run-tool editor-application-set-state --input '{\"isPlaying\": false}')"
     ]
   }
 }

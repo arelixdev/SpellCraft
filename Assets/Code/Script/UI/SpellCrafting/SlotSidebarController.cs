@@ -13,7 +13,7 @@ public class SlotSidebarController : MonoBehaviour
     public SpellCraftingPanel       Panel;
     public LauncherVisualRegistrySO VisualRegistry;
 
-    private readonly List<(Image shape, RectTransform port, TextMeshProUGUI spellLabel)> _slots = new();
+    private readonly List<(Image shape, RectTransform port, TextMeshProUGUI spellLabel, Image cooldownOverlay)> _slots = new();
     private int _selected = -1;
 
     public int SlotCount => _slots.Count;
@@ -26,6 +26,16 @@ public class SlotSidebarController : MonoBehaviour
             SpawnSlot(i, slots[i]);
         HighlightSlot(_selected >= 0 ? _selected : 0);
         RefreshAllSlotLabels();
+    }
+
+    private void Update()
+    {
+        if (Caster == null) return;
+        for (int i = 0; i < _slots.Count; i++)
+        {
+            var overlay = _slots[i].cooldownOverlay;
+            if (overlay != null) overlay.fillAmount = Caster.GetCooldownRatio(i);
+        }
     }
 
     public void Init(SpellCraftingPanel panel)
@@ -112,6 +122,7 @@ public class SlotSidebarController : MonoBehaviour
             && VisualRegistry.TryGet(slot.launcherConfig.launcherType, out var visual))
         {
             if (view?.Background != null) view.Background.sprite = visual.background;
+            if (view?.CooldownOverlay != null) view.CooldownOverlay.sprite = visual.background;
             if (view?.Outline != null)
             {
                 view.Outline.sprite = visual.outline;
@@ -132,7 +143,7 @@ public class SlotSidebarController : MonoBehaviour
             lp.Sidebar   = this;
         }
 
-        _slots.Add((view?.Background, view?.Port, view?.SpellLabelTemp));
+        _slots.Add((view?.Background, view?.Port, view?.SpellLabelTemp, view?.CooldownOverlay));
     }
 
     private void HighlightSlot(int index)
