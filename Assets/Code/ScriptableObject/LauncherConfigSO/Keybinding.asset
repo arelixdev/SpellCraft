@@ -15,6 +15,6 @@ MonoBehaviour:
   launcherName: Keybinding
   launcherType: 1
   cooldown: 1
-  inputAction: {fileID: 0}
+  inputAction: {fileID: -4859410968864230415, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   eventType: 0
   bonusMultiplier: 1

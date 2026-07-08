@@ -51,6 +51,27 @@ public class SpellCaster : MonoBehaviour
         SceneManager.sceneLoaded -= OnSceneLoaded;
     }
 
+    private void OnEnable()
+    {
+        foreach (var slot in _spellSlots)
+        {
+            var config = slot?.launcherConfig;
+            if (config == null || config.launcherType != LauncherType.KeyBind || config.inputAction == null) continue;
+            config.inputAction.action.performed += TryCastKeybind;
+            config.inputAction.action.Enable();
+        }
+    }
+
+    private void OnDisable()
+    {
+        foreach (var slot in _spellSlots)
+        {
+            var config = slot?.launcherConfig;
+            if (config == null || config.launcherType != LauncherType.KeyBind || config.inputAction == null) continue;
+            config.inputAction.action.performed -= TryCastKeybind;
+        }
+    }
+
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
         _castingEnabled = true;
