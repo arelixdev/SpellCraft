@@ -18,6 +18,22 @@ public class SlotSidebarController : MonoBehaviour
 
     public int SlotCount => _slots.Count;
 
+    private void OnEnable()
+    {
+        // S'abonne avant la phase Start() de tout le projet (règle Unity : toutes les
+        // OnEnable() s'exécutent avant tous les Start()), donc on capte à coup sûr le
+        // rebuild fait par SpellCaster.Start(), même si son ordre relatif au nôtre
+        // n'est pas garanti.
+        if (Caster != null)
+            Caster.OnCraftingGraphChanged += RefreshAllSlotLabels;
+    }
+
+    private void OnDisable()
+    {
+        if (Caster != null)
+            Caster.OnCraftingGraphChanged -= RefreshAllSlotLabels;
+    }
+
     private void Start()
     {
         if (Caster == null || SlotPrefab == null) return;

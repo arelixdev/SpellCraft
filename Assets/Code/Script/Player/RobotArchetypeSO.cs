@@ -36,9 +36,21 @@ public class RobotArchetypeSO : ScriptableObject
     public Vector2 StartingGoldRange = new(0f, 0f);
 
     [Title("Slots de sort")]
+    [LabelText("Pondération du nombre de slots")]
+    [Tooltip("Nombre de slots dans la barre (1 à 4), tiré selon ces poids.")]
+    public WeightedCount0to4 SlotCountWeights = new();
+
+    [LabelText("Pondération du nombre de slots remplis")]
+    [Tooltip("Parmi les slots tirés, combien reçoivent d'office un sort de départ (le reste reste vide, à équiper via le crafting). Weight0 > 0 autorise \"aucun slot rempli\". Plafonné au nombre de slots réel.")]
+    public WeightedCount0to4 FilledSlotWeights = new();
+
     [LabelText("Réserve de LauncherConfig")]
-    [Tooltip("Chaque robot tiré reçoit entre 1 et 4 slots, chacun assigné à une config piochée au hasard (sans doublon) dans cette réserve.")]
+    [Tooltip("Chaque slot est assigné à une config piochée au hasard (sans doublon) dans cette réserve.")]
     public LauncherConfigPoolSO LauncherPool;
+
+    [LabelText("Réserve de sorts de départ")]
+    [Tooltip("Sort de départ (connectedSpell) pioché par palier pondéré dans cette réserve, pour les slots \"remplis\".")]
+    public SpellGraphPoolSO SpellGraphPool;
 
     public RobotDefinitionSO Roll(string rolledName)
     {
@@ -59,12 +71,19 @@ public class RobotArchetypeSO : ScriptableObject
     {
         if (LauncherPool == null) return System.Array.Empty<SpellSlot>();
 
-        int slotCount = Random.Range(1, 5); // 1 à 4 inclus
-        var configs = LauncherPool.DrawUnique(slotCount);
+        int slotCount = SlotCountWeights.Roll();
+        var configs = LauncherPool.DrawForSlotCount(slotCount);
 
         var slots = new SpellSlot[configs.Count];
         for (int i = 0; i < configs.Count; i++)
             slots[i] = new SpellSlot { launcherConfig = configs[i] };
+
+        // Parmi les slots tirés, seule une partie (pondérée) reçoit d'office un sort —
+        // toujours en partant du premier slot (préfixe 0, puis 0+1, puis 0+1+2...),
+        // jamais un slot au hasard au milieu : même principe que l'ordre des touches.
+        int filledCount = Mathf.Min(FilledSlotWeights.Roll(), slots.Length);
+        for (int i = 0; i < filledCount; i++)
+            slots[i].connectedSpell = SpellGraphPool != null ? SpellGraphPool.DrawOne() : null;
 
         return slots;
     }

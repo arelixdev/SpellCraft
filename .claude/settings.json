@@ -40,7 +40,17 @@
       "Bash(npx --yes unity-mcp-cli run-tool editor-application-set-state --input '{\"isPlaying\": false}')",
       "mcp__ai-game-developer__scene-create",
       "Bash(npx --yes unity-mcp-cli run-tool assets-delete --input '{\"paths\": [\"Assets/Code/ScriptableObject/RobotDefinitionSO/Titan.asset\", \"Assets/Code/ScriptableObject/RobotDefinitionSO/Vif.asset\", \"Assets/Code/ScriptableObject/RobotDefinitionSO/Sniper.asset\"]}')",
-      "mcp__ai-game-developer__scene-open"
+      "mcp__ai-game-developer__scene-open",
+      "Bash(xargs grep -l \"nodeName\\\\|BuildSlotLabel\\\\|TraverseGraph\")",
+      "Bash(grep -n \"^--- !u!1 &546344435$\\\\|^--- !u!1 &214546174$\" Assets/Level/Scenes/Gameplay.unity)",
+      "Bash(grep -n -A3 \"^--- !u!224 &847821252$\\\\|^--- !u!224 &2052205250$\" Assets/Level/Scenes/Gameplay.unity)",
+      "Bash(awk '/^--- !u!224 &868000942$/{f=1} f{print NR\": \"$0} f&&/m_Pivot/{exit}' Assets/Level/Scenes/Gameplay.unity)",
+      "Bash(grep -n \"^--- !u!1 &696591811$\\\\|^--- !u!224 &696591813$\" Assets/Level/Scenes/Gameplay.unity)",
+      "Bash(grep -n \"^--- !u!114 &1545856763$\" Assets/Level/Scenes/Gameplay.unity)",
+      "Bash(grep -n \"^--- !u!1 &1545856762$\" Assets/Level/Scenes/Gameplay.unity)",
+      "Bash(awk '/^--- !u!224 &278839536$/{f=1} f{print} f&&/m_Pivot/{exit}' Assets/Level/Scenes/Gameplay.unity)",
+      "Bash(grep -n -A20 \"EditorClassIdentifier: Assembly-CSharp::SpellCaster$\" Assets/Level/Scenes/Gameplay.unity)",
+      "Bash(grep -n \"^--- !u!.* &228376614$\" Assets/Level/Scenes/Gameplay.unity)"
     ]
   }
 }

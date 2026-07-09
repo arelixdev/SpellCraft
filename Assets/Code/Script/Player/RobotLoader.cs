@@ -56,7 +56,10 @@ public class RobotLoader : MonoBehaviour
         if (robot.VisualPrefab != null)
         {
             var visual = Instantiate(robot.VisualPrefab, transform);
-            visual.transform.localPosition = Vector3.zero;
+            // Le CharacterController a un centre (0,0,0) et une hauteur de 2 → ses pieds
+            // sont à Y=-1 relatif au Player. Le mesh (pivot à la hanche) doit être abaissé
+            // d'autant pour que les pieds touchent le sol au lieu de flotter.
+            visual.transform.localPosition = new Vector3(0f, -1f, 0f);
             visual.transform.localRotation = Quaternion.identity;
         }
     }

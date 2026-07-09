@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 97576b86ea208684dac9825ac433755e, type: 3}
+  m_Name: SpellGraphPool
+  m_EditorClassIdentifier: Assembly-CSharp::SpellGraphPoolSO
+  Tiers:
+  - Weight: 40
+    Graphs:
+    - {fileID: 11400000, guid: 1b8ba6bf6f9baa7429c30fa29c8d8e62, type: 2}
+    - {fileID: 11400000, guid: 5e62e09598f7b1e4faf7e9c96ccba937, type: 2}
+  - Weight: 30
+    Graphs:
+    - {fileID: 11400000, guid: e84f1a4e065adcb46b9910d63cff3ad1, type: 2}
+    - {fileID: 11400000, guid: d74558927bb45fb4c9e53eee95623fa4, type: 2}
+  - Weight: 20
+    Graphs:
+    - {fileID: 11400000, guid: 2f0c519fbee0e444e9240a9ea0d3a0c8, type: 2}
+  - Weight: 10
+    Graphs:
+    - {fileID: 11400000, guid: f2c275252e4ba9444b9943d6720fd1ea, type: 2}

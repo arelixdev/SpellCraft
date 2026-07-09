@@ -25,6 +25,12 @@ public class SpellCaster : MonoBehaviour
     private float[] _cooldownTimers;
     private bool    _castingEnabled = true;
 
+    // Fired whenever craftingGraph is rebuilt or mutated (RebuildCraftingGraphFromSlots,
+    // CollectNode). Subscribers refresh instead of relying on Start() order (unordered
+    // relative to SpellCaster's own Start(), which is when the graph actually becomes
+    // valid) or on the player manually reopening the crafting panel.
+    public event System.Action OnCraftingGraphChanged;
+
     // Corrupted effects currently applied as permanent player debuffs/buffs —
     // tracked by CorruptedEffectSO so a shared asset referenced by several nodes
     // stays active as long as at least one of them is wired into a slot.
@@ -190,6 +196,7 @@ public class SpellCaster : MonoBehaviour
         EnsureCraftingGraphInitialized();
 
         craftingGraph.nodes.Add(node);
+        OnCraftingGraphChanged?.Invoke();
 
         Debug.Log($"[SpellCaster] Collected '{node.nodeName}' — stored, will appear when panel opens");
     }
@@ -208,6 +215,7 @@ public class SpellCaster : MonoBehaviour
         craftingGraph.slotEntries.Clear();
 
         MergeSlotsInto(craftingGraph);
+        OnCraftingGraphChanged?.Invoke();
     }
 
     // Merges legacy per-slot spells into craftingGraph (only if not already done).

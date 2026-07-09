@@ -12,8 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b13758f45f6bd4a4dad0801ab95566a4, type: 3}
   m_Name: LauncherConfigPool
   m_EditorClassIdentifier: Assembly-CSharp::LauncherConfigPoolSO
-  Configs:
+  NonSequentialConfigs:
   - {fileID: 11400000, guid: 6ee5e98ff80e925419b2bea4a8ac3d4b, type: 2}
+  OrderedKeybindConfigs:
   - {fileID: 11400000, guid: 71c5b005c90dbd24ebbf3e8b98dcddac, type: 2}
   - {fileID: 11400000, guid: 747634d6f68db3743808c44f81ce1f4e, type: 2}
   - {fileID: 11400000, guid: 517442c0d55f4b64e980a0938f663da4, type: 2}

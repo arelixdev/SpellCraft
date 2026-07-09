@@ -20,4 +20,17 @@ MonoBehaviour:
   CritChanceRange: {x: 0.2, y: 0.3}
   CritMultiplierRange: {x: 1.8, y: 2.2}
   StartingGoldRange: {x: 0, y: 0}
+  SlotCountWeights:
+    Weight0: 0
+    Weight1: 40
+    Weight2: 30
+    Weight3: 20
+    Weight4: 10
+  FilledSlotWeights:
+    Weight0: 0
+    Weight1: 40
+    Weight2: 30
+    Weight3: 20
+    Weight4: 10
   LauncherPool: {fileID: 11400000, guid: 5ea345c573754cb429d17bbd34dd1233, type: 2}
+  SpellGraphPool: {fileID: 11400000, guid: 926cb1704e4d9b7438a146706274e6fe, type: 2}
