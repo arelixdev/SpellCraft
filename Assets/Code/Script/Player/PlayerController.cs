@@ -18,6 +18,7 @@ public class PlayerController : MonoBehaviour
 
     public void SetSpeedMultiplier(object source, float multiplier) => _speedMultipliers[source] = multiplier;
     public void ClearSpeedMultiplier(object source) => _speedMultipliers.Remove(source);
+    public void SetBaseMoveSpeed(float value) => moveSpeed = value;
 
     private float AggregateSpeedMultiplier()
     {

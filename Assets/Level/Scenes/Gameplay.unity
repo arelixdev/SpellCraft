@@ -3265,7 +3265,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
   m_AnchoredPosition: {x: 0, y: -540}
-  m_SizeDelta: {x: 0, y: 0}
+  m_SizeDelta: {x: 60, y: 80}
   m_Pivot: {x: 1, y: 0.5}
 --- !u!114 &476324717
 MonoBehaviour:
@@ -7305,6 +7305,7 @@ GameObject:
   - component: {fileID: 1366729021}
   - component: {fileID: 1366729022}
   - component: {fileID: 1366729023}
+  - component: {fileID: 1366729024}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -7523,6 +7524,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerWallet
   _startingGold: 0
+--- !u!114 &1366729024
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1366729010}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 43d816079c462d749bac2194e66356cb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RobotLoader
+  _defaultArchetype: {fileID: 11400000, guid: 1fff3780fe3bdfc4a8e258fb5fffc9ac, type: 2}
+  _defaultNamePool: {fileID: 11400000, guid: 9586200a641b3b846a37f7e235e12d16, type: 2}
 --- !u!1 &1407074583
 GameObject:
   m_ObjectHideFlags: 0

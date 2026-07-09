@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 447977a68cb339843aa960d634073e90, type: 3}
+  m_Name: Archetype_Tank
+  m_EditorClassIdentifier: Assembly-CSharp::RobotArchetypeSO
+  ArchetypeName: Tank
+  Description: "Robot blind\xE9, lent mais increvable."
+  VisualPrefab: {fileID: 496643692691064241, guid: 86897b50e75a85549b3da5e038769449, type: 3}
+  MaxHealthRange: {x: 130, y: 170}
+  MoveSpeedRange: {x: 3.5, y: 4.5}
+  CritChanceRange: {x: 0.02, y: 0.08}
+  CritMultiplierRange: {x: 1.3, y: 1.6}
+  StartingGoldRange: {x: 0, y: 0}
+  LauncherPool: {fileID: 11400000, guid: 5ea345c573754cb429d17bbd34dd1233, type: 2}

@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 447977a68cb339843aa960d634073e90, type: 3}
+  m_Name: Archetype_Sniper
+  m_EditorClassIdentifier: Assembly-CSharp::RobotArchetypeSO
+  ArchetypeName: Sniper
+  Description: "Robot de pr\xE9cision, gros crits mais peu de PV."
+  VisualPrefab: {fileID: 8043441165089155494, guid: 1f60ee59191209c439a9ac507f27ef95, type: 3}
+  MaxHealthRange: {x: 70, y: 90}
+  MoveSpeedRange: {x: 4.5, y: 5.5}
+  CritChanceRange: {x: 0.2, y: 0.3}
+  CritMultiplierRange: {x: 1.8, y: 2.2}
+  StartingGoldRange: {x: 0, y: 0}
+  LauncherPool: {fileID: 11400000, guid: 5ea345c573754cb429d17bbd34dd1233, type: 2}

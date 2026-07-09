@@ -11,6 +11,8 @@ public class PlayerWallet : MonoBehaviour
 
     public event Action<int> OnGoldChanged;
 
+    public void SetStartingGold(int value) => _startingGold = value;
+
     private void Awake() => _gold = _startingGold;
 
     public void AddGold(int amount)

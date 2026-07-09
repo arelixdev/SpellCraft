@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b13758f45f6bd4a4dad0801ab95566a4, type: 3}
+  m_Name: LauncherConfigPool
+  m_EditorClassIdentifier: Assembly-CSharp::LauncherConfigPoolSO
+  Configs:
+  - {fileID: 11400000, guid: 6ee5e98ff80e925419b2bea4a8ac3d4b, type: 2}
+  - {fileID: 11400000, guid: 71c5b005c90dbd24ebbf3e8b98dcddac, type: 2}
+  - {fileID: 11400000, guid: 747634d6f68db3743808c44f81ce1f4e, type: 2}
+  - {fileID: 11400000, guid: 517442c0d55f4b64e980a0938f663da4, type: 2}
+  - {fileID: 11400000, guid: d50c5b1d2777a1b4196a3f3763c846e0, type: 2}

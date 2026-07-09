@@ -22,6 +22,8 @@ public class PlayerHealth : MonoBehaviour
     public event Action<float, float> OnHealthChanged; // current, max
     public event Action               OnDied;
 
+    public void SetMaxHealth(float value) => _maxHealth = value;
+
     private void Awake()
     {
         _currentHealth    = _maxHealth;

@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 447977a68cb339843aa960d634073e90, type: 3}
+  m_Name: Archetype_Vif
+  m_EditorClassIdentifier: Assembly-CSharp::RobotArchetypeSO
+  ArchetypeName: Vif
+  Description: "Robot l\xE9ger, rapide mais fragile."
+  VisualPrefab: {fileID: 8927622788648497550, guid: 90abcad82fc74f14c88257a862c7436b, type: 3}
+  MaxHealthRange: {x: 60, y: 80}
+  MoveSpeedRange: {x: 6.5, y: 7.5}
+  CritChanceRange: {x: 0.08, y: 0.12}
+  CritMultiplierRange: {x: 1.4, y: 1.6}
+  StartingGoldRange: {x: 10, y: 30}
+  LauncherPool: {fileID: 11400000, guid: 5ea345c573754cb429d17bbd34dd1233, type: 2}

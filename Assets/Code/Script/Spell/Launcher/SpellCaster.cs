@@ -342,6 +342,11 @@ public class SpellCaster : MonoBehaviour
 
     public SpellSlot   GetSlot(int i)  => (i >= 0 && i < _spellSlots.Length) ? _spellSlots[i] : null;
     public SpellSlot[] GetSlots()      => _spellSlots;
+
+    // Appelé par RobotLoader (DefaultExecutionOrder -100) avant Awake() de ce
+    // composant, pour que _cooldownTimers et les abonnements KeyBind d'OnEnable
+    // se basent directement sur le loadout tiré au sort du robot choisi.
+    public void SetSlots(SpellSlot[] slots) => _spellSlots = slots ?? System.Array.Empty<SpellSlot>();
     public void SetSlotGraph(int i, SpellGraphSO graph)
     {
         if (i >= 0 && i < _spellSlots.Length) _spellSlots[i].connectedSpell = graph;
