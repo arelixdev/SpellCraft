@@ -50,7 +50,8 @@
       "Bash(grep -n \"^--- !u!1 &1545856762$\" Assets/Level/Scenes/Gameplay.unity)",
       "Bash(awk '/^--- !u!224 &278839536$/{f=1} f{print} f&&/m_Pivot/{exit}' Assets/Level/Scenes/Gameplay.unity)",
       "Bash(grep -n -A20 \"EditorClassIdentifier: Assembly-CSharp::SpellCaster$\" Assets/Level/Scenes/Gameplay.unity)",
-      "Bash(grep -n \"^--- !u!.* &228376614$\" Assets/Level/Scenes/Gameplay.unity)"
+      "Bash(grep -n \"^--- !u!.* &228376614$\" Assets/Level/Scenes/Gameplay.unity)",
+      "mcp__ai-game-developer__gameobject-duplicate"
     ]
   }
 }

@@ -166,7 +166,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0943a354aba6e634cb47feaf025a758a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::RunController
-  SpawnEnemies: 0
+  SpawnEnemies: 1
   EnemySpawner: {fileID: 1837116933}
   BossPortal: {fileID: 0}
   LevelNumber: 1
@@ -3265,7 +3265,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
   m_AnchoredPosition: {x: 0, y: -540}
-  m_SizeDelta: {x: 60, y: 80}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 1, y: 0.5}
 --- !u!114 &476324717
 MonoBehaviour:

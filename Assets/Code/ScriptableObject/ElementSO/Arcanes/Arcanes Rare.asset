@@ -13,11 +13,13 @@ MonoBehaviour:
   m_Name: Arcanes Rare
   m_EditorClassIdentifier: Assembly-CSharp::ElementNodeSO
   icon: {fileID: 0}
-  nodeName: 
+  nodeName: Arcane
   nodeType: 0
   complexityCost: 4
   rarity: 1
   corruptedEffect: {fileID: 0}
+  synergies: []
+  description: 
   element: 4
   damageMultiplier: 1.4
   statusChance: 0.3

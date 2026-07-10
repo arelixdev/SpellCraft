@@ -12,6 +12,10 @@ public class SpellCraftingToggle : MonoBehaviour
     [SerializeField] private Camera             _gameCamera;
     [SerializeField] private float              _slideDuration = 0.2f;
 
+    [Tooltip("Time.timeScale appliqué pendant que le panel est ouvert (le slide, lui, tourne en unscaledDeltaTime et n'est pas affecté).")]
+    [Range(0.05f, 1f)]
+    [SerializeField] private float _timeScaleWhenOpen = 0.2f;
+
     [Tooltip("Root RectTransform for HUD elements (health, energy, gold, Game Over) that must stay centered within the visible game viewport rather than the full screen. Its anchorMax.x is kept in sync with the game camera's viewport width.")]
     [SerializeField] private RectTransform      _hudRoot;
 
@@ -39,6 +43,7 @@ public class SpellCraftingToggle : MonoBehaviour
     public void SetOpen(bool open)
     {
         IsOpen = open;
+        Time.timeScale = open ? _timeScaleWhenOpen : 1f;
         if (_slideCoroutine != null) StopCoroutine(_slideCoroutine);
         _slideCoroutine = StartCoroutine(SlidePanel(open ? 0f : _panelWidth, open ? 0.6f : 1f));
     }

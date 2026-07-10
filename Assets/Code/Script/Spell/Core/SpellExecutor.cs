@@ -175,7 +175,12 @@ public static class SpellExecutor
             return;
         }
 
-        var go = Object.Instantiate(emitter.projectilePrefab, ctx.Origin, Quaternion.identity);
+        // Les zones sont ancrées sur le porteur du sort, pas sur le firePoint (décalé vers
+        // l'avant pour viser les projectiles) : sinon une zone GrowingOnGround — qui ne se
+        // recentre jamais sur le Caster (voir ZoneEffect.Update) — reste figée décalée devant
+        // le joueur au lieu d'apparaître à ses pieds.
+        var spawnPos = ctx.Caster != null ? ctx.Caster.transform.position : ctx.Origin;
+        var go = Object.Instantiate(emitter.projectilePrefab, spawnPos, Quaternion.identity);
 
         if (ctx.OverrideMaterial != null)
             foreach (var r in go.GetComponentsInChildren<Renderer>())
