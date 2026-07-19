@@ -1636,6 +1636,7 @@ MonoBehaviour:
   _panel: {fileID: 1856954425}
   _gameCamera: {fileID: 330585545}
   _slideDuration: 0.2
+  _timeScaleWhenOpen: 0.2
   _hudRoot: {fileID: 1843302648}
 --- !u!114 &278839533
 MonoBehaviour:
@@ -10097,7 +10098,6 @@ MonoBehaviour:
   BossSpawnPoint: {fileID: 0}
   NodePickupPrefab: {fileID: 9188611008758526935, guid: 61ee59d2438706e4f9967c560a94b395, type: 3}
   LootPool: {fileID: 11400000, guid: 60ea425edccdb144095f5f0ef355a8e6, type: 2}
-  DelayBeforeNextLevel: 3
   SearchRadius: 60
   MinDistanceFromActivity: 12
   NavMeshSampleDistance: 3

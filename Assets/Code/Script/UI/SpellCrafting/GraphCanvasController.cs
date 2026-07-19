@@ -2,7 +2,9 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// Manages the node canvas: all nodes live in one shared SpellGraphSO.
-/// Slots are entry-points — any slot can connect to any node.
+/// Slots are entry-points — any slot can connect to any node, but a node can only be
+/// the entry point of one slot at a time (branching a new slot onto it detaches the
+/// previous one, see CompleteLauncherConnection).
 public class GraphCanvasController : MonoBehaviour
 {
     public static GraphCanvasController Instance { get; private set; }
@@ -253,6 +255,13 @@ public class GraphCanvasController : MonoBehaviour
     public void CompleteLauncherConnection(LauncherPortView launcherPort, NodeView targetNode)
     {
         if (_workingGraph == null) return;
+
+        // Un node ne peut être le point d'entrée que d'un seul slot à la fois : si un
+        // autre slot pointait déjà dessus, on le déconnecte avant de réassigner ce node
+        // au slot qu'on vient de brancher.
+        _workingGraph.slotEntries.RemoveAll(e =>
+            e.nodeIndex == targetNode.NodeIndex && e.slotIndex != launcherPort.SlotIndex);
+
         _workingGraph.SetSlotEntry(launcherPort.SlotIndex, targetNode.NodeIndex);
         OnGraphModified?.Invoke();
     }

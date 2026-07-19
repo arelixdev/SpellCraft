@@ -8,7 +8,9 @@ using UnityEngine.SceneManagement;
 /// Portail boss : le joueur entre dans le trigger, appuie sur Espace → le boss spawne.
 /// Plus le joueur attend, plus le boss est puissant.
 /// SetDangerLevel est appelé chaque seconde par RunController.
-/// Une fois le boss vaincu, passage au niveau suivant (rechargement de la scène avec un niveau incrémenté).
+/// Une fois le boss vaincu, le portail reste utilisable : un second appui sur Espace
+/// (le joueur choisit son moment, ex. après avoir fini de looter la zone) passe au
+/// niveau suivant (rechargement de la scène avec un niveau incrémenté).
 /// </summary>
 public class BossPortal : ActivityBase
 {
@@ -26,10 +28,6 @@ public class BossPortal : ActivityBase
 
     [BoxGroup("Boss"), LabelText("Loot Pool")]
     public LootPoolSO LootPool;
-
-    [BoxGroup("Boss"), LabelText("Délai avant niveau suivant (s)")]
-    [Tooltip("Temps laissé au joueur pour voir le loot avant de recharger la scène au niveau suivant")]
-    public float DelayBeforeNextLevel = 3f;
 
     // ── Placement NavMesh ────────────────────────────────────────────────────────
     [BoxGroup("Placement"), LabelText("Rayon de recherche (m)")]
@@ -72,6 +70,9 @@ public class BossPortal : ActivityBase
 
     // ── API ──────────────────────────────────────────────────────────────────────
     public void SetDangerLevel(float dangerSeconds) => _currentDanger = dangerSeconds;
+
+    private bool _bossSpawned;
+    private bool _bossDefeated;
 
     // ── Unity ────────────────────────────────────────────────────────────────────
     private void Start()
@@ -123,8 +124,18 @@ public class BossPortal : ActivityBase
 
     protected override void OnInteract(SpellCaster caster)
     {
+        if (_bossDefeated)
+        {
+            Complete();
+            RunProgress.Level++;
+            Debug.Log($"[BossPortal] Passage au niveau {RunProgress.Level}.");
+            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+            return;
+        }
+
+        if (_bossSpawned) return;
+        _bossSpawned = true;
         SpawnBoss();
-        Complete();
     }
 
     // ── Spawn ────────────────────────────────────────────────────────────────────
@@ -158,7 +169,8 @@ public class BossPortal : ActivityBase
     private void OnBossDefeated(Vector3 position)
     {
         SpawnBossLoot(position);
-        StartCoroutine(AdvanceToNextLevelAfterDelay());
+        _bossDefeated = true;
+        Debug.Log("[BossPortal] Boss vaincu — réinteragis avec le portail pour passer au niveau suivant.");
     }
 
     private void SpawnBossLoot(Vector3 position)
@@ -167,13 +179,5 @@ public class BossPortal : ActivityBase
 
         var pickup = Instantiate(NodePickupPrefab, position, Quaternion.identity);
         pickup.GetComponent<NodePickup>()?.Initialize(LootPool);
-    }
-
-    private IEnumerator AdvanceToNextLevelAfterDelay()
-    {
-        yield return new WaitForSeconds(DelayBeforeNextLevel);
-        RunProgress.Level++;
-        Debug.Log($"[BossPortal] Passage au niveau {RunProgress.Level}.");
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 }

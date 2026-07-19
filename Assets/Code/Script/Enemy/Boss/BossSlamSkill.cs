@@ -2,14 +2,16 @@ using System.Collections;
 using UnityEngine;
 
 /// <summary>
-/// Compétence "Zone au sol" : mémorise la position du joueur au cast, télégraphe un cercle
-/// à cet endroit, puis inflige des dégâts si le joueur y est encore au moment de l'impact.
+/// Compétence "Zone au sol" : coup de marteau ancré près du boss, dans la direction du
+/// joueur au moment du cast — pas téléporté sur la position du joueur (BossChargeSkill
+/// s'occupe déjà de rattraper un joueur loin). Télégraphe un cercle, puis inflige des
+/// dégâts si le joueur y est encore au moment de l'impact.
 /// Le déclenchement (choix aléatoire, exclusivité, délai entre skills) est géré par BossController.
 /// </summary>
 public class BossSlamSkill : MonoBehaviour, IBossSkill
 {
-    [Header("Portée de déclenchement")]
-    [SerializeField] private float _maxRange = 20f;
+    [Header("Portée de déclenchement (courte distance : rattraper est le rôle de Charge)")]
+    [SerializeField] private float _maxRange = 10f;
 
     [Header("Zone au sol")]
     [SerializeField] private float _telegraphDuration = 0.6f;
@@ -40,7 +42,14 @@ public class BossSlamSkill : MonoBehaviour, IBossSkill
     {
         _ai.CanMove = false;
 
-        Vector3    targetPos = _player.position;
+        Vector3 dirToPlayer = _player.position - transform.position;
+        dirToPlayer.y = 0f;
+        if (dirToPlayer.sqrMagnitude < 0.0001f) dirToPlayer = transform.forward;
+        dirToPlayer.Normalize();
+
+        // Ancré à _slamRadius du boss (pas sur le joueur) : le marteau frappe le sol
+        // juste devant/autour du boss, dans la direction visée au cast.
+        Vector3    targetPos = transform.position + dirToPlayer * _slamRadius;
         GameObject marker    = CreateTelegraphMarker(targetPos);
 
         yield return new WaitForSeconds(_telegraphDuration);
