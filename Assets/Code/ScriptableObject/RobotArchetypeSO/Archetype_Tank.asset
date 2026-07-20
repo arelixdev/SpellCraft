@@ -13,7 +13,15 @@ MonoBehaviour:
   m_Name: Archetype_Tank
   m_EditorClassIdentifier: Assembly-CSharp::RobotArchetypeSO
   ArchetypeName: Tank
-  Description: "Robot blind\xE9, lent mais increvable."
+  Description:
+    m_TableReference:
+      m_TableCollectionName: Robot Archetypes
+    m_TableEntryReference:
+      m_KeyId: 0
+      m_Key: archetype.tank.description
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
   VisualPrefab: {fileID: 496643692691064241, guid: 86897b50e75a85549b3da5e038769449, type: 3}
   MaxHealthRange: {x: 130, y: 170}
   MoveSpeedRange: {x: 3.5, y: 4.5}
@@ -34,3 +42,6 @@ MonoBehaviour:
     Weight4: 10
   LauncherPool: {fileID: 11400000, guid: 5ea345c573754cb429d17bbd34dd1233, type: 2}
   SpellGraphPool: {fileID: 11400000, guid: 926cb1704e4d9b7438a146706274e6fe, type: 2}
+  references:
+    version: 2
+    RefIds: []

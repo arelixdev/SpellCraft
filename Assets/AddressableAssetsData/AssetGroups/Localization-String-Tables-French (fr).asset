@@ -15,12 +15,24 @@ MonoBehaviour:
   m_GroupName: Localization-String-Tables-French (fr)
   m_GUID: f0315ea1ba140ef4db28402a1a8a1415
   m_SerializeEntries:
+  - m_GUID: 739e4e6caf3e2d342a4efc0ed49bad7e
+    m_Address: Robot Archetypes_fr
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-fr
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 8257703fee65e694ab058a6d3033f65e
     m_Address: Menu Labels_fr
     m_ReadOnly: 1
     m_SerializedLabels:
     - Locale-fr
     - Preload
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 948a21cb9d6d8ca4a8d057a28f56c357
+    m_Address: Robot Card_fr
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-fr
     FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 1
   m_Settings: {fileID: 11400000, guid: a512ba38245618e4b918fe32de5b4f1d, type: 2}

@@ -13,7 +13,15 @@ MonoBehaviour:
   m_Name: Archetype_Vif
   m_EditorClassIdentifier: Assembly-CSharp::RobotArchetypeSO
   ArchetypeName: Vif
-  Description: "Robot l\xE9ger, rapide mais fragile."
+  Description:
+    m_TableReference:
+      m_TableCollectionName: Robot Archetypes
+    m_TableEntryReference:
+      m_KeyId: 0
+      m_Key: archetype.vif.description
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
   VisualPrefab: {fileID: 8927622788648497550, guid: 90abcad82fc74f14c88257a862c7436b, type: 3}
   MaxHealthRange: {x: 60, y: 80}
   MoveSpeedRange: {x: 6.5, y: 7.5}
@@ -34,3 +42,6 @@ MonoBehaviour:
     Weight4: 10
   LauncherPool: {fileID: 11400000, guid: 5ea345c573754cb429d17bbd34dd1233, type: 2}
   SpellGraphPool: {fileID: 11400000, guid: 926cb1704e4d9b7438a146706274e6fe, type: 2}
+  references:
+    version: 2
+    RefIds: []

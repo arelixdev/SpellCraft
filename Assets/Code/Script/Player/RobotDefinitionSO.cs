@@ -1,5 +1,6 @@
 using Sirenix.OdinInspector;
 using UnityEngine;
+using UnityEngine.Localization;
 
 /// <summary>
 /// Décrit un robot jouable (apparence + stats de départ). Choisi sur l'écran de
@@ -11,8 +12,8 @@ public class RobotDefinitionSO : ScriptableObject
     [LabelText("Nom affiché")]
     public string DisplayName = "Robot";
 
-    [LabelText("Description"), TextArea(2, 4)]
-    public string Description = "";
+    [LabelText("Description")]
+    public LocalizedString Description;
 
     [LabelText("Prefab visuel")]
     [Required] [AssetsOnly]

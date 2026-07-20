@@ -13,7 +13,15 @@ MonoBehaviour:
   m_Name: Archetype_Sniper
   m_EditorClassIdentifier: Assembly-CSharp::RobotArchetypeSO
   ArchetypeName: Sniper
-  Description: "Robot de pr\xE9cision, gros crits mais peu de PV."
+  Description:
+    m_TableReference:
+      m_TableCollectionName: Robot Archetypes
+    m_TableEntryReference:
+      m_KeyId: 0
+      m_Key: archetype.sniper.description
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
   VisualPrefab: {fileID: 8043441165089155494, guid: 1f60ee59191209c439a9ac507f27ef95, type: 3}
   MaxHealthRange: {x: 70, y: 90}
   MoveSpeedRange: {x: 4.5, y: 5.5}
@@ -34,3 +42,6 @@ MonoBehaviour:
     Weight4: 10
   LauncherPool: {fileID: 11400000, guid: 5ea345c573754cb429d17bbd34dd1233, type: 2}
   SpellGraphPool: {fileID: 11400000, guid: 926cb1704e4d9b7438a146706274e6fe, type: 2}
+  references:
+    version: 2
+    RefIds: []

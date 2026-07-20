@@ -1,5 +1,6 @@
 using Sirenix.OdinInspector;
 using UnityEngine;
+using UnityEngine.Localization;
 
 /// <summary>
 /// Modèle d'un robot (Tank, Vif, Sniper...) : chaque stat est un intervalle plutôt qu'une
@@ -12,8 +13,8 @@ public class RobotArchetypeSO : ScriptableObject
     [LabelText("Nom de l'archétype")]
     public string ArchetypeName = "Archétype";
 
-    [LabelText("Description"), TextArea(2, 4)]
-    public string Description = "";
+    [LabelText("Description")]
+    public LocalizedString Description;
 
     [LabelText("Prefab visuel")]
     [Required] [AssetsOnly]

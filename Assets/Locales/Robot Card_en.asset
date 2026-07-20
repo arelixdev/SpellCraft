@@ -1,0 +1,59 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9620f8c34305754d8cc9a7e49e852d9, type: 3}
+  m_Name: Robot Card_en
+  m_EditorClassIdentifier: Unity.Localization::UnityEngine.Localization.Tables.StringTable
+  m_LocaleId:
+    m_Code: en
+  m_SharedData: {fileID: 11400000, guid: 5f00f78046ff1ab4291c2d96cbd7672a, type: 2}
+  m_Metadata:
+    m_Items: []
+  m_TableData:
+  - m_Id: 3105312768
+    m_Localized: 'Max HP: {0:0}'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3122089984
+    m_Localized: 'Speed: {0:0.#}'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3122089985
+    m_Localized: 'Crit: {0:0}% x{1:0.#}'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3122089986
+    m_Localized: 'Starting Gold: {0}'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3122089987
+    m_Localized: 'Slots: none'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3122089988
+    m_Localized: 'Slots ({0}):'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3122089989
+    m_Localized: "{0}. {1} \u2014 {2}"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3122089990
+    m_Localized: empty
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3126284288
+    m_Localized: '?'
+    m_Metadata:
+      m_Items: []
+  references:
+    version: 2
+    RefIds: []

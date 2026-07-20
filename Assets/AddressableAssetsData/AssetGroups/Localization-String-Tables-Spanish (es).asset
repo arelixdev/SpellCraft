@@ -15,12 +15,24 @@ MonoBehaviour:
   m_GroupName: Localization-String-Tables-Spanish (es)
   m_GUID: c531301ac60334145a39e0797e9b4c12
   m_SerializeEntries:
+  - m_GUID: 2d830013d9730bc46b3cd111678f75c8
+    m_Address: Robot Card_es
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-es
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 4325683f5e5bef34cbbabaf014c64ea5
     m_Address: Menu Labels_es
     m_ReadOnly: 1
     m_SerializedLabels:
     - Locale-es
     - Preload
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 9fbc5b71c66a65b4389d12525ded84f2
+    m_Address: Robot Archetypes_es
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-es
     FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 1
   m_Settings: {fileID: 11400000, guid: a512ba38245618e4b918fe32de5b4f1d, type: 2}
