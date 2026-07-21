@@ -33,6 +33,7 @@ public class CharacterSelectController : MonoBehaviour
     private void ChooseRobot(RobotDefinitionSO robot)
     {
         RobotSelection.Chosen = robot;
+        RunProgress.ResetRun();
         SceneManager.LoadScene(_gameplaySceneName);
     }
 }

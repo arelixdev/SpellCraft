@@ -266,8 +266,12 @@ public class SpellProjectile : MonoBehaviour
         {
             var state = _ctx.Caster.GetComponent<CasterComboState>() ?? _ctx.Caster.AddComponent<CasterComboState>();
             if (state.LastHitEnemy != null && state.LastHitEnemy != enemy)
+            {
                 state.LastHitEnemy.GetComponent<ComboHitTracker>()?.ResetAll();
+                state.ComboCount = 0;
+            }
             state.LastHitEnemy = enemy;
+            state.ComboCount++;
         }
 
         var tracker = enemy.GetComponent<ComboHitTracker>() ?? enemy.AddComponent<ComboHitTracker>();

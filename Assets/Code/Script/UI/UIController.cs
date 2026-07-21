@@ -7,6 +7,7 @@ public class UIController : MonoBehaviour
 {
     [Header("Panels")]
     [SerializeField] private GameObject _gameOverPanel;
+    [SerializeField] private GameObject _victoryPanel;
 
     [Header("Health HUD")]
     [SerializeField] private Image   _healthBarFill;
@@ -22,11 +23,17 @@ public class UIController : MonoBehaviour
     {
         if (_gameOverPanel != null)
             _gameOverPanel.SetActive(false);
+
+        if (_victoryPanel != null)
+            _victoryPanel.SetActive(false);
     }
 
     private void Start()
     {
         StartCoroutine(WaitForPlayer());
+
+        if (RunController.Instance != null)
+            RunController.Instance.OnVictory.AddListener(ShowVictory);
     }
 
     private void OnDisable()
@@ -39,6 +46,9 @@ public class UIController : MonoBehaviour
 
         if (_playerWallet != null)
             _playerWallet.OnGoldChanged -= UpdateGoldHUD;
+
+        if (RunController.Instance != null)
+            RunController.Instance.OnVictory.RemoveListener(ShowVictory);
     }
 
     private IEnumerator WaitForPlayer()
@@ -109,5 +119,11 @@ public class UIController : MonoBehaviour
     {
         if (_gameOverPanel != null)
             _gameOverPanel.SetActive(true);
+    }
+
+    private void ShowVictory()
+    {
+        if (_victoryPanel != null)
+            _victoryPanel.SetActive(true);
     }
 }

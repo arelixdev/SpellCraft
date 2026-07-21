@@ -29,6 +29,9 @@ public class RunController : MonoBehaviour
     [FoldoutGroup("Events"), LabelText("Danger mis à jour (secondes écoulées)")]
     public UnityEvent<float> OnDangerChanged;
 
+    [FoldoutGroup("Events"), LabelText("Victoire (Big Boss vaincu)")]
+    public UnityEvent OnVictory;
+
     // ── État ─────────────────────────────────────────────────────────────────────
     [FoldoutGroup("État"), ShowInInspector, ReadOnly, LabelText("Temps écoulé (s)")]
     public float TimeElapsed { get; private set; }
@@ -97,5 +100,14 @@ public class RunController : MonoBehaviour
         IsRunning = false;
         if (SpawnEnemies) EnemySpawner?.StopSpawning();
         Debug.Log("[RunController] Run arrêté.");
+    }
+
+    public void WinRun()
+    {
+        if (!IsRunning) return;
+        IsRunning = false;
+        if (SpawnEnemies) EnemySpawner?.StopSpawning();
+        OnVictory?.Invoke();
+        Debug.Log("[RunController] Run gagné !");
     }
 }

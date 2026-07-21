@@ -395,7 +395,7 @@ public static class SpellExecutor
         }
     }
 
-    // --- Condition helpers (stub until systems exist) ---
+    // --- Condition helpers ---
 
     private static bool IsCasterAtFullHP(GameObject caster)
     {
@@ -405,8 +405,7 @@ public static class SpellExecutor
 
     private static int GetComboCount(GameObject caster)
     {
-        // TODO: plug into ComboTracker component
-        return 0;
+        return caster != null && caster.TryGetComponent<CasterComboState>(out var state) ? state.ComboCount : 0;
     }
 
     private static int CountEnemiesNearby(GameObject caster, float radius)
