@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 /// <summary>
 /// Écran de sélection du robot en début de run : tire un robot aléatoire (stats + nom)
@@ -46,6 +45,6 @@ public class CharacterSelectController : MonoBehaviour
             playerGO.GetComponent<PlayerHealth>()?.ResetForNewRun();
         }
 
-        SceneManager.LoadScene(_gameplaySceneName);
+        ScreenFader.LoadScene(_gameplaySceneName);
     }
 }

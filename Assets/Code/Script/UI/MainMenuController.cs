@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 /// <summary>
@@ -27,7 +26,7 @@ public class MainMenuController : MonoBehaviour
 
     private void PlayOrContinue()
     {
-        SceneManager.LoadScene(_gameplayEntrySceneName);
+        ScreenFader.LoadScene(_gameplayEntrySceneName);
     }
 
     private void OpenOptions()

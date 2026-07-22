@@ -20,6 +20,19 @@ public class PlayerController : MonoBehaviour
     public void ClearSpeedMultiplier(object source) => _speedMultipliers.Remove(source);
     public void SetBaseMoveSpeed(float value) => moveSpeed = value;
 
+    // Le CharacterController doit être désactivé le temps du set direct de position, sinon
+    // il peut la ré-écraser/la résoudre contre son état interne au prochain Move(). Le
+    // Move(zero) après réactivation force en plus la purge de la vélocité de chute
+    // accumulée pendant que le Player tombait avant le téléport — sans ça, il continue de
+    // "tomber" du haut de sa vitesse au moment du reset, même déjà posé au sol.
+    public void Teleport(Vector3 position)
+    {
+        _characterController.enabled = false;
+        transform.position = position;
+        _characterController.enabled = true;
+        _characterController.Move(Vector3.zero);
+    }
+
     private float AggregateSpeedMultiplier()
     {
         float result = 1f;

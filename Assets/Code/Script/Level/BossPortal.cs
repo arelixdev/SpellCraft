@@ -160,7 +160,7 @@ public class BossPortal : ActivityBase
             Complete();
             RunProgress.Level++;
             Debug.Log($"[BossPortal] Passage au niveau {RunProgress.Level}.");
-            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+            ScreenFader.LoadScene(SceneManager.GetActiveScene().name);
             return;
         }
 

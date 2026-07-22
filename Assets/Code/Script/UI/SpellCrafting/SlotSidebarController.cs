@@ -36,6 +36,7 @@ public class SlotSidebarController : MonoBehaviour
 
     private void Start()
     {
+        EnsureCaster();
         if (Caster == null || SlotPrefab == null) return;
         var slots = Caster.GetSlots();
         for (int i = 0; i < slots.Length; i++)
@@ -46,12 +47,25 @@ public class SlotSidebarController : MonoBehaviour
 
     private void Update()
     {
+        EnsureCaster();
         if (Caster == null) return;
         for (int i = 0; i < _slots.Count; i++)
         {
             var overlay = _slots[i].cooldownOverlay;
             if (overlay != null) overlay.fillAmount = Caster.GetCooldownRatio(i);
         }
+    }
+
+    // Caster est câblé dans l'Inspector vers le Player placé dans CETTE instance de la
+    // scène Gameplay — détruit comme doublon par PlayerPersistence dès la 2e partie (le
+    // Player réellement vivant est celui du tout premier chargement, DontDestroyOnLoad).
+    // Start() s'exécute juste avant que ce doublon soit effectivement détruit (en fin de
+    // frame), donc les slots s'affichent quand même — mais sans ce fallback, Update() se
+    // fige ensuite : le cooldown affiché reste bloqué à sa dernière valeur pour de bon.
+    private void EnsureCaster()
+    {
+        if (Caster == null)
+            Caster = GameObject.FindWithTag("Player")?.GetComponent<SpellCaster>();
     }
 
     public void Init(SpellCraftingPanel panel)
