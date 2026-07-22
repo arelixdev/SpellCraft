@@ -16,6 +16,14 @@ public class SpellCraftingPanel : MonoBehaviour
 
     public void OnOpen()
     {
+        // TargetCaster est câblé dans l'Inspector vers le Player placé dans CETTE instance
+        // de la scène Gameplay. Or ce Player-là est celui que PlayerPersistence détruit comme
+        // doublon dès la 2e partie (le Player réellement vivant est celui du tout premier
+        // chargement, conservé via DontDestroyOnLoad) : sans ce fallback, TargetCaster pointe
+        // vers un objet détruit et le panel s'ouvrirait vide à partir du 2e run.
+        if (TargetCaster == null)
+            TargetCaster = GameObject.FindWithTag("Player")?.GetComponent<SpellCaster>();
+
         var cg = TargetCaster != null ? TargetCaster.craftingGraph : null;
 
         if (cg != null && cg.nodes.Count > 0)

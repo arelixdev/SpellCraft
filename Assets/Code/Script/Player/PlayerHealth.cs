@@ -73,4 +73,18 @@ public class PlayerHealth : MonoBehaviour
         OnDied?.Invoke();
         Debug.Log("[PlayerHealth] Player died.");
     }
+
+    // Le Player survit au rechargement de scène (PlayerPersistence), donc son Awake() ne
+    // se relance pas au démarrage d'un nouveau run : sans cet appel explicite, un run
+    // recommencé après une mort garderait 0 PV et un PlayerController désactivé.
+    public void ResetForNewRun()
+    {
+        _currentHealth       = _maxHealth;
+        _invincibilityTimer  = 0f;
+
+        if (_playerController != null) _playerController.enabled = true;
+        if (_spellCaster      != null) _spellCaster.enabled      = true;
+
+        OnHealthChanged?.Invoke(_currentHealth, _maxHealth);
+    }
 }

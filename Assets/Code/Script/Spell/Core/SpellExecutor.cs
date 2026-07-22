@@ -17,15 +17,20 @@ public static class SpellExecutor
 
     // Re-traverses graph and refreshes OrbitalManager without spawning any other emitter type.
     // Safe to call on graph change — won't duplicate projectiles or trigger side-effects.
-    public static void RefreshPermanentOrbitals(SpellGraphSO graph, int startNodeIndex, SpellContext ctx)
+    // Returns the still-active permanent-orbital prefab (or null), so the caller can prune
+    // any previously-registered orbital that this slot no longer leads to.
+    public static GameObject RefreshPermanentOrbitals(SpellGraphSO graph, int startNodeIndex, SpellContext ctx)
     {
-        if (graph == null || graph.nodes.Count == 0) return;
+        if (graph == null || graph.nodes.Count == 0) return null;
         int startIdx = Mathf.Clamp(startNodeIndex, 0, graph.nodes.Count - 1);
         EmitterNodeSO emitterNode = null;
         TraversePreSpawn(graph, startIdx, ctx, ref emitterNode);
 
-        if (ctx.Emitter != EmitterType.Orbital || !ctx.OrbitalPermanent) return;
-        if (emitterNode != null) SpawnOrbital(emitterNode, ctx);
+        if (ctx.Emitter != EmitterType.Orbital || !ctx.OrbitalPermanent || emitterNode == null)
+            return null;
+
+        SpawnOrbital(emitterNode, ctx);
+        return emitterNode.projectilePrefab;
     }
 
     // Called by SpellProjectile when a trigger fires

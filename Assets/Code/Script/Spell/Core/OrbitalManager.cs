@@ -53,6 +53,19 @@ public class OrbitalManager : MonoBehaviour
         _slots.RemoveAt(idx);
     }
 
+    // Destroys every registered orbital whose prefab isn't in keepPrefabs — called after
+    // a full graph re-traversal so orbitals dropped from a slot (node disconnected/removed)
+    // actually disappear instead of orbiting forever with no live SpellCaster slot behind them.
+    public void PruneExcept(HashSet<GameObject> keepPrefabs)
+    {
+        for (int i = _slots.Count - 1; i >= 0; i--)
+        {
+            if (keepPrefabs.Contains(_slots[i].Prefab)) continue;
+            DestroySlot(i);
+            _slots.RemoveAt(i);
+        }
+    }
+
     private void SpawnSlot(GameObject prefab, SpellContext ctx, int count)
     {
         var instances = new List<GameObject>(count);

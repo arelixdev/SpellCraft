@@ -30,6 +30,10 @@ public class BurnStatus : MonoBehaviour
         }
     }
 
+    // Le pool désactive le GameObject dès la mort (avant que Update() ait pu se
+    // nettoyer via IsDead) : sans ça, la brûlure survivrait jusqu'au prochain respawn.
+    private void OnDisable() => Destroy(this);
+
     private void Update()
     {
         if (_health == null || _health.IsDead)

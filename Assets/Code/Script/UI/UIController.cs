@@ -9,6 +9,10 @@ public class UIController : MonoBehaviour
     [SerializeField] private GameObject _gameOverPanel;
     [SerializeField] private GameObject _victoryPanel;
 
+    [Header("Options")]
+    [SerializeField] private Button _optionsButton;
+    [SerializeField] private OptionsPanelController _optionsPanel;
+
     [Header("Health HUD")]
     [SerializeField] private Image   _healthBarFill;
     [SerializeField] private TMP_Text _healthLabel;
@@ -26,6 +30,9 @@ public class UIController : MonoBehaviour
 
         if (_victoryPanel != null)
             _victoryPanel.SetActive(false);
+
+        if (_optionsButton != null && _optionsPanel != null)
+            _optionsButton.onClick.AddListener(_optionsPanel.Open);
     }
 
     private void Start()

@@ -35,6 +35,10 @@ public class PoisonStatus : MonoBehaviour
         Debug.Log($"[PoisonStatus] {name} empoisonné — stack {_stacks}/{MaxStacks}");
     }
 
+    // Le pool désactive le GameObject dès la mort (avant que Update() ait pu se
+    // nettoyer via IsDead) : sans ça, les stacks survivraient jusqu'au prochain respawn.
+    private void OnDisable() => Destroy(this);
+
     private void Update()
     {
         if (_health == null || _health.IsDead)

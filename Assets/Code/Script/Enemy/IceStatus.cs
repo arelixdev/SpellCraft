@@ -30,6 +30,11 @@ public class IceStatus : MonoBehaviour
         }
     }
 
+    // Le pool désactive le GameObject dès la mort (avant que Update() ait pu se
+    // nettoyer via la durée) : sans ça, le ralentissement (et la vitesse réduite de
+    // l'agent) survivrait jusqu'au prochain respawn.
+    private void OnDisable() => Destroy(this);
+
     private void Update()
     {
         _duration -= Time.deltaTime;

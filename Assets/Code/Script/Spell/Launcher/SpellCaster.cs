@@ -57,7 +57,11 @@ public class SpellCaster : MonoBehaviour
         SceneManager.sceneLoaded -= OnSceneLoaded;
     }
 
-    private void OnEnable()
+    private void OnEnable() => SubscribeKeybinds();
+
+    private void OnDisable() => UnsubscribeKeybinds();
+
+    private void SubscribeKeybinds()
     {
         foreach (var slot in _spellSlots)
         {
@@ -68,7 +72,7 @@ public class SpellCaster : MonoBehaviour
         }
     }
 
-    private void OnDisable()
+    private void UnsubscribeKeybinds()
     {
         foreach (var slot in _spellSlots)
         {
@@ -279,6 +283,8 @@ public class SpellCaster : MonoBehaviour
     {
         if (craftingGraph == null) return;
 
+        var activePrefabs = new HashSet<GameObject>();
+
         for (int i = 0; i < _spellSlots.Length; i++)
         {
             if (!craftingGraph.TryGetSlotEntry(i, out int startNode)) continue;
@@ -295,8 +301,13 @@ public class SpellCaster : MonoBehaviour
             if (_spellSlots[i]?.launcherConfig != null)
                 ctx.Damage *= _spellSlots[i].launcherConfig.bonusMultiplier;
 
-            SpellExecutor.RefreshPermanentOrbitals(craftingGraph, startNode, ctx);
+            var prefab = SpellExecutor.RefreshPermanentOrbitals(craftingGraph, startNode, ctx);
+            if (prefab != null) activePrefabs.Add(prefab);
         }
+
+        // A slot that lost its orbital node (disconnected/removed) no longer shows up above —
+        // without this, OrbitalManager would keep orbiting it forever with no slot behind it.
+        GetComponent<OrbitalManager>()?.PruneExcept(activePrefabs);
     }
 
     // Re-evaluates which corrupted nodes are currently reachable from an equipped
@@ -358,5 +369,28 @@ public class SpellCaster : MonoBehaviour
     public void SetSlotGraph(int i, SpellGraphSO graph)
     {
         if (i >= 0 && i < _spellSlots.Length) _spellSlots[i].connectedSpell = graph;
+    }
+
+    // Le Player survit au rechargement de scène (PlayerPersistence), donc SetSlots() seul
+    // (pensé pour tourner avant Awake(), cf. commentaire ci-dessus) ne suffit plus une fois
+    // le run précédent déjà démarré : il faut aussi retailler _cooldownTimers, réabonner les
+    // KeyBind du nouveau loadout et reconstruire craftingGraph, sous peine de garder les
+    // sorts (et leurs cooldowns) de l'archétype précédent au choix d'un nouveau robot.
+    public void ResetForNewRun(SpellSlot[] slots, float critChance, float critMultiplier)
+    {
+        UnsubscribeKeybinds();
+
+        _spellSlots         = slots ?? System.Array.Empty<SpellSlot>();
+        _cooldownTimers      = new float[_spellSlots.Length];
+        baseCritChance       = critChance;
+        baseCritMultiplier   = critMultiplier;
+        _castingEnabled      = true;
+
+        SubscribeKeybinds();
+
+        RebuildCraftingGraphFromSlots();
+        foreach (var node in craftingGraph.nodes)
+            node?.RuntimeInit();
+        RefreshPassiveCorruption();
     }
 }

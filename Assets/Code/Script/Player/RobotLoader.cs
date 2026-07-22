@@ -13,6 +13,8 @@ public class RobotLoader : MonoBehaviour
     [SerializeField] private RobotArchetypeSO _defaultArchetype;
     [SerializeField] private RobotNamePoolSO  _defaultNamePool;
 
+    private GameObject _visualInstance;
+
     private void Awake()
     {
         var robot = RobotSelection.Chosen;
@@ -28,18 +30,37 @@ public class RobotLoader : MonoBehaviour
             return;
         }
 
-        ApplyStats(robot);
+        ApplyStats(robot, liveReset: false);
         ApplyVisual(robot);
     }
 
-    private void ApplyStats(RobotDefinitionSO robot)
+    // Le Player survit au rechargement de scène (PlayerPersistence) : cet Awake() ne se
+    // relance donc pas quand on choisit un nouveau robot pour un nouveau run — sans cet
+    // appel explicite (CharacterSelectController), le Player garderait les sorts/stats de
+    // l'archétype précédent. liveReset=true route les sorts via SpellCaster.ResetForNewRun
+    // au lieu du simple SetSlots (pensé pour tourner avant le tout premier Awake).
+    public void ApplyRobotForNewRun(RobotDefinitionSO robot)
+    {
+        if (robot == null) return;
+
+        ApplyStats(robot, liveReset: true);
+        ApplyVisual(robot);
+    }
+
+    private void ApplyStats(RobotDefinitionSO robot, bool liveReset)
     {
         GetComponent<PlayerHealth>()?.SetMaxHealth(robot.BaseMaxHealth);
         GetComponent<PlayerController>()?.SetBaseMoveSpeed(robot.BaseMoveSpeed);
         GetComponent<PlayerWallet>()?.SetStartingGold(robot.StartingGold);
 
         var spellCaster = GetComponent<SpellCaster>();
-        if (spellCaster != null)
+        if (spellCaster == null) return;
+
+        if (liveReset)
+        {
+            spellCaster.ResetForNewRun(robot.SpellSlots, robot.BaseCritChance, robot.BaseCritMultiplier);
+        }
+        else
         {
             spellCaster.baseCritChance     = robot.BaseCritChance;
             spellCaster.baseCritMultiplier = robot.BaseCritMultiplier;
@@ -53,14 +74,20 @@ public class RobotLoader : MonoBehaviour
         if (placeholderRenderer != null)
             placeholderRenderer.enabled = false;
 
+        if (_visualInstance != null)
+        {
+            Destroy(_visualInstance);
+            _visualInstance = null;
+        }
+
         if (robot.VisualPrefab != null)
         {
-            var visual = Instantiate(robot.VisualPrefab, transform);
+            _visualInstance = Instantiate(robot.VisualPrefab, transform);
             // Le CharacterController a un centre (0,0,0) et une hauteur de 2 → ses pieds
             // sont à Y=-1 relatif au Player. Le mesh (pivot à la hanche) doit être abaissé
             // d'autant pour que les pieds touchent le sol au lieu de flotter.
-            visual.transform.localPosition = new Vector3(0f, -1f, 0f);
-            visual.transform.localRotation = Quaternion.identity;
+            _visualInstance.transform.localPosition = new Vector3(0f, -1f, 0f);
+            _visualInstance.transform.localRotation = Quaternion.identity;
         }
     }
 }

@@ -34,6 +34,18 @@ public class CharacterSelectController : MonoBehaviour
     {
         RobotSelection.Chosen = robot;
         RunProgress.ResetRun();
+
+        // Le Player est en DontDestroyOnLoad (PlayerPersistence), donc son Awake() ne se
+        // relance pas au choix d'un nouveau robot : il faut réappliquer explicitement les
+        // stats/sorts du robot choisi, puis réanimer le Player s'il était mort lors du run
+        // précédent (ordre important : ResetForNewRun se base sur le maxHealth à jour).
+        var playerGO = GameObject.FindWithTag("Player");
+        if (playerGO != null)
+        {
+            playerGO.GetComponent<RobotLoader>()?.ApplyRobotForNewRun(robot);
+            playerGO.GetComponent<PlayerHealth>()?.ResetForNewRun();
+        }
+
         SceneManager.LoadScene(_gameplaySceneName);
     }
 }
