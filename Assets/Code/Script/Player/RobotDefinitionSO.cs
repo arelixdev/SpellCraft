@@ -15,9 +15,9 @@ public class RobotDefinitionSO : ScriptableObject
     [LabelText("Description")]
     public LocalizedString Description;
 
-    [LabelText("Prefab visuel")]
-    [Required] [AssetsOnly]
-    public GameObject VisualPrefab;
+    // Généré par RobotArchetypeSO.Roll() via RobotVisualGenerator.RollRandomRecipe() : pas
+    // de prefab visuel fixe, l'apparence est composée de presets Sidekick tirés au hasard.
+    public RobotVisualRecipe VisualRecipe;
 
     [Title("Stats de départ")]
     [LabelText("PV max")]

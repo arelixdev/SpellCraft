@@ -80,9 +80,10 @@ public class RobotLoader : MonoBehaviour
             _visualInstance = null;
         }
 
-        if (robot.VisualPrefab != null)
+        _visualInstance = RobotVisualGenerator.BuildVisual(robot.VisualRecipe);
+        if (_visualInstance != null)
         {
-            _visualInstance = Instantiate(robot.VisualPrefab, transform);
+            _visualInstance.transform.SetParent(transform, false);
             // Le CharacterController a un centre (0,0,0) et une hauteur de 2 → ses pieds
             // sont à Y=-1 relatif au Player. Le mesh (pivot à la hanche) doit être abaissé
             // d'autant pour que les pieds touchent le sol au lieu de flotter.

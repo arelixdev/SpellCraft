@@ -341,8 +341,8 @@ GameObject:
   m_Component:
   - component: {fileID: 2000753137621670420}
   - component: {fileID: 2393822375014639373}
-  - component: {fileID: 7281513226129274812}
   - component: {fileID: 6009349048986444593}
+  - component: {fileID: 5685625344647520249}
   m_Layer: 0
   m_Name: Robotmg
   m_TagString: Untagged
@@ -377,36 +377,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3614150094020615595}
   m_CullTransparentMesh: 1
---- !u!114 &7281513226129274812
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3614150094020615595}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
-  m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
-  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-  m_Maskable: 1
-  m_OnCullStateChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  m_Sprite: {fileID: 0}
-  m_Type: 0
-  m_PreserveAspect: 0
-  m_FillCenter: 1
-  m_FillMethod: 4
-  m_FillAmount: 1
-  m_FillClockwise: 1
-  m_FillOrigin: 0
-  m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 1
 --- !u!114 &6009349048986444593
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -427,6 +397,33 @@ MonoBehaviour:
   m_FlexibleWidth: -1
   m_FlexibleHeight: -1
   m_LayoutPriority: 1
+--- !u!114 &5685625344647520249
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3614150094020615595}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1344c3c82d62a2a41a3576d8abb8e3ea, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.RawImage
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Texture: {fileID: 0}
+  m_UVRect:
+    serializedVersion: 2
+    x: 0
+    y: 0
+    width: 1
+    height: 1
 --- !u!1 &4394215074419022792
 GameObject:
   m_ObjectHideFlags: 0
@@ -898,6 +895,7 @@ GameObject:
   - component: {fileID: 2416562135900828888}
   - component: {fileID: 6457348876755855834}
   - component: {fileID: 3349914941962127623}
+  - component: {fileID: 6494525443839810457}
   m_Layer: 0
   m_Name: RobotCard
   m_TagString: Untagged
@@ -986,6 +984,7 @@ MonoBehaviour:
   _statsLabel: {fileID: 5191434415637325939}
   _slotsLabel: {fileID: 4553626475304559377}
   _chooseButton: {fileID: 5244226417272905648}
+  _previewViewport: {fileID: 6494525443839810457}
 --- !u!114 &3349914941962127623
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1012,6 +1011,25 @@ MonoBehaviour:
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
   m_ReverseArrangement: 0
+--- !u!114 &6494525443839810457
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7891971272499965836}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 66f5aff8f7f6bcb40bd3466fc8a13c90, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RobotPreviewViewport
+  _previewImage: {fileID: 5685625344647520249}
+  _rotationSpeed: 25
+  _textureSize: 256
+  _cameraDistance: 2
+  _cameraHeight: 1.58
+  _lookAtHeight: 1.55
+  _fieldOfView: 28
 --- !u!1 &8911643999350943002
 GameObject:
   m_ObjectHideFlags: 0

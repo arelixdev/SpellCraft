@@ -16,10 +16,6 @@ public class RobotArchetypeSO : ScriptableObject
     [LabelText("Description")]
     public LocalizedString Description;
 
-    [LabelText("Prefab visuel")]
-    [Required] [AssetsOnly]
-    public GameObject VisualPrefab;
-
     [Title("Intervalles de stats")]
     [LabelText("PV max"), MinMaxSlider(1f, 300f, true)]
     public Vector2 MaxHealthRange = new(90f, 110f);
@@ -58,7 +54,7 @@ public class RobotArchetypeSO : ScriptableObject
         var robot = ScriptableObject.CreateInstance<RobotDefinitionSO>();
         robot.DisplayName         = rolledName;
         robot.Description         = Description;
-        robot.VisualPrefab        = VisualPrefab;
+        robot.VisualRecipe        = RobotVisualGenerator.RollRandomRecipe();
         robot.BaseMaxHealth       = Random.Range(MaxHealthRange.x, MaxHealthRange.y);
         robot.BaseMoveSpeed       = Random.Range(MoveSpeedRange.x, MoveSpeedRange.y);
         robot.BaseCritChance      = Random.Range(CritChanceRange.x, CritChanceRange.y);

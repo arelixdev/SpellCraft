@@ -17,15 +17,16 @@ public class CharacterSelectController : MonoBehaviour
     {
         if (_cardPrefab == null || _cardContainer == null) return;
 
-        foreach (var archetype in _archetypes)
+        for (int i = 0; i < _archetypes.Length; i++)
         {
+            var archetype = _archetypes[i];
             if (archetype == null) continue;
 
             var rolledName = _namePool != null ? _namePool.GetRandom() : archetype.ArchetypeName;
             var robot      = archetype.Roll(rolledName);
 
             var card = Instantiate(_cardPrefab, _cardContainer);
-            card.Setup(robot, ChooseRobot);
+            card.Setup(robot, ChooseRobot, i);
         }
     }
 

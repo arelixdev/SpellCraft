@@ -21,6 +21,7 @@ public class RobotCardView : MonoBehaviour
     [SerializeField] private TMP_Text _statsLabel;
     [SerializeField] private TMP_Text _slotsLabel;
     [SerializeField] private Button   _chooseButton;
+    [SerializeField] private RobotPreviewViewport _previewViewport;
 
     private RobotDefinitionSO _robot;
     private Action<RobotDefinitionSO> _onChosen;
@@ -35,7 +36,9 @@ public class RobotCardView : MonoBehaviour
         LocalizationSettings.SelectedLocaleChanged -= OnLocaleChanged;
     }
 
-    public void Setup(RobotDefinitionSO robot, Action<RobotDefinitionSO> onChosen)
+    // previewSlotIndex décale le stage hors-champ de cette carte (voir RobotPreviewViewport) :
+    // doit être unique parmi les cartes affichées en même temps (l'index de boucle du caller).
+    public void Setup(RobotDefinitionSO robot, Action<RobotDefinitionSO> onChosen, int previewSlotIndex)
     {
         _robot    = robot;
         _onChosen = onChosen;
@@ -46,6 +49,12 @@ public class RobotCardView : MonoBehaviour
         {
             _chooseButton.onClick.RemoveAllListeners();
             _chooseButton.onClick.AddListener(() => _onChosen?.Invoke(_robot));
+        }
+
+        if (_previewViewport != null)
+        {
+            _previewViewport.Initialize(previewSlotIndex);
+            _previewViewport.ShowRobot(robot.VisualRecipe);
         }
     }
 
