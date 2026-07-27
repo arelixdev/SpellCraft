@@ -22,7 +22,7 @@ public class ChestActivity : ActivityBase
 
     [FoldoutGroup("État"), ShowInInspector, ReadOnly, LabelText("Prix actuel")]
     public int CurrentPrice => Mathf.RoundToInt(BaseGoldPrice *
-        Mathf.Pow(PriceGrowthPerChest, RunController.Instance != null ? RunController.Instance.ChestsOpened : 0));
+        Mathf.Pow(PriceGrowthPerChest, RunProgress.ChestsOpenedThisRun));
 
     // ── Visuals ──────────────────────────────────────────────────────────────────
     [BoxGroup("Visuals"), LabelText("Animator (optionnel)")]

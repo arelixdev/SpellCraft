@@ -64,8 +64,18 @@ public class SlotSidebarController : MonoBehaviour
     // fige ensuite : le cooldown affiché reste bloqué à sa dernière valeur pour de bon.
     private void EnsureCaster()
     {
-        if (Caster == null)
-            Caster = GameObject.FindWithTag("Player")?.GetComponent<SpellCaster>();
+        if (Caster != null) return;
+
+        Caster = GameObject.FindWithTag("Player")?.GetComponent<SpellCaster>();
+        if (Caster == null) return;
+
+        // Le doublon précédent est déjà détruit (voir commentaire ci-dessus) : pas besoin de
+        // s'en désabonner, mais sans ce réabonnement sur la vraie référence persistante, les
+        // labels restent figés pour de bon (l'event dont ils dépendaient appartenait à
+        // l'ancien Caster mort). Refresh immédiat pour rattraper le rebuild de
+        // ResetForNewRun survenu pendant qu'on était sans abonnement valide.
+        Caster.OnCraftingGraphChanged += RefreshAllSlotLabels;
+        RefreshAllSlotLabels();
     }
 
     public void Init(SpellCraftingPanel panel)

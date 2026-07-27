@@ -44,9 +44,6 @@ public class RunController : MonoBehaviour
     [FoldoutGroup("État"), ShowInInspector, ReadOnly, LabelText("Run actif")]
     public bool IsRunning { get; private set; }
 
-    [FoldoutGroup("État"), ShowInInspector, ReadOnly, LabelText("Coffres ouverts")]
-    public int ChestsOpened { get; private set; }
-
     private float _lastEventSecond = -1f;
 
     // ── Unity ───────────────────────────────────────────────────────────────────
@@ -120,14 +117,17 @@ public class RunController : MonoBehaviour
     public void StartRun()
     {
         if (IsRunning) return;
-        IsRunning    = true;
-        TimeElapsed  = 0f;
-        ChestsOpened = 0;
+        IsRunning   = true;
+        TimeElapsed = 0f;
         if (SpawnEnemies) EnemySpawner?.StartSpawning();
         Debug.Log("[RunController] Run démarré.");
     }
 
-    public void RegisterChestOpened() => ChestsOpened++;
+    // Compteur stocké sur RunProgress (survit au rechargement de scène entre deux niveaux),
+    // pas ici : RunController est recréé à chaque scène, donc un compteur local retomberait
+    // à zéro à chaque changement de niveau — c'est exactement ce qui faisait retomber le
+    // prix des coffres à sa valeur de base au lieu de continuer à monter.
+    public void RegisterChestOpened() => RunProgress.ChestsOpenedThisRun++;
 
     [Button("■ Arrêter le run")]
     public void StopRun()
