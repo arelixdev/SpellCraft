@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Rendering.Universal;
 using UnityEngine.UI;
 
 /// <summary>
@@ -7,7 +8,7 @@ using UnityEngine.UI;
 /// hors-champ (sous la map, décalé en X selon previewSlotIndex) : toutes les cartes
 /// partagent le même layer de rendu, donc c'est cet écart physique entre stages — pas le
 /// layer — qui empêche une carte de filmer le robot d'une autre. Rendu vers un
-/// RenderTexture affiché dans un RawImage, avec une rotation lente pour une vue à 360°.
+/// RenderTexture affiché dans un RawImage, en pose fixe (pas de rotation automatique).
 /// </summary>
 public class RobotPreviewViewport : MonoBehaviour
 {
@@ -16,7 +17,6 @@ public class RobotPreviewViewport : MonoBehaviour
     private const float _STAGE_BASE_Y = -500f;
 
     [SerializeField] private RawImage _previewImage;
-    [SerializeField] private float _rotationSpeed = 25f;
     [SerializeField] private int _textureSize = 256;
     [SerializeField] private float _cameraDistance = 2f;
     [SerializeField] private float _cameraHeight = 1.58f;
@@ -46,7 +46,7 @@ public class RobotPreviewViewport : MonoBehaviour
 
         GameObject cameraGO = new GameObject("PreviewCamera");
         cameraGO.transform.SetParent(_stage, false);
-        cameraGO.transform.localPosition = new Vector3(0f, _cameraHeight, -_cameraDistance);
+        cameraGO.transform.localPosition = new Vector3(0f, _cameraHeight, _cameraDistance);
         Vector3 lookTarget = new Vector3(0f, _lookAtHeight, 0f);
         cameraGO.transform.localRotation = Quaternion.LookRotation((lookTarget - cameraGO.transform.localPosition).normalized);
         cameraGO.layer = Mathf.Max(previewLayer, 0);
@@ -58,6 +58,12 @@ public class RobotPreviewViewport : MonoBehaviour
         _camera.fieldOfView = _fieldOfView;
         _camera.nearClipPlane = 0.1f;
         _camera.farClipPlane = 10f;
+
+        // Sans ça, le post-processing (Bloom) reste désactivé par défaut sur une caméra créée
+        // par script en URP — nécessaire pour que le glow émissif des yeux des robots produise
+        // un vrai halo au lieu d'une simple couleur vive.
+        UniversalAdditionalCameraData cameraData = cameraGO.AddComponent<UniversalAdditionalCameraData>();
+        cameraData.renderPostProcessing = true;
 
         // Format ARGB32 explicite : sans lui, certaines plateformes créent la RenderTexture
         // sans canal alpha et le fond transparent de la caméra devient un fond noir opaque.
@@ -97,14 +103,6 @@ public class RobotPreviewViewport : MonoBehaviour
         _visualInstance.transform.localPosition = Vector3.zero;
         _visualInstance.transform.localRotation = Quaternion.identity;
         SetLayerRecursively(_visualInstance, _camera.gameObject.layer);
-    }
-
-    private void Update()
-    {
-        if (_visualInstance != null)
-        {
-            _visualInstance.transform.Rotate(Vector3.up, _rotationSpeed * Time.deltaTime, Space.World);
-        }
     }
 
     private static void SetLayerRecursively(GameObject go, int layer)

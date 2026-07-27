@@ -1024,7 +1024,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::RobotPreviewViewport
   _previewImage: {fileID: 5685625344647520249}
-  _rotationSpeed: 25
   _textureSize: 256
   _cameraDistance: 2
   _cameraHeight: 1.58
@@ -1202,8 +1201,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 187.2893, y: -364.1306}
-  m_SizeDelta: {x: 535.278, y: 868.6412}
+  m_AnchoredPosition: {x: 187.80824, y: -380.73764}
+  m_SizeDelta: {x: 536.3159, y: 901.8552}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &4021148375802270992
 CanvasRenderer:
