@@ -11,6 +11,11 @@ public class PlayerController : MonoBehaviour
     private CharacterController _characterController;
     private Vector2 _moveInput;
 
+    // Lu par PlayerAnimatorDriver pour piloter le blend tree de locomotion : l'input WASD est
+    // en espace monde (voir Update), donc le driver le reprojette en espace local du Player
+    // pour choisir la bonne direction relative à l'orientation (qui suit le curseur, pas l'input).
+    public Vector2 MoveInput => _moveInput;
+
     // Stacked multiplicatively, keyed by the source modifier so each contributor
     // can be added/removed independently (e.g. corrupted nodes wired/unwired
     // from a slot) without stomping on other active sources.
@@ -58,6 +63,12 @@ public class PlayerController : MonoBehaviour
         _inputActions.Player.Move.performed -= OnMove;
         _inputActions.Player.Move.canceled -= OnMove;
         _inputActions.Player.Disable();
+
+        // PlayerHealth.Die() désactive ce composant : si une touche de déplacement était
+        // tenue à cet instant, _moveInput garde sa dernière valeur (Update() ne tourne plus
+        // pour la remettre à jour) et le prochain ResetForNewRun() la réactiverait telle
+        // quelle, faisant repartir le robot tout seul jusqu'à la prochaine touche pressée.
+        _moveInput = Vector2.zero;
     }
 
     private void OnMove(InputAction.CallbackContext context)

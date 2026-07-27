@@ -86,7 +86,16 @@ public static class RobotVisualGenerator
         GameObject baseModel = Resources.Load<GameObject>("Meshes/SK_BaseModel");
         Material baseMaterial = Resources.Load<Material>("Materials/M_BaseMaterial");
 
-        _sidekickRuntime = new SidekickRuntime(baseModel, baseMaterial, null, _dbManager);
+        // SidekickCharacters/_Demos, rigué sur le même Avatar humanoid que SK_BaseModel donc
+        // compatible tel quel). CreateCharacter() l'assigne à tout robot créé — aperçus
+        // CharacterSelect et robot joueur (RobotLoader) partagent ce même contrôleur.
+        RuntimeAnimatorController idleController = Resources.Load<RuntimeAnimatorController>("AC_Robot");
+        if (idleController == null)
+        {
+            Debug.LogError("[RobotVisualGenerator] AC_RobotIdle introuvable dans Resources — les robots resteront en pose statique.");
+        }
+
+        _sidekickRuntime = new SidekickRuntime(baseModel, baseMaterial, idleController, _dbManager);
         SidekickRuntime.PopulateToolData(_sidekickRuntime);
 
         _scifiRobotsSpecies = SidekickSpecies.GetAll(_dbManager)
