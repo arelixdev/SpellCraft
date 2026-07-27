@@ -29,16 +29,23 @@ public class BossChargeSkill : MonoBehaviour, IBossSkill
 
     [HideInInspector] public bool LeavesFireTrail;
 
-    private Transform    _player;
-    private PlayerHealth _playerHealth;
-    private NavMeshAgent _agent;
-    private EnemyAI      _ai;
+    private Transform       _player;
+    private PlayerHealth    _playerHealth;
+    private NavMeshAgent    _agent;
+    private EnemyAI         _ai;
+    private CapsuleCollider _collider;
 
     private void Awake()
     {
-        _agent = GetComponent<NavMeshAgent>();
-        _ai    = GetComponent<EnemyAI>();
+        _agent    = GetComponent<NavMeshAgent>();
+        _ai       = GetComponent<EnemyAI>();
+        _collider = GetComponent<CapsuleCollider>();
     }
+
+    // transform.position est au pivot du boss (centre du CapsuleCollider, pas les pieds —
+    // même convention que le CharacterController du Player, voir RobotLoader.cs), donc la
+    // traînée de feu doit recaler sa hauteur sur le bas du collider plutôt que le pivot.
+    private float GroundY() => _collider != null ? _collider.bounds.min.y : transform.position.y;
 
     private void Start()
     {
@@ -99,6 +106,7 @@ public class BossChargeSkill : MonoBehaviour, IBossSkill
     {
         float   length = Vector3.Distance(start, end);
         Vector3 mid    = (start + end) * 0.5f;
+        mid.y = GroundY();
 
         var zone = GameObject.CreatePrimitive(PrimitiveType.Cube);
         zone.name = "BossFireTrail";
