@@ -43,6 +43,9 @@ public class CharacterSelectController : MonoBehaviour
         if (playerGO != null)
         {
             playerGO.GetComponent<RobotLoader>()?.ApplyRobotForNewRun(robot);
+            // Avant PlayerHealth.ResetForNewRun : sans ça, le plein de vie ci-dessous se
+            // baserait sur un MaxHealth qui inclut encore les bonus du run précédent.
+            playerGO.GetComponent<RelicManager>()?.ResetForNewRun();
             playerGO.GetComponent<PlayerHealth>()?.ResetForNewRun();
         }
 

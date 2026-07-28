@@ -91,7 +91,10 @@ public class UIController : MonoBehaviour
     }
 
     private enum HealthLabelMode { Hidden, CurrentMax, Percent }
-    private HealthLabelMode _healthLabelMode = HealthLabelMode.Hidden;
+    // CurrentMax par défaut : le dial de vie est un ratio (current/max), donc un bonus de vie
+    // qui soigne du même montant (relique de vie max) ne fait pas bouger la barre quand le
+    // joueur est déjà au max — sans le label numérique visible, le bonus semble ne rien faire.
+    private HealthLabelMode _healthLabelMode = HealthLabelMode.CurrentMax;
 
     public void CycleHealthLabel()
     {

@@ -25,13 +25,27 @@ public class SlotSidebarController : MonoBehaviour
         // rebuild fait par SpellCaster.Start(), même si son ordre relatif au nôtre
         // n'est pas garanti.
         if (Caster != null)
+        {
             Caster.OnCraftingGraphChanged += RefreshAllSlotLabels;
+            Caster.OnSlotAdded            += HandleSlotAdded;
+        }
     }
 
     private void OnDisable()
     {
         if (Caster != null)
+        {
             Caster.OnCraftingGraphChanged -= RefreshAllSlotLabels;
+            Caster.OnSlotAdded            -= HandleSlotAdded;
+        }
+    }
+
+    // Appelé par SpellCaster.AddSlot (relique "nouveau sort") : ajoute juste l'icône
+    // manquante au lieu de reconstruire toute la sidebar.
+    private void HandleSlotAdded(int index, SpellSlot slot)
+    {
+        SpawnSlot(index, slot);
+        RefreshAllSlotLabels();
     }
 
     private void Start()
@@ -75,6 +89,7 @@ public class SlotSidebarController : MonoBehaviour
         // l'ancien Caster mort). Refresh immédiat pour rattraper le rebuild de
         // ResetForNewRun survenu pendant qu'on était sans abonnement valide.
         Caster.OnCraftingGraphChanged += RefreshAllSlotLabels;
+        Caster.OnSlotAdded            += HandleSlotAdded;
         RefreshAllSlotLabels();
     }
 

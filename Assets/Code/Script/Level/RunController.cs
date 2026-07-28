@@ -45,6 +45,7 @@ public class RunController : MonoBehaviour
     public bool IsRunning { get; private set; }
 
     private float _lastEventSecond = -1f;
+    private PlayerHealth _playerHealth;
 
     // ── Unity ───────────────────────────────────────────────────────────────────
     private void Awake()
@@ -58,11 +59,25 @@ public class RunController : MonoBehaviour
     {
         RepositionPlayerOnNavMesh();
 
-        var playerHealth = GameObject.FindWithTag("Player")?.GetComponent<PlayerHealth>();
-        if (playerHealth != null)
-            playerHealth.OnDied += StopRun;
+        _playerHealth = GameObject.FindWithTag("Player")?.GetComponent<PlayerHealth>();
+        if (_playerHealth != null)
+            _playerHealth.OnDied += StopRun;
 
         StartRun();
+    }
+
+    // Le Player survit au rechargement de scène (PlayerPersistence) mais RunController, lui,
+    // est recréé à chaque niveau — sans ce désabonnement, PlayerHealth.OnDied accumule un
+    // handler StopRun par RunController détruit au fil des niveaux. Au décès du joueur,
+    // Invoke() les appelle tous dans l'ordre : le premier StopRun d'un RunController détruit
+    // relève un EnemySpawner tout aussi détruit, et `EnemySpawner?.StopSpawning()` (qui ne
+    // passe PAS par l'opérateur == surchargé d'UnityEngine.Object) tente quand même l'appel,
+    // qui lève une MissingReferenceException — ce qui interrompt l'invocation du multicast
+    // delegate avant d'atteindre UIController.ShowGameOver, d'où l'écran de Game Over absent.
+    private void OnDestroy()
+    {
+        if (_playerHealth != null)
+            _playerHealth.OnDied -= StopRun;
     }
 
     // Le Player survit au rechargement de scène (PlayerPersistence) : il garde sa position

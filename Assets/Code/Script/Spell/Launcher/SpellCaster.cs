@@ -22,14 +22,19 @@ public class SpellCaster : MonoBehaviour
     [ListDrawerSettings(ShowIndexLabels = true, NumberOfItemsPerPage = 6)]
     [SerializeField] private SpellSlot[] _spellSlots;
 
-    private float[] _cooldownTimers;
-    private bool    _castingEnabled = true;
+    private float[]       _cooldownTimers;
+    private bool           _castingEnabled = true;
+    private RelicManager   _relicManager;
 
     // Fired whenever craftingGraph is rebuilt or mutated (RebuildCraftingGraphFromSlots,
     // CollectNode). Subscribers refresh instead of relying on Start() order (unordered
     // relative to SpellCaster's own Start(), which is when the graph actually becomes
     // valid) or on the player manually reopening the crafting panel.
     public event System.Action OnCraftingGraphChanged;
+
+    // Fired when AddSlot() grows _spellSlots at runtime (relique "nouveau sort"), pour que
+    // l'UI ajoute juste l'icône du nouveau slot sans reconstruire toute la sidebar.
+    public event System.Action<int, SpellSlot> OnSlotAdded;
 
     // Corrupted effects currently applied as permanent player debuffs/buffs —
     // tracked by CorruptedEffectSO so a shared asset referenced by several nodes
@@ -40,6 +45,7 @@ public class SpellCaster : MonoBehaviour
     {
         _spellSlots     ??= System.Array.Empty<SpellSlot>();
         _cooldownTimers   = new float[_spellSlots.Length];
+        _relicManager     = GetComponent<RelicManager>();
         SceneManager.sceneLoaded += OnSceneLoaded;
     }
 
@@ -143,10 +149,10 @@ public class SpellCaster : MonoBehaviour
             Caster         = gameObject,
             Origin         = _firePoint != null ? _firePoint.position : transform.position,
             Direction      = _firePoint != null ? _firePoint.forward  : transform.forward,
-            CritChance     = baseCritChance,
-            CritMultiplier = baseCritMultiplier,
+            CritChance     = Mathf.Clamp01(baseCritChance + (_relicManager?.CritChanceBonus ?? 0f)),
+            CritMultiplier = baseCritMultiplier + (_relicManager?.CritMultiplierBonus ?? 0f),
         };
-        ctx.Damage *= slot.launcherConfig.bonusMultiplier;
+        ctx.Damage *= slot.launcherConfig.bonusMultiplier * (_relicManager?.DamageMultiplier ?? 1f);
 
         if (craftingGraph != null && craftingGraph.TryGetSlotEntry(i, out int startNode))
         {
@@ -162,7 +168,7 @@ public class SpellCaster : MonoBehaviour
         }
 
         // Set after Execute so a corrupted node's CooldownMultiplier (accumulated on ctx) applies
-        _cooldownTimers[i] = slot.launcherConfig.cooldown * ctx.CooldownMultiplier;
+        _cooldownTimers[i] = slot.launcherConfig.cooldown * ctx.CooldownMultiplier * (_relicManager?.CooldownMultiplier ?? 1f);
     }
 
     private bool IsSlotReady(int i)
@@ -300,6 +306,7 @@ public class SpellCaster : MonoBehaviour
 
             if (_spellSlots[i]?.launcherConfig != null)
                 ctx.Damage *= _spellSlots[i].launcherConfig.bonusMultiplier;
+            ctx.Damage *= _relicManager?.DamageMultiplier ?? 1f;
 
             var prefab = SpellExecutor.RefreshPermanentOrbitals(craftingGraph, startNode, ctx);
             if (prefab != null) activePrefabs.Add(prefab);
@@ -369,6 +376,39 @@ public class SpellCaster : MonoBehaviour
     public void SetSlotGraph(int i, SpellGraphSO graph)
     {
         if (i >= 0 && i < _spellSlots.Length) _spellSlots[i].connectedSpell = graph;
+    }
+
+    // Appelé par un RelicEffect qui ajoute un nouveau sort au slotbar (contrairement à
+    // CollectNode, qui n'ajoute qu'un node dans le graphe partagé) : grossit _spellSlots
+    // d'un élément et rebranche tout ce qui dépend de sa taille. Pas de retrait — le
+    // slot ajouté est de toute façon écrasé au prochain ResetForNewRun (nouveau loadout).
+    public void AddSlot(SpellLauncherConfigSO config, SpellGraphSO spell)
+    {
+        if (config == null) return;
+
+        int newIndex = _spellSlots.Length;
+        var slots = new SpellSlot[newIndex + 1];
+        _spellSlots.CopyTo(slots, 0);
+        var newSlot = new SpellSlot { launcherConfig = config, connectedSpell = spell };
+        slots[newIndex] = newSlot;
+        _spellSlots = slots;
+
+        var timers = new float[_cooldownTimers.Length + 1];
+        _cooldownTimers.CopyTo(timers, 0);
+        _cooldownTimers = timers;
+
+        if (config.launcherType == LauncherType.KeyBind && config.inputAction != null)
+        {
+            config.inputAction.action.performed += TryCastKeybind;
+            config.inputAction.action.Enable();
+        }
+
+        RebuildCraftingGraphFromSlots();
+        foreach (var node in craftingGraph.nodes)
+            node?.RuntimeInit();
+        RefreshPassiveCorruption();
+
+        OnSlotAdded?.Invoke(newIndex, newSlot);
     }
 
     // Le Player survit au rechargement de scène (PlayerPersistence), donc SetSlots() seul

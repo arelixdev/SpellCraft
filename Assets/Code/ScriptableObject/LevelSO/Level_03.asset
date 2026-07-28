@@ -24,3 +24,6 @@ MonoBehaviour:
   - Activity: {fileID: 11400000, guid: 82c0154befbadc64cb01f923d21b2dbc, type: 2}
     MinCount: 3
     MaxCount: 6
+  - Activity: {fileID: 11400000, guid: fd89644e4d7225b4dbeb5cd7088ed4de, type: 2}
+    MinCount: 2
+    MaxCount: 6
