@@ -192,7 +192,7 @@ public class BossPortal : ActivityBase
 
         var bossHealth = boss.GetComponent<EnemyHealth>();
         if (bossHealth != null)
-            bossHealth.OnDied += () => OnBossDefeated(GroundPosition(boss.transform));
+            bossHealth.OnDied += () => OnBossDefeated(boss.transform.position);
 
         SpawnEscortMobs(spawnPos);
 
@@ -237,19 +237,6 @@ public class BossPortal : ActivityBase
         }
 
         Debug.Log("[BossPortal] Boss vaincu — réinteragis avec le portail pour passer au niveau suivant.");
-    }
-
-    // transform.position d'un ennemi est au pivot du CapsuleCollider (centre, pas les pieds —
-    // même convention que le CharacterController du Player, voir RobotLoader.cs), donc le
-    // pickup doit recaler sa hauteur sur le bas du collider plutôt que le pivot du boss.
-    private static Vector3 GroundPosition(Transform enemyTransform)
-    {
-        var collider = enemyTransform.GetComponent<CapsuleCollider>();
-        if (collider == null) return enemyTransform.position;
-
-        Vector3 pos = enemyTransform.position;
-        pos.y = collider.bounds.min.y;
-        return pos;
     }
 
     private void SpawnBossLoot(Vector3 position)
