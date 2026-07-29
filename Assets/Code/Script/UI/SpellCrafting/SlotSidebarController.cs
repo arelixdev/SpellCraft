@@ -90,7 +90,24 @@ public class SlotSidebarController : MonoBehaviour
         // ResetForNewRun survenu pendant qu'on était sans abonnement valide.
         Caster.OnCraftingGraphChanged += RefreshAllSlotLabels;
         Caster.OnSlotAdded            += HandleSlotAdded;
+
+        // Start() a spawné ses icônes contre le doublon (son SpellCaster déserialisé depuis
+        // CETTE scène, donc avec le loadout de base du robot) avant que ce switch vers le
+        // vrai Caster persistant n'ait lieu. Si une relique a ajouté un slot (SpellCaster.
+        // AddSlot) lors d'un niveau précédent, ce slot existe bel et bien dans le tableau du
+        // vrai Caster mais son OnSlotAdded a déjà été consommé par l'ancienne sidebar (détruite
+        // avec l'ancienne scène) — sans ce rattrapage, son icône n'apparaît jamais ici.
+        SyncMissingSlots();
         RefreshAllSlotLabels();
+    }
+
+    private void SyncMissingSlots()
+    {
+        var slots = Caster?.GetSlots();
+        if (slots == null) return;
+
+        for (int i = _slots.Count; i < slots.Length; i++)
+            SpawnSlot(i, slots[i]);
     }
 
     public void Init(SpellCraftingPanel panel)

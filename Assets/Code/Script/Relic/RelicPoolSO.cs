@@ -29,6 +29,22 @@ public class RelicPoolSO : ScriptableObject
         new RarityWeight { Rarity = NodeRarity.Epique,  Weight = 10f },
     };
 
+    // Tirage sans remise pour un choix multiple (autel à choix) — même approche que
+    // LootPoolSO.DrawThree : retire les doublons après coup plutôt que d'exclure la
+    // rareté déjà tirée, pour ne pas fausser la pondération entre les 3 propositions.
+    public List<RelicSO> DrawThree()
+    {
+        var result = new List<RelicSO>();
+        int attempts = 0;
+        while (result.Count < 3 && attempts++ < 50)
+        {
+            var relic = DrawOne();
+            if (relic != null && !result.Contains(relic))
+                result.Add(relic);
+        }
+        return result;
+    }
+
     public RelicSO DrawOne()
     {
         if (Catalog == null || Catalog.AllRelics.Count == 0) return null;

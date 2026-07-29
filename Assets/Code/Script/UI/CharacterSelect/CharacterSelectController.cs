@@ -47,6 +47,9 @@ public class CharacterSelectController : MonoBehaviour
             // baserait sur un MaxHealth qui inclut encore les bonus du run précédent.
             playerGO.GetComponent<RelicManager>()?.ResetForNewRun();
             playerGO.GetComponent<PlayerHealth>()?.ResetForNewRun();
+            // Après ApplyRobotForNewRun : SetStartingGold vient d'y définir le StartingGold
+            // du robot choisi, ResetForNewRun l'applique réellement à l'or courant.
+            playerGO.GetComponent<PlayerWallet>()?.ResetForNewRun();
         }
 
         ScreenFader.LoadScene(_gameplaySceneName);

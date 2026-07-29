@@ -15,6 +15,16 @@ public class PlayerWallet : MonoBehaviour
 
     private void Awake() => _gold = _startingGold;
 
+    // Le Player survit au rechargement de scène (PlayerPersistence), donc son Awake() ne se
+    // relance pas au choix d'un nouveau robot : sans cet appel explicite, un nouveau run
+    // repartirait avec l'or du run précédent au lieu du StartingGold du robot qui vient
+    // d'être appliqué par SetStartingGold.
+    public void ResetForNewRun()
+    {
+        _gold = _startingGold;
+        OnGoldChanged?.Invoke(_gold);
+    }
+
     public void AddGold(int amount)
     {
         if (amount <= 0) return;

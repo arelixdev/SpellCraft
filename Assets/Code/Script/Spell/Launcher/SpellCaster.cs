@@ -243,45 +243,50 @@ public class SpellCaster : MonoBehaviour
 
     private void MergeSlotsInto(SpellGraphSO graph)
     {
-        int nodeOffset = 0;
         for (int i = 0; i < _spellSlots.Length; i++)
+            AppendSlotInto(graph, i, _spellSlots[i]?.connectedSpell);
+    }
+
+    // Fusionne le graphe par défaut d'UN slot à la SUITE du graphe existant (nodeOffset =
+    // graph.nodes.Count courant) plutôt que de tout reconstruire depuis zéro — utilisé à la
+    // fois par MergeSlotsInto (boucle sur tous les slots dans un graphe fraîchement vidé) et
+    // par AddSlot (un seul slot ajouté à un graphe déjà en cours d'utilisation, dont le
+    // câblage ne doit pas être perturbé, cf. commentaire sur AddSlot).
+    private void AppendSlotInto(SpellGraphSO graph, int slotIndex, SpellGraphSO source)
+    {
+        if (source == null || source.nodes.Count == 0) return;
+
+        int nodeOffset = graph.nodes.Count;
+        graph.SetSlotEntry(slotIndex, nodeOffset);
+
+        for (int j = 0; j < source.nodes.Count; j++)
         {
-            var source = _spellSlots[i]?.connectedSpell;
-            if (source == null || source.nodes.Count == 0) continue;
-
-            graph.SetSlotEntry(i, nodeOffset);
-
-            for (int j = 0; j < source.nodes.Count; j++)
+            graph.nodes.Add(source.nodes[j]);
+            graph.editorLayout.Add(new SpellGraphSO.NodePlacement
             {
-                graph.nodes.Add(source.nodes[j]);
-                graph.editorLayout.Add(new SpellGraphSO.NodePlacement
-                {
-                    nodeIndex      = nodeOffset + j,
-                    canvasPosition = new Vector2(-200f + j * 180f, 80f - i * 150f)
-                });
+                nodeIndex      = nodeOffset + j,
+                canvasPosition = new Vector2(-200f + j * 180f, 80f - slotIndex * 150f)
+            });
+        }
+
+        foreach (var conn in source.connections)
+        {
+            // Guard against a stray connection in the source asset referencing an
+            // index past its own node list — left uncaught, the offset below would
+            // silently bridge it into whichever slot gets merged next.
+            if (conn.fromIndex < 0 || conn.fromIndex >= source.nodes.Count ||
+                conn.toIndex   < 0 || conn.toIndex   >= source.nodes.Count)
+            {
+                Debug.LogWarning($"[SpellCaster] '{source.name}' has an out-of-range connection " +
+                                  $"{conn.fromIndex}->{conn.toIndex} (only {source.nodes.Count} nodes) — skipped.");
+                continue;
             }
 
-            foreach (var conn in source.connections)
+            graph.connections.Add(new SpellGraphSO.Connection
             {
-                // Guard against a stray connection in the source asset referencing an
-                // index past its own node list — left uncaught, the offset below would
-                // silently bridge it into whichever slot gets merged next.
-                if (conn.fromIndex < 0 || conn.fromIndex >= source.nodes.Count ||
-                    conn.toIndex   < 0 || conn.toIndex   >= source.nodes.Count)
-                {
-                    Debug.LogWarning($"[SpellCaster] '{source.name}' has an out-of-range connection " +
-                                      $"{conn.fromIndex}->{conn.toIndex} (only {source.nodes.Count} nodes) — skipped.");
-                    continue;
-                }
-
-                graph.connections.Add(new SpellGraphSO.Connection
-                {
-                    fromIndex = conn.fromIndex + nodeOffset,
-                    toIndex   = conn.toIndex   + nodeOffset
-                });
-            }
-
-            nodeOffset += source.nodes.Count;
+                fromIndex = conn.fromIndex + nodeOffset,
+                toIndex   = conn.toIndex   + nodeOffset
+            });
         }
     }
 
@@ -403,10 +408,19 @@ public class SpellCaster : MonoBehaviour
             config.inputAction.action.Enable();
         }
 
-        RebuildCraftingGraphFromSlots();
-        foreach (var node in craftingGraph.nodes)
-            node?.RuntimeInit();
+        // Ajoute SEULEMENT ce nouveau slot au graphe existant — un rebuild complet
+        // (RebuildCraftingGraphFromSlots) effacerait le câblage déjà en place, y compris
+        // tout ce que le joueur a réorganisé dans le panel de craft (ex : rebrancher le
+        // sort d'un slot autocast sur le keybind), et le ramènerait au mapping slot→sort
+        // d'origine du robot.
+        EnsureCraftingGraphInitialized();
+        int nodesBefore = craftingGraph.nodes.Count;
+        AppendSlotInto(craftingGraph, newIndex, spell);
+        for (int i = nodesBefore; i < craftingGraph.nodes.Count; i++)
+            craftingGraph.nodes[i]?.RuntimeInit();
+
         RefreshPassiveCorruption();
+        OnCraftingGraphChanged?.Invoke();
 
         OnSlotAdded?.Invoke(newIndex, newSlot);
     }

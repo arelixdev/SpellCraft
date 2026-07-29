@@ -13,9 +13,17 @@ public class RelicManager : MonoBehaviour
 {
     private readonly List<RelicSO> _collectedRelics = new();
 
-    // Stacké multiplicativement/additivement par source (la RelicEffect elle-même sert de
-    // clé), même pattern que PlayerController._speedMultipliers : plusieurs reliques du
-    // même type coexistent sans s'écraser.
+    // Clé de stacking utilisée par chaque RelicEffect.Apply/Remove de ce ramassage — un
+    // `object` neuf par exemplaire, PAS le RelicEffect lui-même : une RelicSO est un asset
+    // partagé, donc son RelicEffect reste la même instance à chaque ramassage. L'utiliser
+    // comme clé de dictionnaire écraserait le bonus précédent au lieu de s'additionner
+    // quand on ramasse deux fois la même relique (cf. Coeur Renforcé x2 ne boostant le
+    // max HP qu'une fois). Même index que _collectedRelics.
+    private readonly List<object> _collectedSources = new();
+
+    // Stacké multiplicativement/additivement par source, même pattern que
+    // PlayerController._speedMultipliers : plusieurs reliques (ou exemplaires) coexistent
+    // sans s'écraser tant que chacune a sa propre clé (voir _collectedSources ci-dessus).
     private readonly Dictionary<object, float> _damageMultipliers    = new();
     private readonly Dictionary<object, float> _critChanceBonuses    = new();
     private readonly Dictionary<object, float> _critMultiplierBonuses = new();
@@ -81,9 +89,12 @@ public class RelicManager : MonoBehaviour
     {
         if (relic == null) return;
 
+        object source = new object();
         _collectedRelics.Add(relic);
+        _collectedSources.Add(source);
+
         foreach (var effect in relic.Effects)
-            effect?.Apply(gameObject);
+            effect?.Apply(gameObject, source);
 
         Debug.Log($"[RelicManager] Relique collectée : {relic.DisplayName}");
         OnRelicCollected?.Invoke(relic);
@@ -94,11 +105,12 @@ public class RelicManager : MonoBehaviour
     // garde pas les reliques du précédent.
     public void ResetForNewRun()
     {
-        foreach (var relic in _collectedRelics)
-            foreach (var effect in relic.Effects)
-                effect?.Remove(gameObject);
+        for (int i = 0; i < _collectedRelics.Count; i++)
+            foreach (var effect in _collectedRelics[i].Effects)
+                effect?.Remove(gameObject, _collectedSources[i]);
 
         _collectedRelics.Clear();
+        _collectedSources.Clear();
         _damageMultipliers.Clear();
         _critChanceBonuses.Clear();
         _critMultiplierBonuses.Clear();
