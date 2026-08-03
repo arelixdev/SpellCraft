@@ -257,7 +257,7 @@ Material:
     - _Triplanar_Offset_Top: {r: 0, g: 0, b: 0, a: 0}
     - _Triplanar_Tiling_Bottom: {r: 20, g: 20, b: 0, a: 0}
     - _Triplanar_Tiling_Side: {r: 20, g: 20, b: 0, a: 0}
-    - _Triplanar_Tiling_Top: {r: 60, g: 60, b: 0, a: 0}
+    - _Triplanar_Tiling_Top: {r: 35, g: 35, b: 0, a: 0}
     - _UVPan: {r: 0, g: 0, b: 0, a: 0}
     - _Wave_Direction_Vector: {r: 0, g: 1, b: 0, a: 0}
     - _Wave_Noise_Tiling: {r: 1, g: 1, b: 0, a: 0}
